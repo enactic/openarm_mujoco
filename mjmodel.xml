@@ -80,11 +80,12 @@
     <geom name="ground" size="0.5 0.5 0.1" type="plane" material="grid"/>
   </worldbody>
   <actuator>
-    <position joint="rev1" name="rev1_actuator" kv="5.0" kp="15"></position>
-    <position joint="rev2" name="rev2_actuator" kv="5.0" kp="15"></position>
-    <position joint="rev3" name="rev3_actuator" kv="5.0" kp="15"></position>
-    <position joint="rev4" name="rev4_actuator" kv="5.0" kp="15"></position>
-    <position joint="rev5" name="rev5_actuator" kv="2.5" kp="15"></position>
-    <position joint="rev6" name="rev6_actuator" kv="2.5" kp="15"></position>
+    <position joint="rev1" name="rev1_actuator" kv="5.0" kp="20" ctrllimited="true" ctrlrange="-2.356194 2.356194"/>
+    <position joint="rev2" name="rev2_actuator" kv="10.0" kp="35" ctrllimited="true" ctrlrange="-3.05433 0"/>
+    <position joint="rev3" name="rev3_actuator" kv="5.0" kp="20" ctrllimited="true" ctrlrange="-2.0944 2.0944"/>
+    <position joint="rev4" name="rev4_actuator" kv="5.0" kp="25" ctrllimited="true" ctrlrange="-3.14159 0"/>
+    <position joint="rev5" name="rev5_actuator" kv="2.5" kp="20" ctrllimited="true" ctrlrange="-2.0944 2.0944"/>
+    <position joint="rev6" name="rev6_actuator" kv="2.5" kp="20" ctrllimited="true" ctrlrange="-1.5708 1.5708"/>
+    <position joint="rev7" name="rev7_actuator" kv="2.5" kp="20"/>
   </actuator>
 </mujoco>
