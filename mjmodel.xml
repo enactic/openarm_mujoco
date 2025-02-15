@@ -1,9 +1,10 @@
 <mujoco model="openarm_grip">
-  <compiler angle="radian"/>
+  <compiler angle="radian" meshdir="./meshes"/>
+  <option timestep="0.001" integrator="RK4" />
 
   <asset>
     <mesh name="base_link" file="base_link.stl" scale="0.001 0.001 0.001"/>
-    <mesh name="J2_v1_1" file="J2_v1_1.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="J2_v1_1" file="J2_v1_1.stl" />
     <mesh name="J3_v1_1" file="J3_v1_1.stl" scale="0.001 0.001 0.001"/>
     <mesh name="J4_v1_1" file="J4_v1_1.stl" scale="0.001 0.001 0.001"/>
     <mesh name="J5_v1_1" file="J5_v1_1.stl" scale="0.001 0.001 0.001"/>
@@ -29,11 +30,11 @@
   </asset>
 
   <worldbody>
-    <body name="J2_v1_1" pos="0 0 -0.00225">
-      <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="base_link"/>
+    <!-- <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="base_link"/> -->
+    <body name="J2_v1_1" pos="0 0 0">
       <inertial pos="0.00230073 -0.000216912 0.027606" quat="0.525523 0.473792 0.485545 0.513413" mass="0.49221" diaginertia="0.000717072 0.000591684 0.000314245"/>
-      <joint name="rev1" pos="0 0 0" axis="0 0 1" range="-2.35619 2.35619" actuatorfrcrange="-100 100"/>
-      <geom pos="0 0 0.00225" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="J2_v1_1"/>
+      <joint name="rev1" pos="0 0 -0.00225" axis="0 0 1" range="-2.35619 2.35619" actuatorfrcrange="-100 100"/>
+      <geom pos="0 0 0.00226" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="J2_v1_1"/>
       <body name="J3_v1_1" pos="0.02975 0 0.04475">
         <inertial pos="-0.0297259 0.0140847 0.00245888" quat="0.455807 0.546109 -0.5307 0.460827" mass="0.637283" diaginertia="0.000758429 0.000647067 0.000428504"/>
         <joint name="rev2" pos="0 0 0" axis="-1 0 0" range="-3.05433 0" actuatorfrcrange="-100 100"/>
@@ -76,9 +77,12 @@
       </body>
     </body>
     <camera name="side" pos="-0.082 -1.386 0.649" quat="0.812072 0.583554 0.0011671 0.00162414"/>
-    <geom name="target" size="0.04" pos="0.4 0 0.2" material="target"/>
     <geom name="ground" size="0.5 0.5 0.1" type="plane" material="grid"/>
   </worldbody>
+
+  <contact>
+    <exclude name="gripper_contact" body1="left_jaw_1" body2="right_jaw_1"/>
+  </contact>
 
   <tendon>
     <fixed name="split">
@@ -91,14 +95,14 @@
   </equality>
 
   <actuator>
-    <position joint="rev1" name="rev1_actuator" kv="5.0" kp="20" ctrllimited="true" ctrlrange="-2.356194 2.356194"/>
-    <position joint="rev2" name="rev2_actuator" kv="10.0" kp="35" ctrllimited="true" ctrlrange="-3.05433 0"/>
-    <position joint="rev3" name="rev3_actuator" kv="5.0" kp="20" ctrllimited="true" ctrlrange="-2.0944 2.0944"/>
-    <position joint="rev4" name="rev4_actuator" kv="5.0" kp="25" ctrllimited="true" ctrlrange="-3.14159 0"/>
-    <position joint="rev5" name="rev5_actuator" kv="2.5" kp="20" ctrllimited="true" ctrlrange="-2.0944 2.0944"/>
-    <position joint="rev6" name="rev6_actuator" kv="2.5" kp="20" ctrllimited="true" ctrlrange="-0.3 1.5708"/>
-    <position joint="rev7" name="rev7_actuator" kv="2.5" kp="20"/>
-    <position name="gripper_actuator" tendon="split" kv="2.5" kp="10" ctrlrange="-80 25"/>
+    <position joint="rev1" name="rev1_actuator" kv="18.5" kp="45.0" ctrllimited="true" ctrlrange="-2.356194 2.356194"/>
+    <position joint="rev2" name="rev2_actuator" kv="12.0" kp="50.0" ctrllimited="true" ctrlrange="-3.05433 0"/>
+    <position joint="rev3" name="rev3_actuator" kv="8.0" kp="30.0" ctrllimited="true" ctrlrange="-2.0944 2.0944"/>
+    <position joint="rev4" name="rev4_actuator" kv="10.0" kp="30.0" ctrllimited="true" ctrlrange="-3.14159 0"/>
+    <position joint="rev5" name="rev5_actuator" kv="3.0" kp="27.5" ctrllimited="true" ctrlrange="-2.0944 2.0944"/>
+    <position joint="rev6" name="rev6_actuator" kv="3.0" kp="35.0" ctrllimited="true" ctrlrange="-0.3 1.5708"/>
+    <position joint="rev7" name="rev7_actuator" kv="3.0" kp="35.0" ctrllimited="true" ctrlrange="-0.5 0.5"/>
+    <position name="gripper_actuator" tendon="split" kv="20.5" kp="100.0" ctrllimited="true" ctrlrange="-0.0455 0"/>
 
   </actuator>
 </mujoco>
