@@ -30,7 +30,7 @@
   </asset>
 
   <worldbody>
-    <!-- <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="base_link"/> -->
+    <geom contype="0" conaffinity="0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="base_link"/>
     <body name="J2_v1_1" pos="0 0 0">
       <inertial pos="0.00230073 -0.000216912 0.027606" quat="0.525523 0.473792 0.485545 0.513413" mass="0.49221" diaginertia="0.000717072 0.000591684 0.000314245"/>
       <joint name="rev1" pos="0 0 -0.00225" axis="0 0 1" range="-2.35619 2.35619" actuatorfrcrange="-100 100"/>
@@ -95,7 +95,7 @@
   </equality>
 
   <actuator>
-    <position joint="rev1" name="rev1_actuator" kv="18.5" kp="45.0" ctrllimited="true" ctrlrange="-2.356194 2.356194"/>
+    <position joint="rev1" name="rev1_actuator" kv="18.5" kp="85.0" ctrllimited="true" ctrlrange="-2.356194 2.356194"/>
     <position joint="rev2" name="rev2_actuator" kv="12.0" kp="50.0" ctrllimited="true" ctrlrange="-3.05433 0"/>
     <position joint="rev3" name="rev3_actuator" kv="8.0" kp="30.0" ctrllimited="true" ctrlrange="-2.0944 2.0944"/>
     <position joint="rev4" name="rev4_actuator" kv="10.0" kp="30.0" ctrllimited="true" ctrlrange="-3.14159 0"/>
