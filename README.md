@@ -7,7 +7,7 @@ https://github.com/user-attachments/assets/5452adfd-1496-4264-bd3d-56e6716dfa6f
 1. Install MuJoCo and launch a simulation.
 2. Drag the `*.xml` file into the simulation window.
 
-For a detailed installation guide, see: [github.com/reazon-research/openarm-sim/blob/main/MuJoCo.md](https://github.com/reazon-research/openarm-sim/blob/main/MuJoCo.md)
+For a detailed installation guide, see: [github.com/reazon-research/openarm-sim/blob/main/MuJoCo.md](https://github.com/reazon-research/openarm-sim/blob/main/openarm_mujoco/README_MuJoCo.md)
 
 ## Improving Simulation Stability
 - Short timestep of 0.001
