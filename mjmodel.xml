@@ -4,7 +4,7 @@
 
   <asset>
     <mesh name="base_link" file="base_link.stl" scale="0.001 0.001 0.001"/>
-    <mesh name="J2_v1_1" file="J2_v1_1.stl" />
+    <mesh name="J2_v1_1" file="J2_v1_1.stl" scale="0.001 0.001 0.001"/>
     <mesh name="J3_v1_1" file="J3_v1_1.stl" scale="0.001 0.001 0.001"/>
     <mesh name="J4_v1_1" file="J4_v1_1.stl" scale="0.001 0.001 0.001"/>
     <mesh name="J5_v1_1" file="J5_v1_1.stl" scale="0.001 0.001 0.001"/>
