@@ -2,6 +2,60 @@
   <compiler angle="radian" meshdir="./meshes"/>
   <option timestep="0.001" integrator="RK4" />
 
+  <extension>
+    <plugin plugin="mujoco.pid">
+      <instance name="rev1_pid">
+        <config key="kp" value="40.0"/>
+        <config key ="ki" value="40.0"/>
+        <config key="kd" value="7"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+      <instance name="rev2_pid">
+        <config key="kp" value="60.0"/>
+        <config key ="ki" value="40.0"/>
+        <config key="kd" value="7"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+      <instance name="rev3_pid">
+        <config key="kp" value="60.0"/>
+        <config key ="ki" value="20.0"/>
+        <config key="kd" value="10"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+      <instance name="rev4_pid">
+        <config key="kp" value="40.0"/>
+        <config key ="ki" value="20.0"/>
+        <config key="kd" value="20"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+      <instance name="rev5_pid">
+        <config key="kp" value="60.0"/>
+        <config key ="ki" value="20.0"/>
+        <config key="kd" value="10"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+      <instance name="rev6_pid">
+        <config key="kp" value="40.0"/>
+        <config key ="ki" value="20.0"/>
+        <config key="kd" value="4"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+      <instance name="rev7_pid">
+        <config key="kp" value="40.0"/>
+        <config key ="ki" value="20.0"/>
+        <config key="kd" value="4"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+    </plugin>
+  </extension>
+
   <asset>
     <mesh name="base_link" file="base_link.stl" scale="0.001 0.001 0.001"/>
     <mesh name="J2_v1_1" file="J2_v1_1.stl" scale="0.001 0.001 0.001"/>
@@ -62,12 +116,12 @@
                   <body name="left_jaw_1" pos="-0.0775 -0.121655 0.012086">
                     <inertial pos="0.017371 -0.0173984 0.00406215" quat="0.720768 0.686728 0.0942906 0.00280109" mass="0.286956" diaginertia="0.000211713 0.000184665 9.46214e-05"/>
                     <joint name="slider_left" pos="0 0 0" axis="-1 0 0" type="slide" range="-0.0455 0" />
-                    <geom pos="0.0775 0.069829 -0.169736" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="left_jaw_1"/>
+                    <geom contype="0" conaffinity="0" pos="0.0775 0.069829 -0.169736" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="left_jaw_1"/>
                   </body>
                   <body name="right_jaw_1" pos="0.0775 -0.121655 0.012086">
                     <inertial pos="-0.0173973 -0.0186854 -0.00174976" quat="0.846948 0.521671 -0.0167881 -0.101274" mass="0.285094" diaginertia="0.000213775 0.000188829 9.23967e-05"/>
                     <joint name="slider_right" pos="0 0 0" axis="1 0 0" type="slide" range="-0.0455 0"/>
-                    <geom pos="-0.0775 0.069829 -0.169736" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="right_jaw_1"/>
+                    <geom contype="0" conaffinity="0" pos="-0.0775 0.069829 -0.169736" quat="1 0 0 0" type="mesh" rgba="0.7 0.7 0.7 1" mesh="right_jaw_1"/>
                   </body>
                 </body>
               </body>
@@ -95,13 +149,13 @@
   </equality>
 
   <actuator>
-    <position joint="rev1" name="rev1_actuator" kv="18.5" kp="85.0" ctrllimited="true" ctrlrange="-2.356194 2.356194"/>
-    <position joint="rev2" name="rev2_actuator" kv="12.0" kp="50.0" ctrllimited="true" ctrlrange="-3.05433 0"/>
-    <position joint="rev3" name="rev3_actuator" kv="8.0" kp="30.0" ctrllimited="true" ctrlrange="-2.0944 2.0944"/>
-    <position joint="rev4" name="rev4_actuator" kv="10.0" kp="30.0" ctrllimited="true" ctrlrange="-3.14159 0"/>
-    <position joint="rev5" name="rev5_actuator" kv="3.0" kp="27.5" ctrllimited="true" ctrlrange="-2.0944 2.0944"/>
-    <position joint="rev6" name="rev6_actuator" kv="3.0" kp="35.0" ctrllimited="true" ctrlrange="-0.3 1.5708"/>
-    <position joint="rev7" name="rev7_actuator" kv="3.0" kp="35.0" ctrllimited="true" ctrlrange="-0.5 0.5"/>
+    <plugin joint="rev1" name="rev1_actuator" plugin="mujoco.pid" instance="rev1_pid" actdim="2" ctrllimited="true" ctrlrange="-2.356194 2.356194"/>
+    <plugin joint="rev2" name="rev2_actuator" plugin="mujoco.pid" instance="rev2_pid" actdim="2" ctrllimited="true" ctrlrange="-3.05433 0"/>
+    <plugin joint="rev3" name="rev3_actuator" plugin="mujoco.pid" instance="rev3_pid" actdim="2" ctrllimited="true" ctrlrange="-2.0944 2.0944"/>
+    <plugin joint="rev4" name="rev4_actuator" plugin="mujoco.pid" instance="rev4_pid" actdim="2" ctrllimited="true" ctrlrange="-2.0 0"/>
+    <plugin joint="rev5" name="rev5_actuator" plugin="mujoco.pid" instance="rev5_pid" actdim="2" ctrllimited="true" ctrlrange="-2.0944 2.0944"/>
+    <plugin joint="rev6" name="rev6_actuator" plugin="mujoco.pid" instance="rev6_pid" actdim="2" ctrllimited="true" ctrlrange="-0.3 1.5708"/>
+    <plugin joint="rev7" name="rev7_actuator" plugin="mujoco.pid" instance="rev7_pid" actdim="2" ctrllimited="true" ctrlrange="-0.5 0.5"/>
     <position name="gripper_actuator" tendon="split" kv="20.5" kp="100.0" ctrllimited="true" ctrlrange="-0.0455 0"/>
 
   </actuator>
