@@ -257,26 +257,6 @@
     <plugin joint="right_rev7" name="right_rev7_actuator" plugin="mujoco.pid" instance="rev7_pid" actdim="2" ctrllimited="true" ctrlrange="-0.9599310885968813 0.9599310885968813"/>
     <position name="right_gripper_actuator" tendon="right_split" kv="20.5" kp="200.0" ctrllimited="true" ctrlrange="0 0.0455"/>
   </actuator>
-  <!-- <actuator>
-    <motor name="left_rev1_ctrl" joint="left_rev1" class="openarm_joints_left" />
-    <motor name="left_rev2_ctrl" joint="left_rev2" class="openarm_joints_left" />
-    <motor name="left_rev3_ctrl" joint="left_rev3" class="openarm_joints_left" />
-    <motor name="left_rev4_ctrl" joint="left_rev4" class="openarm_joints_left" />
-    <motor name="left_rev5_ctrl" joint="left_rev5" class="openarm_joints_left" />
-    <motor name="left_rev6_ctrl" joint="left_rev6" class="openarm_joints_left" />
-    <motor name="left_rev7_ctrl" joint="left_rev7" class="openarm_joints_left" />
-    <motor name="left_left_pris1_ctrl" joint="left_left_pris1" class="openarm_joints_left" />
-    <motor name="left_right_pris2_ctrl" joint="left_right_pris2" class="openarm_joints_left" />
-    <motor name="right_rev1_ctrl" joint="right_rev1" class="openarm_joints_right" />
-    <motor name="right_rev2_ctrl" joint="right_rev2" class="openarm_joints_right" />
-    <motor name="right_rev3_ctrl" joint="right_rev3" class="openarm_joints_right" />
-    <motor name="right_rev4_ctrl" joint="right_rev4" class="openarm_joints_right" />
-    <motor name="right_rev5_ctrl" joint="right_rev5" class="openarm_joints_right" />
-    <motor name="right_rev6_ctrl" joint="right_rev6" class="openarm_joints_right" />
-    <motor name="right_rev7_ctrl" joint="right_rev7" class="openarm_joints_right" />
-    <motor name="right_left_pris1_ctrl" joint="right_left_pris1" class="openarm_joints_right" />
-    <motor name="right_right_pris2_ctrl" joint="right_right_pris2" class="openarm_joints_right" />
-  </actuator> -->
 
   <contact>
     <exclude body1="right_link1" body2="right_link2" />
