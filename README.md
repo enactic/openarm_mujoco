@@ -1,13 +1,16 @@
 # MuJoCo MJCF for OpenArm
+<img width="514" alt="image" src="https://github.com/user-attachments/assets/84ed9338-8990-46d3-8aee-1e87c55583b5" />
 
-https://github.com/user-attachments/assets/5452adfd-1496-4264-bd3d-56e6716dfa6f
 
 ## Usage
+
+https://github.com/user-attachments/assets/5452adfd-1496-4264-bd3d-56e6716dfa6f
 
 1. Install MuJoCo and launch a simulation.
 2. Drag the `*.xml` file into the simulation window.
 
 For a detailed installation guide, see: [github.com/reazon-research/openarm-sim/blob/main/MuJoCo.md](https://github.com/reazon-research/openarm-sim/blob/main/openarm_mujoco/README_MuJoCo.md)
+
 
 ## Improving Simulation Stability
 - Short timestep of < 0.001
@@ -22,3 +25,4 @@ For a detailed installation guide, see: [github.com/reazon-research/openarm-sim/
 ## URDF to MJCF Conversion
 - Grippers actuate equally using a tendon and equality constraint, which uses a mimic joint in URDF
 - Off-diagonal inertias are set to zero
+
