@@ -87,10 +87,6 @@
   </asset>
 
   <worldbody>
-    <!-- <body name="link1" pos="0.00000000 0.00000000 0.00070000" childclass="robot"> -->
-    <!-- <joint name="base_link" class="j" /> -->
-    <!-- <freejoint name="floating_base" /> -->
-    <!-- <geom name="link1_collision" pos="0.0 0.0 0.0289" type="box" size="0.055 0.0365 0.0296" class="collision" /> -->
     <geom name="link1_visual" pos="0.0 0.0 -0.0007" material="gray" type="mesh" mesh="link1.stl" class="visual" />
     <body name="link2" pos="0.0 0.0 0.05325">
       <joint name="rev1" type="hinge" class="j" range="-2.0943951023931953 2.0943951023931953" axis="0 0 1" />
@@ -145,7 +141,6 @@
           </body>
         </body>
       </body>
-      <!-- </body> -->
       <site name="link1_site" />
       <camera name="front_camera" mode="track" fovy="90.0" quat="4.329780281177467e-17 4.329780281177466e-17 0.7071067811865475 0.7071067811865476" pos="0.0 2.0 0.5" />
       <camera name="side_camera" mode="track" fovy="90.0" quat="-0.5 -0.4999999999999999 0.5 0.5000000000000001" pos="-2.0 0.0 0.5" />
@@ -171,22 +166,9 @@
     <plugin joint="rev6" name="rev6_actuator" plugin="mujoco.pid" instance="rev6_pid" actdim="2" ctrllimited="true" ctrlrange="-0.3 1.5708"/>
     <plugin joint="rev7" name="rev7_actuator" plugin="mujoco.pid" instance="rev7_pid" actdim="2" ctrllimited="true" ctrlrange="-0.9599310885968813 0.9599310885968813"/>
     <position name="gripper_actuator" tendon="split" kv="20.5" kp="100.0" ctrllimited="true" ctrlrange="0 0.0455"/>
-    <!-- <plugin name="rev1_ctrl" joint="rev1" plugin="mujoco.pid" instance="rev1_pid" actdim="2" />
-    <plugin name="rev2_ctrl" joint="rev2" plugin="mujoco.pid" instance="rev2_pid" actdim="2" />
-    <plugin name="rev3_ctrl" joint="rev3" plugin="mujoco.pid" instance="rev3_pid" actdim="2" />
-    <plugin name="rev4_ctrl" joint="rev4" plugin="mujoco.pid" instance="rev4_pid" actdim="2" />
-    <plugin name="rev5_ctrl" joint="rev5" plugin="mujoco.pid" instance="rev5_pid" actdim="2" />
-    <plugin name="rev6_ctrl" joint="rev6" plugin="mujoco.pid" instance="rev6_pid" actdim="2" />
-    <plugin name="rev7_ctrl" joint="rev7" plugin="mujoco.pid" instance="rev7_pid" actdim="2" /> -->
-    <!-- <plugin name="left_pris1_ctrl" joint="left_pris1" plugin="mujoco.pid"/> -->
-    <!-- <motor name="right_pris2_ctrl" joint="right_pris2" class="j" /> -->
-
   </actuator>
 
   <contact>
-    <!-- <exclude body1="link1" body2="link2" /> -->
-    <!-- <exclude body1="link1" body2="link3" /> -->
-    <!-- <exclude body1="link1" body2="link4" /> -->
     <exclude body1="link2" body2="link3" />
     <exclude body1="link3" body2="link4" />
     <exclude body1="link4" body2="link5" />
