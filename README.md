@@ -15,8 +15,10 @@ For a detailed installation guide, see: [github.com/reazon-research/openarm-sim/
 - Simplified collision geometry
 
 ## CAD to STL conversion
-- Setting `contype` and `conaffinity` to zero uses a geom as a visual mesh.
-- To view collision bounding boxex, activate `Rendering`>`Model Elements`>`Body Tree` in the left sidebar.
+- Setting `contype` and `conaffinity` to zero uses a geom as a visual mesh
+- To view collision bounding boxex, activate `Rendering`>`Model Elements`>`Body Tree` in the left sidebar
+- Binary meshes (`*.stl`) are needed, so this conversion should be done in CAD or with [MeshLab](https://github.com/cnr-isti-vclab/meshlab)
 
 ## URDF to MJCF Conversion
 - Grippers actuate equally using a tendon and equality constraint, which uses a mimic joint in URDF
+- Off-diagonal inertias are set to zero
