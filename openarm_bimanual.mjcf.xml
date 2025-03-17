@@ -19,6 +19,61 @@
   </default>
 
   <compiler angle="radian" meshdir="./meshes"/>
+  <option integrator="RK4" timestep="0.00005"/>
+
+  <extension>
+    <plugin plugin="mujoco.pid">
+      <instance name="rev1_pid">
+        <config key="kp" value="250.0"/>
+        <config key ="ki" value="10.0"/>
+        <config key="kd" value="20"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+      <instance name="rev2_pid">
+        <config key="kp" value="200.0"/>
+        <config key ="ki" value="10.0"/>
+        <config key="kd" value="15"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+      <instance name="rev3_pid">
+        <config key="kp" value="200.0"/>
+        <config key ="ki" value="10.0"/>
+        <config key="kd" value="5"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+      <instance name="rev4_pid">
+        <config key="kp" value="150.0"/>
+        <config key ="ki" value="10.0"/>
+        <config key="kd" value="15"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+      <instance name="rev5_pid">
+        <config key="kp" value="135.0"/>
+        <config key ="ki" value="10.0"/>
+        <config key="kd" value="1"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+      <instance name="rev6_pid">
+        <config key="kp" value="115.0"/>
+        <config key ="ki" value="10.0"/>
+        <config key="kd" value="1"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+      <instance name="rev7_pid">
+        <config key="kp" value="70.0"/>
+        <config key ="ki" value="20.0"/>
+        <config key="kd" value="4"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+    </plugin>
+  </extension>
 
   <asset>
     <material name="gray" rgba="0.4117647058823529 0.4117647058823529 0.4117647058823529 1.0" />
@@ -165,7 +220,44 @@
     <camera name="side_camera" mode="track" fovy="90.0" quat="-0.5 -0.4999999999999999 0.5 0.5000000000000001" pos="-2.0 0.0 0.5" />
   </worldbody>
 
+  <tendon>
+    <fixed name="left_split">
+      <joint joint="left_left_pris1" coef="0.5"/>
+      <joint joint="left_right_pris2" coef="0.5"/>
+    </fixed>
+  </tendon>
+  <equality>
+    <joint joint1="left_left_pris1" joint2="left_right_pris2" solimp="0.95 0.99 0.001" solref="0.005 1"/>
+  </equality>
+  <tendon>
+    <fixed name="right_split">
+      <joint joint="right_left_pris1" coef="0.5"/>
+      <joint joint="right_right_pris2" coef="0.5"/>
+    </fixed>
+  </tendon>
+  <equality>
+    <joint joint1="right_left_pris1" joint2="right_right_pris2" solimp="0.95 0.99 0.001" solref="0.005 1"/>
+  </equality>
+
   <actuator>
+    <plugin joint="left_rev1" name="left_rev1_actuator" plugin="mujoco.pid" instance="rev1_pid" actdim="2" ctrllimited="true" ctrlrange="-2.356194 2.356194"/>
+    <plugin joint="left_rev2" name="left_rev2_actuator" plugin="mujoco.pid" instance="rev2_pid" actdim="2" ctrllimited="true" ctrlrange="0.0 3.141592653589793"/>
+    <plugin joint="left_rev3" name="left_rev3_actuator" plugin="mujoco.pid" instance="rev3_pid" actdim="2" ctrllimited="true" ctrlrange="-2.0944 2.0944"/>
+    <plugin joint="left_rev4" name="left_rev4_actuator" plugin="mujoco.pid" instance="rev4_pid" actdim="2" ctrllimited="true" ctrlrange="-0.3490658503988659 2.792526803190927"/>
+    <plugin joint="left_rev5" name="left_rev5_actuator" plugin="mujoco.pid" instance="rev5_pid" actdim="2" ctrllimited="true" ctrlrange="-2.0944 2.0944"/>
+    <plugin joint="left_rev6" name="left_rev6_actuator" plugin="mujoco.pid" instance="rev6_pid" actdim="2" ctrllimited="true" ctrlrange="-0.3 1.5708"/>
+    <plugin joint="left_rev7" name="left_rev7_actuator" plugin="mujoco.pid" instance="rev7_pid" actdim="2" ctrllimited="true" ctrlrange="-0.9599310885968813 0.9599310885968813"/>
+    <position name="left_gripper_actuator" tendon="left_split" kv="20.5" kp="200.0" ctrllimited="true" ctrlrange="0 0.0455"/>
+    <plugin joint="right_rev1" name="right_rev1_actuator" plugin="mujoco.pid" instance="rev1_pid" actdim="2" ctrllimited="true" ctrlrange="-2.356194 2.356194"/>
+    <plugin joint="right_rev2" name="right_rev2_actuator" plugin="mujoco.pid" instance="rev2_pid" actdim="2" ctrllimited="true" ctrlrange="0.0 3.141592653589793"/>
+    <plugin joint="right_rev3" name="right_rev3_actuator" plugin="mujoco.pid" instance="rev3_pid" actdim="2" ctrllimited="true" ctrlrange="-2.0944 2.0944"/>
+    <plugin joint="right_rev4" name="right_rev4_actuator" plugin="mujoco.pid" instance="rev4_pid" actdim="2" ctrllimited="true" ctrlrange="-0.3490658503988659 2.792526803190927"/>
+    <plugin joint="right_rev5" name="right_rev5_actuator" plugin="mujoco.pid" instance="rev5_pid" actdim="2" ctrllimited="true" ctrlrange="-2.0944 2.0944"/>
+    <plugin joint="right_rev6" name="right_rev6_actuator" plugin="mujoco.pid" instance="rev6_pid" actdim="2" ctrllimited="true" ctrlrange="-0.3 1.5708"/>
+    <plugin joint="right_rev7" name="right_rev7_actuator" plugin="mujoco.pid" instance="rev7_pid" actdim="2" ctrllimited="true" ctrlrange="-0.9599310885968813 0.9599310885968813"/>
+    <position name="right_gripper_actuator" tendon="right_split" kv="20.5" kp="200.0" ctrllimited="true" ctrlrange="0 0.0455"/>
+  </actuator>
+  <!-- <actuator>
     <motor name="left_rev1_ctrl" joint="left_rev1" class="openarm_joints_left" />
     <motor name="left_rev2_ctrl" joint="left_rev2" class="openarm_joints_left" />
     <motor name="left_rev3_ctrl" joint="left_rev3" class="openarm_joints_left" />
@@ -184,7 +276,7 @@
     <motor name="right_rev7_ctrl" joint="right_rev7" class="openarm_joints_right" />
     <motor name="right_left_pris1_ctrl" joint="right_left_pris1" class="openarm_joints_right" />
     <motor name="right_right_pris2_ctrl" joint="right_right_pris2" class="openarm_joints_right" />
-  </actuator>
+  </actuator> -->
 
   <contact>
     <exclude body1="right_link1" body2="right_link2" />
@@ -199,6 +291,7 @@
     <exclude body1="right_link7" body2="right_link8" />
     <exclude body1="right_link8" body2="right_link_left_jaw" />
     <exclude body1="right_link8" body2="right_link_right_jaw" />
+    <exclude body1="right_link_left_jaw" body2="right_link_right_jaw" />
     <exclude body1="left_link1" body2="left_link2" />
     <exclude body1="left_link1" body2="left_link3" />
     <exclude body1="left_link1" body2="left_link4" />
@@ -211,8 +304,7 @@
     <exclude body1="left_link7" body2="left_link8" />
     <exclude body1="left_link8" body2="left_link_left_jaw" />
     <exclude body1="left_link8" body2="left_link_right_jaw" />
-    <!-- <exclude body1="pedestal_link" body2="left_link1" />
-    <exclude body1="pedestal_link" body2="right_link1" /> -->
+    <exclude body1="left_link_left_jaw" body2="left_link_right_jaw" />
   </contact>
 
   <sensor>
