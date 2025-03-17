@@ -15,8 +15,61 @@
   </default>
 
   <compiler angle="radian" meshdir="./meshes"/>
-  <option timestep="0.000001" integrator="RK4" />
+  <option timestep="0.0002" integrator="RK4" />
 
+  <extension>
+    <plugin plugin="mujoco.pid">
+      <instance name="rev1_pid">
+        <config key="kp" value="250.0"/>
+        <config key ="ki" value="10.0"/>
+        <config key="kd" value="2"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+      <instance name="rev2_pid">
+        <config key="kp" value="140.0"/>
+        <config key ="ki" value="10.0"/>
+        <config key="kd" value="7"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+      <instance name="rev3_pid">
+        <config key="kp" value="200.0"/>
+        <config key ="ki" value="10.0"/>
+        <config key="kd" value="1"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+      <instance name="rev4_pid">
+        <config key="kp" value="150.0"/>
+        <config key ="ki" value="10.0"/>
+        <config key="kd" value="1"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+      <instance name="rev5_pid">
+        <config key="kp" value="135.0"/>
+        <config key ="ki" value="10.0"/>
+        <config key="kd" value="1"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+      <instance name="rev6_pid">
+        <config key="kp" value="115.0"/>
+        <config key ="ki" value="10.0"/>
+        <config key="kd" value="1"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+      <instance name="rev7_pid">
+        <config key="kp" value="70.0"/>
+        <config key ="ki" value="20.0"/>
+        <config key="kd" value="4"/>
+        <config key="slewmax" value="3" />
+        <config key="imax" value="1"/>
+      </instance>
+    </plugin>
+  </extension>
 
   <asset>
     <material name="gray" rgba="0.4117647058823529 0.4117647058823529 0.4117647058823529 1.0" />
@@ -81,7 +134,7 @@
                     <geom name="link_left_jaw_visual" pos="0.665265 -0.00286677 -0.0209282" quat="0.9999904117943706 0.0 -0.004379077451349348 0.0" material="gray" type="mesh" mesh="left_jaw.stl" class="visual" />
                   </body>
                   <body name="link_right_jaw" pos="-0.10571 -0.0781373 0.0132053" quat="0.7070607328648157 0.7071042918414913 -0.0018762887134541077 0.008069698921057647">
-                    <joint name="right_pris2" type="slide" class="j" range="0.0 0.0451" axis="0 0 1" />
+                    <joint name="right_pris2" type="slide" class="j" range="0.0 0.0451" axis="0 0 -1" />
                     <inertial pos="-0.0187844 -0.00272415 -0.0159503" quat="0.999990411794363 0.0 -0.004379077453115355 0.0" mass="0.042981665301134515" diaginertia="1.1561293087621594e-05 2.370165527871047e-05 3.039652946542647e-05" />
                     <geom name="link_right_jaw_collision" pos="0.665265 -0.00286677 -0.175928" quat="0.999990411794363 0.0 -0.004379077453115391 0.0" type="mesh" mesh="right_jaw.stl" class="collision" />
                     <geom name="link_right_jaw_visual" pos="0.665265 -0.00286677 -0.175928" quat="0.999990411794363 0.0 -0.004379077453115357 0.0" material="gray" type="mesh" mesh="right_jaw.stl" class="visual" />
@@ -102,7 +155,7 @@
   <tendon>
     <fixed name="split">
       <joint joint="left_pris1" coef="0.5"/>
-      <joint joint="right_pris2" coef="-0.5"/>
+      <joint joint="right_pris2" coef="0.5"/>
     </fixed>
   </tendon>
   <equality>
@@ -110,15 +163,24 @@
   </equality>
 
   <actuator>
-    <motor name="rev1_ctrl" joint="rev1" class="j" />
-    <motor name="rev2_ctrl" joint="rev2" class="j" />
-    <motor name="rev3_ctrl" joint="rev3" class="j" />
-    <motor name="rev4_ctrl" joint="rev4" class="j" />
-    <motor name="rev5_ctrl" joint="rev5" class="j" />
-    <motor name="rev6_ctrl" joint="rev6" class="j" />
-    <motor name="rev7_ctrl" joint="rev7" class="j" />
-    <motor name="left_pris1_ctrl" joint="left_pris1" class="j" />
+    <plugin joint="rev1" name="rev1_actuator" plugin="mujoco.pid" instance="rev1_pid" actdim="2" ctrllimited="true" ctrlrange="-2.356194 2.356194"/>
+    <plugin joint="rev2" name="rev2_actuator" plugin="mujoco.pid" instance="rev2_pid" actdim="2" ctrllimited="true" ctrlrange="-1.5 1.5"/>
+    <plugin joint="rev3" name="rev3_actuator" plugin="mujoco.pid" instance="rev3_pid" actdim="2" ctrllimited="true" ctrlrange="-2.0944 2.0944"/>
+    <plugin joint="rev4" name="rev4_actuator" plugin="mujoco.pid" instance="rev4_pid" actdim="2" ctrllimited="true" ctrlrange="-0.3490658503988659 2.792526803190927"/>
+    <plugin joint="rev5" name="rev5_actuator" plugin="mujoco.pid" instance="rev5_pid" actdim="2" ctrllimited="true" ctrlrange="-2.0944 2.0944"/>
+    <plugin joint="rev6" name="rev6_actuator" plugin="mujoco.pid" instance="rev6_pid" actdim="2" ctrllimited="true" ctrlrange="-0.3 1.5708"/>
+    <plugin joint="rev7" name="rev7_actuator" plugin="mujoco.pid" instance="rev7_pid" actdim="2" ctrllimited="true" ctrlrange="-0.9599310885968813 0.9599310885968813"/>
+    <position name="gripper_actuator" tendon="split" kv="20.5" kp="100.0" ctrllimited="true" ctrlrange="0 0.0455"/>
+    <!-- <plugin name="rev1_ctrl" joint="rev1" plugin="mujoco.pid" instance="rev1_pid" actdim="2" />
+    <plugin name="rev2_ctrl" joint="rev2" plugin="mujoco.pid" instance="rev2_pid" actdim="2" />
+    <plugin name="rev3_ctrl" joint="rev3" plugin="mujoco.pid" instance="rev3_pid" actdim="2" />
+    <plugin name="rev4_ctrl" joint="rev4" plugin="mujoco.pid" instance="rev4_pid" actdim="2" />
+    <plugin name="rev5_ctrl" joint="rev5" plugin="mujoco.pid" instance="rev5_pid" actdim="2" />
+    <plugin name="rev6_ctrl" joint="rev6" plugin="mujoco.pid" instance="rev6_pid" actdim="2" />
+    <plugin name="rev7_ctrl" joint="rev7" plugin="mujoco.pid" instance="rev7_pid" actdim="2" /> -->
+    <!-- <plugin name="left_pris1_ctrl" joint="left_pris1" plugin="mujoco.pid"/> -->
     <!-- <motor name="right_pris2_ctrl" joint="right_pris2" class="j" /> -->
+
   </actuator>
 
   <contact>
@@ -134,6 +196,7 @@
     <exclude body1="link7" body2="link8" />
     <exclude body1="link8" body2="link_left_jaw" />
     <exclude body1="link8" body2="link_right_jaw" />
+    <exclude body1="link_left_jaw" body2="link_right_jaw" />
   </contact>
 
   <sensor>
