@@ -19,7 +19,7 @@
   </default>
 
   <compiler angle="radian" meshdir="./meshes"/>
-  <option integrator="RK4" timestep="0.00005"/>
+  <option integrator="RK4" timestep="0.00001"/>
 
   <extension>
     <plugin plugin="mujoco.pid">
