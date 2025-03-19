@@ -4,7 +4,9 @@
 
 ## Usage
 
-https://github.com/user-attachments/assets/5452adfd-1496-4264-bd3d-56e6716dfa6f
+
+https://github.com/user-attachments/assets/814ee3e1-36dd-4561-a837-25e921838253
+
 
 1. Install MuJoCo and launch a simulation.
 2. Drag the `*.xml` file into the simulation window.
