@@ -1,18 +1,15 @@
 # MuJoCo MJCF for OpenArm
-<img width="514" alt="image" src="https://github.com/user-attachments/assets/84ed9338-8990-46d3-8aee-1e87c55583b5" />
 
+<img width="514" alt="image" src="https://github.com/user-attachments/assets/84ed9338-8990-46d3-8aee-1e87c55583b5" />
 
 ## Usage
 
-
 https://github.com/user-attachments/assets/814ee3e1-36dd-4561-a837-25e921838253
-
 
 1. Install MuJoCo and launch a simulation.
 2. Drag the `*.xml` file into the simulation window.
 
 For a detailed installation guide, see: [github.com/enactic/openarm_simulation/blob/main/MuJoCo.md](https://github.com/enactic/openarm_simulation/blob/main/openarm_mujoco/README_MuJoCo.md)
-
 
 ## Improving Simulation Stability
 - Short timestep of < 0.001
