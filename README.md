@@ -28,3 +28,7 @@ For a detailed installation guide, see: [github.com/enactic/openarm_simulation/b
 - Grippers actuate equally using a tendon and equality constraint, which uses a mimic joint in URDF
 - Off-diagonal inertias are set to zero
 
+## Code of Conduct
+
+All participation in the OpenArm project is governed by our
+[Code of Conduct](CODE_OF_CONDUCT.md).
