@@ -122,7 +122,6 @@
           <inertial pos="0.0011467657911800769 3.319987657026362e-05 0.05395284380736254" quat="1.0 0.0 0.0 0.0" mass="1.1416684646202298" diaginertia="0.001567 0.001273 0.001016" />
           <geom name="openarm_left_link1_collision" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link1_left_symp.stl" class="collision" />
           <geom name="openarm_left_link1_visual_0" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link1_0.obj" class="visual" />
-        <geom name="openarm_left_link1_visual_1" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link1_1.obj" class="visual" />
         <geom name="openarm_left_link1_visual_2" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link1_2.obj" class="visual" />
         <geom name="openarm_left_link1_visual_3" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link1_3.obj" class="visual" />
           <body name="openarm_left_link2" pos="-0.0301 0.0 0.06" quat="0.7071067811882787 -0.7071067811848163 0.0 0.0">
@@ -165,8 +164,6 @@
                       <geom name="openarm_left_link7_collision" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link7_left_symp.stl" class="collision" />
                       <geom name="openarm_left_link7_visual_0" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link7_0.obj" class="visual" />
         <geom name="openarm_left_link7_visual_1" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link7_1.obj" class="visual" />
-        <!-- <geom name="openarm_left_link7_visual_2" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link7_2.obj" class="visual" /> -->
-        <!-- <geom name="openarm_left_link7_visual_3" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link7_3.obj" class="visual" /> -->
                       <body name="openarm_left_link8" pos="1e-06 0.0205 0.0" quat="1.0 0.0 0.0 0.0">
                         <body name="openarm_left_hand" pos="0 -0.025 0.1001" quat="1.0 0.0 0.0 0.0">
                           <inertial pos="0.0 0.002 0.01" quat="1.0 0.0 0.0 0.0" mass="0.15" diaginertia="0.0001 0.00025 0.00017" />
@@ -208,7 +205,6 @@
           <inertial pos="0.0011467657911800769 3.319987657026362e-05 0.05395284380736254" quat="1.0 0.0 0.0 0.0" mass="1.1416684646202298" diaginertia="0.001567 0.001273 0.001016" />
           <geom name="openarm_right_link1_collision" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link1_symp.stl" class="collision" />
           <geom name="openarm_right_link1_visual_0" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link1_0.obj" class="visual" />
-        <geom name="openarm_right_link1_visual_1" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link1_1.obj" class="visual" />
         <geom name="openarm_right_link1_visual_2" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link1_2.obj" class="visual" />
         <geom name="openarm_right_link1_visual_3" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link1_3.obj" class="visual" />
           <body name="openarm_right_link2" pos="-0.0301 0.0 0.06" quat="0.7071067811882787 0.7071067811848163 0.0 0.0">
@@ -291,25 +287,40 @@
     
   </worldbody>
 
+  <tendon>
+    <fixed name="split_right">
+      <joint joint="openarm_right_finger_joint1" coef="0.5"/>
+      <joint joint="openarm_right_finger_joint2" coef="0.5"/>
+    </fixed>
+    <fixed name="split_left">
+      <joint joint="openarm_left_finger_joint1" coef="0.5"/>
+      <joint joint="openarm_left_finger_joint2" coef="0.5"/>
+    </fixed>
+  </tendon>
+  <equality>
+    <joint joint1="openarm_right_finger_joint1" joint2="openarm_right_finger_joint2" solimp="0.95 0.99 0.001" solref="0.005 1"/>
+    <joint joint1="openarm_left_finger_joint1" joint2="openarm_left_finger_joint2" solimp="0.95 0.99 0.001" solref="0.005 1"/>
+  </equality>
+
+  
+
   <actuator>
-    <motor name="openarm_left_joint1_ctrl" joint="openarm_left_joint1" class="motor" />
-    <motor name="openarm_left_joint2_ctrl" joint="openarm_left_joint2" class="motor" />
-    <motor name="openarm_left_joint3_ctrl" joint="openarm_left_joint3" class="motor" />
-    <motor name="openarm_left_joint4_ctrl" joint="openarm_left_joint4" class="motor" />
-    <motor name="openarm_left_joint5_ctrl" joint="openarm_left_joint5" class="motor" />
-    <motor name="openarm_left_joint6_ctrl" joint="openarm_left_joint6" class="motor" />
-    <motor name="openarm_left_joint7_ctrl" joint="openarm_left_joint7" class="motor" />
-    <motor name="openarm_left_finger_joint1_ctrl" joint="openarm_left_finger_joint1" class="motor" />
-    <motor name="openarm_left_finger_joint2_ctrl" joint="openarm_left_finger_joint2" class="motor" />
-    <motor name="openarm_right_joint1_ctrl" joint="openarm_right_joint1" class="motor" />
-    <motor name="openarm_right_joint2_ctrl" joint="openarm_right_joint2" class="motor" />
-    <motor name="openarm_right_joint3_ctrl" joint="openarm_right_joint3" class="motor" />
-    <motor name="openarm_right_joint4_ctrl" joint="openarm_right_joint4" class="motor" />
-    <motor name="openarm_right_joint5_ctrl" joint="openarm_right_joint5" class="motor" />
-    <motor name="openarm_right_joint6_ctrl" joint="openarm_right_joint6" class="motor" />
-    <motor name="openarm_right_joint7_ctrl" joint="openarm_right_joint7" class="motor" />
-    <motor name="openarm_right_finger_joint1_ctrl" joint="openarm_right_finger_joint1" class="motor" />
-    <motor name="openarm_right_finger_joint2_ctrl" joint="openarm_right_finger_joint2" class="motor" />
+    <motor name="left_joint1_ctrl" joint="openarm_left_joint1" class="motor" />
+    <motor name="left_joint2_ctrl" joint="openarm_left_joint2" class="motor" />
+    <motor name="left_joint3_ctrl" joint="openarm_left_joint3" class="motor" />
+    <motor name="left_joint4_ctrl" joint="openarm_left_joint4" class="motor" />
+    <motor name="left_joint5_ctrl" joint="openarm_left_joint5" class="motor" />
+    <motor name="left_joint6_ctrl" joint="openarm_left_joint6" class="motor" />
+    <motor name="left_joint7_ctrl" joint="openarm_left_joint7" class="motor" />
+    <motor name="left_finger" joint="openarm_left_finger_joint1" class="motor" />
+    <motor name="right_joint1_ctrl" joint="openarm_right_joint1" class="motor" />
+    <motor name="right_joint2_ctrl" joint="openarm_right_joint2" class="motor" />
+    <motor name="right_joint3_ctrl" joint="openarm_right_joint3" class="motor" />
+    <motor name="right_joint4_ctrl" joint="openarm_right_joint4" class="motor" />
+    <motor name="right_joint5_ctrl" joint="openarm_right_joint5" class="motor" />
+    <motor name="right_joint6_ctrl" joint="openarm_right_joint6" class="motor" />
+    <motor name="right_joint7_ctrl" joint="openarm_right_joint7" class="motor" />
+    <motor name="right_finger" joint="openarm_right_finger_joint1" class="motor" />
   </actuator>
 
   <contact>
