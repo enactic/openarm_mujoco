@@ -3,11 +3,11 @@
   <default>
     <default class="robot">
       <default class="motor">
-        <joint />
-        <motor />
+        <joint damping="0.25" frictionloss="0.02"/>
+        <motor ctrlrange="-10 10"/>
       </default>
       <default class="collision">
-        <geom material="collision_material" condim="3" contype="0" conaffinity="1" priority="1" group="1" solref="0.005 1" friction="1 0.01 0.01" />
+        <geom material="collision_material" condim="3" conaffinity="1" priority="1" group="3" solref="0.005 1" friction="1 0.01 0.01" />
         <equality solimp="0.99 0.999 1e-05" solref="0.005 1" />
       </default>
       <default class="visual">
@@ -105,12 +105,12 @@
     
     <body name="openarm_body_link0" pos="0 0 0" quat="1.0 0.0 0.0 0.0">
       <inertial pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" mass="13.89" diaginertia="1.653 1.653 0.051" />
-      <geom name="openarm_body_link0_collision" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="body_link0_symp.stl" class="collision" />
+      <geom name="openarm_body_link0_collision_3" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="body_link0_3.obj" class="collision" />
       <geom name="openarm_body_link0_visual_0" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="body_link0_0.obj" class="visual" />
-        <geom name="openarm_body_link0_visual_1" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="body_link0_1.obj" class="visual" />
+        <geom name="openarm_body_link0_visual_1" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="body_link0_1.obj" class="visual" />
         <geom name="openarm_body_link0_visual_2" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="body_link0_2.obj" class="visual" />
         <geom name="openarm_body_link0_visual_3" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="body_link0_3.obj" class="visual" />
-        <geom name="openarm_body_link0_visual_4" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="body_link0_4.obj" class="visual" />
+        <geom name="openarm_body_link0_visual_4" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="body_link0_4.obj" class="visual" />
         <geom name="openarm_body_link0_visual_5" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="body_link0_5.obj" class="visual" />
       <body name="openarm_left_link0" pos="0.0 0.031 0.698" quat="0.7071054825112363 -0.7071080798594735 0.0 0.0">
         <inertial pos="-0.0009483362816297526 0.0001580207020448382 0.03076860287587199" quat="1.0 0.0 0.0 0.0" mass="1.1432284943239561" diaginertia="0.001128 0.000962 0.00147" />
@@ -312,7 +312,7 @@
     <motor name="left_joint5_ctrl" joint="openarm_left_joint5" class="motor" />
     <motor name="left_joint6_ctrl" joint="openarm_left_joint6" class="motor" />
     <motor name="left_joint7_ctrl" joint="openarm_left_joint7" class="motor" />
-    <motor name="left_finger" joint="openarm_left_finger_joint1" class="motor" />
+    <motor name="left_finger" joint="openarm_left_finger_joint1" class="motor" ctrlrange="-0.1 0.1" />
     <motor name="right_joint1_ctrl" joint="openarm_right_joint1" class="motor" />
     <motor name="right_joint2_ctrl" joint="openarm_right_joint2" class="motor" />
     <motor name="right_joint3_ctrl" joint="openarm_right_joint3" class="motor" />
@@ -320,7 +320,7 @@
     <motor name="right_joint5_ctrl" joint="openarm_right_joint5" class="motor" />
     <motor name="right_joint6_ctrl" joint="openarm_right_joint6" class="motor" />
     <motor name="right_joint7_ctrl" joint="openarm_right_joint7" class="motor" />
-    <motor name="right_finger" joint="openarm_right_finger_joint1" class="motor" />
+    <motor name="right_finger" joint="openarm_right_finger_joint1" class="motor" ctrlrange="-0.1 0.1" />
   </actuator>
 
   <contact>
@@ -331,6 +331,7 @@
     <exclude body1="openarm_left_link3" body2="openarm_left_link4" />
     <exclude body1="openarm_left_link4" body2="openarm_left_link5" />
     <exclude body1="openarm_left_link5" body2="openarm_left_link6" />
+    <exclude body1="openarm_left_link5" body2="openarm_left_link7" />
     <exclude body1="openarm_left_link6" body2="openarm_left_link7" />
     <exclude body1="openarm_body_link0" body2="openarm_right_link0" />
     <exclude body1="openarm_right_link0" body2="openarm_right_link1" />
@@ -339,6 +340,7 @@
     <exclude body1="openarm_right_link3" body2="openarm_right_link4" />
     <exclude body1="openarm_right_link4" body2="openarm_right_link5" />
     <exclude body1="openarm_right_link5" body2="openarm_right_link6" />
+    <exclude body1="openarm_right_link5" body2="openarm_right_link7" />
     <exclude body1="openarm_right_link6" body2="openarm_right_link7" />
     <exclude body1="openarm_left_hand" body2="openarm_left_right_finger" />
     <exclude body1="openarm_left_hand" body2="openarm_left_left_finger" />
