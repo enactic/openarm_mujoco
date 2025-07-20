@@ -24,35 +24,20 @@
     <mesh name="body_link0_symp.stl" file="./meshes/body/v10/collision/body_link0_symp.stl" scale="0.001 0.001 0.001" />
     <mesh name="body_link0.obj" file="./meshes/body_obj/body_link0.obj" scale="0.001 0.001 0.001" />
     <mesh name="link0_symp.stl" file="./meshes/arm/v10/collision/link0_symp.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link0.obj" file="./meshes/arm_obj/link0/link0.obj" scale="0.001 0.001 0.001" />
     <mesh name="link0_left_symp.stl" file="./meshes/arm/v10/collision/link0_symp.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="link0_left.obj" file="./meshes/arm_obj/link0/link0.obj" scale="0.001 -0.001 0.001" />
     <mesh name="link1_symp.stl" file="./meshes/arm/v10/collision/link1_symp.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link1.obj" file="./meshes/arm_obj/link1/link1.obj" scale="0.001 0.001 0.001" />
     <mesh name="link1_left_symp.stl" file="./meshes/arm/v10/collision/link1_symp.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="link1_left.obj" file="./meshes/arm_obj/link1/link1.obj" scale="0.001 -0.001 0.001" />
     <mesh name="link2_symp.stl" file="./meshes/arm/v10/collision/link2_symp.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link2.obj" file="./meshes/arm_obj/link2/link2.obj" scale="0.001 0.001 0.001" />
     <mesh name="link2_left_symp.stl" file="./meshes/arm/v10/collision/link2_symp.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="link2_left.obj" file="./meshes/arm_obj/link2/link2.obj" scale="0.001 -0.001 0.001" />
     <mesh name="link3_symp.stl" file="./meshes/arm/v10/collision/link3_symp.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link3.obj" file="./meshes/arm_obj/link3/link3.obj" scale="0.001 0.001 0.001" />
     <mesh name="link3_left_symp.stl" file="./meshes/arm/v10/collision/link3_symp.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="link3_left.obj" file="./meshes/arm_obj/link3/link3.obj" scale="0.001 -0.001 0.001" />
     <mesh name="link4_symp.stl" file="./meshes/arm/v10/collision/link4_symp.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link4.obj" file="./meshes/arm_obj/link4/link4.obj" scale="0.001 0.001 0.001" />
     <mesh name="link5_symp.stl" file="./meshes/arm/v10/collision/link5_symp.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link5.obj" file="./meshes/arm_obj/link5/link5.obj" scale="0.001 0.001 0.001" />
     <mesh name="link5_left_symp.stl" file="./meshes/arm/v10/collision/link5_symp.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="link5_left.obj" file="./meshes/arm_obj/link5/link5.obj" scale="0.001 -0.001 0.001" />
     <mesh name="link6_symp.stl" file="./meshes/arm/v10/collision/link6_symp.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link6.obj" file="./meshes/arm_obj/link6/link6.obj" scale="0.001 0.001 0.001" />
     <mesh name="link6_left_symp.stl" file="./meshes/arm/v10/collision/link6_symp.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="link6_left.obj" file="./meshes/arm_obj/link6/link6.obj" scale="0.001 -0.001 0.001" />
     <mesh name="link7_symp.stl" file="./meshes/arm/v10/collision/link7_symp.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link7.obj" file="./meshes/arm_obj/link7/link7.obj" scale="0.001 0.001 0.001" />
     <mesh name="link7_left_symp.stl" file="./meshes/arm/v10/collision/link7_symp.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="link7_left.obj" file="./meshes/arm_obj/link7/link7.obj" scale="0.001 -0.001 0.001" />
     <mesh name="hand.stl" file="./meshes/ee/openarm_hand/collision/hand.stl" scale="0.001 0.001 0.001" />
     <mesh name="hand.obj" file="./meshes/ee/openarm_hand/hand_obj/hand/hand.obj" scale="0.001 0.001 0.001" />
     <mesh name="finger.stl" file="./meshes/ee/openarm_hand/collision/finger.stl" scale="0.001 0.001 0.001" />
