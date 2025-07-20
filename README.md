@@ -1,4 +1,4 @@
-# MuJoCo Description File (MJCF) for OpenArm
+# MuJoCo Description Files (MJCF) for OpenArm
 <img height="546" alt="image" src="https://github.com/user-attachments/assets/b969665c-75f9-470d-b327-e3806ae66002" />
 
 This repository contains assets for OpenArm v1 (above) and v0.3 (below) simulation in MuJoCo. 
