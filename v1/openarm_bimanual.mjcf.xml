@@ -16,71 +16,71 @@
     </default>
   </default>
 
-  <compiler angle="radian" />
+  <compiler angle="radian" meshdir="meshes" />
 
   <asset>
     <material name="default_material" rgba="0.7 0.7 0.7 1" />
     <material name="collision_material" rgba="1.0 0.28 0.1 0.9" />
     
-    <mesh name="body_collision" file="./meshes/collision/body/body_link0.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link0_collision" file="./meshes/collision/arm/link0.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link0_collision_left" file="./meshes/collision/arm/link0.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="link1_collision" file="./meshes/collision/arm/link1.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link1_collision_left" file="./meshes/collision/arm/link1.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="link2_collision" file="./meshes/collision/arm/link2.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link2_collision_left" file="./meshes/collision/arm/link2.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="link3_collision" file="./meshes/collision/arm/link3.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link3_collision_left" file="./meshes/collision/arm/link3.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="link4_collision" file="./meshes/collision/arm/link4.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link5_collision" file="./meshes/collision/arm/link5.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link5_collision_left" file="./meshes/collision/arm/link5.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="link6_collision" file="./meshes/collision/arm/link6.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link6_collision_left" file="./meshes/collision/arm/link6.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="link7_collision" file="./meshes/collision/arm/link7.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link7_collision_left" file="./meshes/collision/arm/link7.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="hand_collision" file="./meshes/collision/gripper/hand.stl" scale="0.001 0.001 0.001" />
-    <mesh name="finger_collision" file="./meshes/collision/gripper/finger.stl" scale="0.001 0.001 0.001" />
-    <mesh name="finger_collision_left" file="./meshes/collision/gripper/finger.stl" scale="0.001 -0.001 0.001" />
+    <mesh name="body_collision" file="collision/body/body_link0.stl" scale="0.001 0.001 0.001" />
+    <mesh name="link0_collision" file="collision/arm/link0.stl" scale="0.001 0.001 0.001" />
+    <mesh name="link0_collision_left" file="collision/arm/link0.stl" scale="0.001 -0.001 0.001" />
+    <mesh name="link1_collision" file="collision/arm/link1.stl" scale="0.001 0.001 0.001" />
+    <mesh name="link1_collision_left" file="collision/arm/link1.stl" scale="0.001 -0.001 0.001" />
+    <mesh name="link2_collision" file="collision/arm/link2.stl" scale="0.001 0.001 0.001" />
+    <mesh name="link2_collision_left" file="collision/arm/link2.stl" scale="0.001 -0.001 0.001" />
+    <mesh name="link3_collision" file="collision/arm/link3.stl" scale="0.001 0.001 0.001" />
+    <mesh name="link3_collision_left" file="collision/arm/link3.stl" scale="0.001 -0.001 0.001" />
+    <mesh name="link4_collision" file="collision/arm/link4.stl" scale="0.001 0.001 0.001" />
+    <mesh name="link5_collision" file="collision/arm/link5.stl" scale="0.001 0.001 0.001" />
+    <mesh name="link5_collision_left" file="collision/arm/link5.stl" scale="0.001 -0.001 0.001" />
+    <mesh name="link6_collision" file="collision/arm/link6.stl" scale="0.001 0.001 0.001" />
+    <mesh name="link6_collision_left" file="collision/arm/link6.stl" scale="0.001 -0.001 0.001" />
+    <mesh name="link7_collision" file="collision/arm/link7.stl" scale="0.001 0.001 0.001" />
+    <mesh name="link7_collision_left" file="collision/arm/link7.stl" scale="0.001 -0.001 0.001" />
+    <mesh name="hand_collision" file="collision/gripper/hand.stl" scale="0.001 0.001 0.001" />
+    <mesh name="finger_collision" file="collision/gripper/finger.stl" scale="0.001 0.001 0.001" />
+    <mesh name="finger_collision_left" file="collision/gripper/finger.stl" scale="0.001 -0.001 0.001" />
     
-    <mesh name="body_link0_0.obj" file="./meshes/visual/body/body_link0_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="body_link0_1.obj" file="./meshes/visual/body/body_link0_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="body_link0_2.obj" file="./meshes/visual/body/body_link0_2.obj" scale="0.001 0.001 0.001" />
-    <mesh name="body_link0_3.obj" file="./meshes/visual/body/body_link0_3.obj" scale="0.001 0.001 0.001" />
-    <mesh name="body_link0_4.obj" file="./meshes/visual/body/body_link0_4.obj" scale="0.001 0.001 0.001" />
-    <mesh name="body_link0_5.obj" file="./meshes/visual/body/body_link0_5.obj" scale="0.001 0.001 0.001" />
+    <mesh name="body_link0_0.obj" file="visual/body/body_link0_0.obj" scale="0.001 0.001 0.001" />
+    <mesh name="body_link0_1.obj" file="visual/body/body_link0_1.obj" scale="0.001 0.001 0.001" />
+    <mesh name="body_link0_2.obj" file="visual/body/body_link0_2.obj" scale="0.001 0.001 0.001" />
+    <mesh name="body_link0_3.obj" file="visual/body/body_link0_3.obj" scale="0.001 0.001 0.001" />
+    <mesh name="body_link0_4.obj" file="visual/body/body_link0_4.obj" scale="0.001 0.001 0.001" />
+    <mesh name="body_link0_5.obj" file="visual/body/body_link0_5.obj" scale="0.001 0.001 0.001" />
     
-    <mesh name="link0_0.obj" file="./meshes/visual/arm/link0_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link0_1.obj" file="./meshes/visual/arm/link0_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link1_0.obj" file="./meshes/visual/arm/link1_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link1_1.obj" file="./meshes/visual/arm/link1_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link1_2.obj" file="./meshes/visual/arm/link1_2.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link1_3.obj" file="./meshes/visual/arm/link1_3.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link2_0.obj" file="./meshes/visual/arm/link2_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link2_1.obj" file="./meshes/visual/arm/link2_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link2_2.obj" file="./meshes/visual/arm/link2_2.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link3_0.obj" file="./meshes/visual/arm/link3_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link3_1.obj" file="./meshes/visual/arm/link3_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link3_2.obj" file="./meshes/visual/arm/link3_2.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link4_0.obj" file="./meshes/visual/arm/link4_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link4_1.obj" file="./meshes/visual/arm/link4_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link4_2.obj" file="./meshes/visual/arm/link4_2.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link5_0.obj" file="./meshes/visual/arm/link5_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link5_1.obj" file="./meshes/visual/arm/link5_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link5_2.obj" file="./meshes/visual/arm/link5_2.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link6_0.obj" file="./meshes/visual/arm/link6_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link6_1.obj" file="./meshes/visual/arm/link6_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link7_0.obj" file="./meshes/visual/arm/link7_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link7_1.obj" file="./meshes/visual/arm/link7_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link7_2.obj" file="./meshes/visual/arm/link7_2.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link7_3.obj" file="./meshes/visual/arm/link7_3.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link0_0.obj" file="visual/arm/link0_0.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link0_1.obj" file="visual/arm/link0_1.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link1_0.obj" file="visual/arm/link1_0.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link1_1.obj" file="visual/arm/link1_1.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link1_2.obj" file="visual/arm/link1_2.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link1_3.obj" file="visual/arm/link1_3.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link2_0.obj" file="visual/arm/link2_0.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link2_1.obj" file="visual/arm/link2_1.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link2_2.obj" file="visual/arm/link2_2.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link3_0.obj" file="visual/arm/link3_0.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link3_1.obj" file="visual/arm/link3_1.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link3_2.obj" file="visual/arm/link3_2.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link4_0.obj" file="visual/arm/link4_0.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link4_1.obj" file="visual/arm/link4_1.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link4_2.obj" file="visual/arm/link4_2.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link5_0.obj" file="visual/arm/link5_0.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link5_1.obj" file="visual/arm/link5_1.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link5_2.obj" file="visual/arm/link5_2.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link6_0.obj" file="visual/arm/link6_0.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link6_1.obj" file="visual/arm/link6_1.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link7_0.obj" file="visual/arm/link7_0.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link7_1.obj" file="visual/arm/link7_1.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link7_2.obj" file="visual/arm/link7_2.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link7_3.obj" file="visual/arm/link7_3.obj" scale="0.001 0.001 0.001" />
     
     <!-- Visual Meshes - Gripper -->
-    <mesh name="hand_0.obj" file="./meshes/visual/gripper/hand_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="hand_1.obj" file="./meshes/visual/gripper/hand_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="finger_0.obj" file="./meshes/visual/gripper/finger_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="finger_0_flip.obj" file="./meshes/visual/gripper/finger_0.obj" scale="0.001 -0.001 0.001" />
-    <mesh name="finger_1.obj" file="./meshes/visual/gripper/finger_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="finger_1_flip.obj" file="./meshes/visual/gripper/finger_1.obj" scale="0.001 -0.001 0.001" />
+    <mesh name="hand_0.obj" file="visual/gripper/hand_0.obj" scale="0.001 0.001 0.001" />
+    <mesh name="hand_1.obj" file="visual/gripper/hand_1.obj" scale="0.001 0.001 0.001" />
+    <mesh name="finger_0.obj" file="visual/gripper/finger_0.obj" scale="0.001 0.001 0.001" />
+    <mesh name="finger_0_flip.obj" file="visual/gripper/finger_0.obj" scale="0.001 -0.001 0.001" />
+    <mesh name="finger_1.obj" file="visual/gripper/finger_1.obj" scale="0.001 0.001 0.001" />
+    <mesh name="finger_1_flip.obj" file="visual/gripper/finger_1.obj" scale="0.001 -0.001 0.001" />
 
     <material name="matte_black" rgba="0.24705882 0.24705882 0.24705882 1.0" reflectance="0.05098039000000001" shininess="0.5" />
     <material name="metal_silver" rgba="0.79607843 0.79607843 0.79607843 1.0" reflectance="1.0" shininess="1.0" />
