@@ -69,6 +69,8 @@
     <mesh name="link5_2.obj" file="visual/arm/link5_2.obj" scale="0.001 0.001 0.001" />
     <mesh name="link6_0.obj" file="visual/arm/link6_0.obj" scale="0.001 0.001 0.001" />
     <mesh name="link6_1.obj" file="visual/arm/link6_1.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link6_0_left.obj" file="visual/arm/link6_0.obj" scale="0.001 -0.001 0.001" />
+    <mesh name="link6_1_left.obj" file="visual/arm/link6_1.obj" scale="0.001 -0.001 0.001" />
     <mesh name="link7_0.obj" file="visual/arm/link7_0.obj" scale="0.001 0.001 0.001" />
     <mesh name="link7_1.obj" file="visual/arm/link7_1.obj" scale="0.001 0.001 0.001" />
     <mesh name="link7_0_left.obj" file="visual/arm/link7_0.obj" scale="0.001 -0.001 0.001" />
@@ -140,8 +142,8 @@
                     <joint name="openarm_left_joint6" type="hinge" ref="0.0" class="motor" range="-0.785398 0.785398" axis="1 0 0" />
                     <inertial pos="-0.037136587005447405 0.00033230528343419053 -9.498374522309838e-05" quat="1.0 0.0 0.0 0.0" mass="0.3540202773187987" diaginertia="0.000143 0.000157 0.000159" />
                     <geom name="openarm_left_link6_collision" pos="-0.0375 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link6_collision_left" class="collision" />
-                    <geom name="openarm_left_link6_visual_0" pos="-0.0375 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link6_0.obj" class="visual" />
-        <geom name="openarm_left_link6_visual_1" pos="-0.0375 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link6_1.obj" class="visual" />
+                    <geom name="openarm_left_link6_visual_0" pos="-0.0375 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link6_0_left.obj" class="visual" />
+        <geom name="openarm_left_link6_visual_1" pos="-0.0375 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link6_1_left.obj" class="visual" />
                     <body name="openarm_left_link7" pos="-0.0375 0.0 0.0" quat="1.0 0.0 0.0 0.0">
                       <joint name="openarm_left_joint7" type="hinge" ref="0.0" class="motor" range="-1.570796 1.570796" axis="0 -1 0" />
                       <inertial pos="6.875510271106056e-05 -0.01766175250761268 0.06651945409987448" quat="1.0 0.0 0.0 0.0" mass="0.5499771327380578" diaginertia="0.000639 0.000497 0.000342" />
