@@ -22,7 +22,6 @@
     <material name="default_material" rgba="0.7 0.7 0.7 1" />
     <material name="collision_material" rgba="1.0 0.28 0.1 0.9" />
     
-    <!-- Collision Meshes -->
     <mesh name="body_collision" file="./meshes/collision/body/body_link0.stl" scale="0.001 0.001 0.001" />
     <mesh name="link0_collision" file="./meshes/collision/arm/link0.stl" scale="0.001 0.001 0.001" />
     <mesh name="link0_collision_left" file="./meshes/collision/arm/link0.stl" scale="0.001 -0.001 0.001" />
@@ -43,7 +42,6 @@
     <mesh name="finger_collision" file="./meshes/collision/gripper/finger.stl" scale="0.001 0.001 0.001" />
     <mesh name="finger_collision_left" file="./meshes/collision/gripper/finger.stl" scale="0.001 -0.001 0.001" />
     
-    <!-- Visual Meshes - Body -->
     <mesh name="body_link0_0.obj" file="./meshes/visual/body/body_link0_0.obj" scale="0.001 0.001 0.001" />
     <mesh name="body_link0_1.obj" file="./meshes/visual/body/body_link0_1.obj" scale="0.001 0.001 0.001" />
     <mesh name="body_link0_2.obj" file="./meshes/visual/body/body_link0_2.obj" scale="0.001 0.001 0.001" />
@@ -51,7 +49,6 @@
     <mesh name="body_link0_4.obj" file="./meshes/visual/body/body_link0_4.obj" scale="0.001 0.001 0.001" />
     <mesh name="body_link0_5.obj" file="./meshes/visual/body/body_link0_5.obj" scale="0.001 0.001 0.001" />
     
-    <!-- Visual Meshes - Arms -->
     <mesh name="link0_0.obj" file="./meshes/visual/arm/link0_0.obj" scale="0.001 0.001 0.001" />
     <mesh name="link0_1.obj" file="./meshes/visual/arm/link0_1.obj" scale="0.001 0.001 0.001" />
     <mesh name="link1_0.obj" file="./meshes/visual/arm/link1_0.obj" scale="0.001 0.001 0.001" />
