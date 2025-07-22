@@ -1,6 +1,7 @@
-# MuJoCo MJCF for OpenArm
+# MuJoCo Description Files (MJCF) for OpenArm
+<img height="546" alt="image" src="https://github.com/user-attachments/assets/b969665c-75f9-470d-b327-e3806ae66002" />
 
-<img width="514" alt="image" src="https://github.com/user-attachments/assets/84ed9338-8990-46d3-8aee-1e87c55583b5" />
+This repository contains assets for OpenArm v1 (above) and v0.3 (below) simulation in MuJoCo. 
 
 ## Usage
 
@@ -9,21 +10,19 @@ https://github.com/user-attachments/assets/814ee3e1-36dd-4561-a837-25e921838253
 1. Install MuJoCo and launch a simulation.
 2. Drag the `*.xml` file into the simulation window.
 
-For a detailed installation guide, see: [github.com/enactic/openarm_simulation/blob/main/MuJoCo.md](https://github.com/enactic/openarm_simulation/blob/main/openarm_mujoco/README_MuJoCo.md)
+The motors use torque control, so position and velocity control can be achieved by implementing a simple PD controller in client code.
 
-## Improving Simulation Stability
-- Short timestep of < 0.001
-- Runge Kutta integrator
-- Simplified collision geometry
+## Collision Visualization
+- To view collision meshes, activate `Rendering`>`Model Elements`>`Convex Hull` and `Group Enable`>`Geom groups`>`Geom 3` in the left sidebar
+- It may also help to hide the visual meshes by deselecting `Geom 2`
 
-## CAD to STL conversion
-- Setting `contype` and `conaffinity` to zero uses a geom as a visual mesh
-- To view collision bounding boxes, activate `Rendering`>`Model Elements`>`Body Tree` in the left sidebar
-- Binary meshes (`*.stl`) are needed, so this conversion should be done in CAD or with [MeshLab](https://github.com/cnr-isti-vclab/meshlab)
+<img height="534" alt="image" src="https://github.com/user-attachments/assets/1b003bf4-f0ce-42b9-89df-c8efd073cde7" />
+
 
 ## URDF to MJCF Conversion
 - Grippers actuate equally using a tendon and equality constraint, which uses a mimic joint in URDF
 - Off-diagonal inertias are set to zero
+- Motors require `ctrlrange` limits and joints have additional runtime properties `damping` and `frictionloss`
 
 ## Code of Conduct
 
