@@ -24,6 +24,12 @@ The motors use torque control, so position and velocity control can be achieved 
 - Off-diagonal inertias are set to zero
 - Motors require `ctrlrange` limits and joints have additional runtime properties `damping` and `frictionloss`
 
+## License
+
+Licensed under the Apache License 2.0. See `LICENSE` for details.
+
+Copyright 2025 Enactic, Inc.
+
 ## Code of Conduct
 
 All participation in the OpenArm project is governed by our
