@@ -24,6 +24,12 @@ The motors use torque control, so position and velocity control can be achieved 
 - Off-diagonal inertias are set to zero
 - Motors require `ctrlrange` limits and joints have additional runtime properties `damping` and `frictionloss`
 
+## Related links
+
+- 📚 Read the [documentation](https://docs.openarm.dev/simulation/mujoco)
+- 💬 Join the community on [Discord](https://discord.gg/FsZaZ4z3We)
+- 📬 Contact us through <openarm@enactic.ai>
+
 ## License
 
 Licensed under the Apache License 2.0. See `LICENSE` for details.
