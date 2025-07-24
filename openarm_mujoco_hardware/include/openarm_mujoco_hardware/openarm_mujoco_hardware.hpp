@@ -65,7 +65,7 @@ class MujocoHardware : public hardware_interface::SystemInterface {
   static constexpr size_t TOTAL_DOF =
       8;  // Total degrees of freedom, including gripper
   inline static constexpr std::array<double, TOTAL_DOF> KP_ = {
-      180.0, 180.0, 140.0, 155.0, 115.0, 115.0, 115.0, 25.0};
+      180.0, 180.0, 140.0, 155.0, 115.0, 115.0, 115.0, 105.0};
   inline static constexpr std::array<double, TOTAL_DOF> KD_ = {
       0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01};
   static constexpr double MAX_MOTOR_TORQUE = 100.0;

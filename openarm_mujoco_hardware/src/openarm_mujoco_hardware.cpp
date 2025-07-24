@@ -155,8 +155,9 @@ MujocoHardware::export_state_interfaces() {
     state_interfaces.emplace_back(hardware_interface::StateInterface(
         info_.joints.at(i).name, hardware_interface::HW_IF_VELOCITY,
         &qvel_[i]));
-    // state_interfaces.emplace_back(hardware_interface::StateInterface(info_.joints.at(i).name,
-    // hardware_interface::HW_IF_EFFORT, &qtau_[i]));
+    state_interfaces.emplace_back(hardware_interface::StateInterface(
+        info_.joints.at(i).name, hardware_interface::HW_IF_EFFORT, 
+        &qtau_[i]));
   }
   return state_interfaces;
 }
@@ -290,7 +291,8 @@ void WebSocketSession::on_read(boost::beast::error_code ec,
     try {
       nlohmann::json j = nlohmann::json::parse(data);
       // if "state" key exists, update the hardware state
-      if (j.contains("state")) {
+      if (j.contains("state")) 
+      {
         const nlohmann::json& state = j["state"];
         for (size_t i = 0; i < hw_->info_.joints.size(); ++i) {
           const auto& joint = hw_->info_.joints[i];
@@ -301,6 +303,9 @@ void WebSocketSession::on_read(boost::beast::error_code ec,
             }
             if (joint_data.contains("qvel")) {
               hw_->qvel_[i] = joint_data.at("qvel").get<double>();
+            }
+            if (joint_data.contains("qtau")) {
+              hw_->qtau_[i] = joint_data.at("qtau").get<double>();
             }
           }
         }
