@@ -18,6 +18,12 @@ The motors use torque control, so position and velocity control can be achieved 
 
 <img height="534" alt="image" src="https://github.com/user-attachments/assets/1b003bf4-f0ce-42b9-89df-c8efd073cde7" />
 
+## ROS2 Hardware Interface
+
+MuJoCo can be used to simulate realistic hardware interfaces to test low-frequency control without physical hardware. 
+
+https://github.com/enactic/openarm_mujoco_hardware
+
 
 ## URDF to MJCF Conversion
 - Grippers actuate equally using a tendon and equality constraint, which uses a mimic joint in URDF
