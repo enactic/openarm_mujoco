@@ -60,9 +60,9 @@
     <mesh name="link6_1.obj" file="visual/arm/link6_1.obj" scale="0.001 0.001 0.001" />
     <mesh name="link7_0.obj" file="visual/arm/link7_0.obj" scale="0.001 0.001 0.001" />
     <mesh name="link7_1.obj" file="visual/arm/link7_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link7_2.obj" file="visual/arm/link7_2.obj" scale="0.001 0.001 0.001" />
+    <!-- <mesh name="link7_2.obj" file="visual/arm/link7_2.obj" scale="0.001 0.001 0.001" />
     <mesh name="link7_3.obj" file="visual/arm/link7_3.obj" scale="0.001 0.001 0.001" />
-    
+     -->
 
     <mesh name="hand_0.obj" file="visual/gripper/hand_0.obj" scale="0.001 0.001 0.001" />
     <mesh name="hand_1.obj" file="visual/gripper/hand_1.obj" scale="0.001 0.001 0.001" />
