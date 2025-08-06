@@ -75,7 +75,7 @@
     <mesh name="link7_1.obj" file="visual/arm/link7_1.obj" scale="0.001 0.001 0.001" />
     <mesh name="link7_0_left.obj" file="visual/arm/link7_0.obj" scale="0.001 -0.001 0.001" />
     <mesh name="link7_1_left.obj" file="visual/arm/link7_1.obj" scale="0.001 -0.001 0.001" />
-    <!-- Visual Meshes - Gripper -->
+
     <mesh name="hand_0.obj" file="visual/gripper/hand_0.obj" scale="0.001 0.001 0.001" />
     <mesh name="hand_1.obj" file="visual/gripper/hand_1.obj" scale="0.001 0.001 0.001" />
     <mesh name="finger_0.obj" file="visual/gripper/finger_0.obj" scale="0.001 0.001 0.001" />
@@ -233,8 +233,6 @@
                       <geom name="openarm_right_link7_collision" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link7_collision" class="collision" />
                       <geom name="openarm_right_link7_visual_0" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link7_0.obj" class="visual" />
         <geom name="openarm_right_link7_visual_1" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link7_1.obj" class="visual" />
-        <!-- <geom name="openarm_right_link7_visual_2" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link7_2.obj" class="visual" /> -->
-        <!-- <geom name="openarm_right_link7_visual_3" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link7_3.obj" class="visual" /> -->
                       <body name="openarm_right_link8" pos="1e-06 0.0205 0.0" quat="1.0 0.0 0.0 0.0">
                         <body name="openarm_right_hand" pos="0 -0.025 0.1001" quat="1.0 0.0 0.0 0.0">
                           <inertial pos="0.0 0.002 0.01" quat="1.0 0.0 0.0 0.0" mass="0.15" diaginertia="0.0001 0.00025 0.00017" />
