@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <mujoco model="openarm">
   <default>
     <default class="robot">
@@ -7,169 +7,241 @@
         <motor ctrlrange="-10 10"/>
       </default>
       <default class="collision">
-        <geom material="collision_material" condim="3" conaffinity="1" priority="1" group="3" solref="0.005 1" friction="1 0.01 0.01" />
-        <equality solimp="0.99 0.999 1e-05" solref="0.005 1" />
+        <geom material="collision_material" condim="3" conaffinity="1" priority="1" group="3" solref="0.005 1"
+          friction="1 0.01 0.01"/>
+        <equality solimp="0.99 0.999 1e-05" solref="0.005 1"/>
       </default>
       <default class="visual">
-        <geom material="visualgeom" contype="0" conaffinity="0" group="2" />
+        <geom material="visualgeom" contype="0" conaffinity="0" group="2"/>
       </default>
     </default>
   </default>
 
-  <compiler angle="radian" meshdir="meshes" />
+  <compiler angle="radian" meshdir="meshes"/>
 
   <asset>
-    <material name="default_material" rgba="0.7 0.7 0.7 1" />
-    <material name="collision_material" rgba="1.0 0.28 0.1 0.9" />
-    
-    <mesh name="body_collision" file="collision/body/body_link0.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link0_collision" file="collision/arm/link0.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link0_collision_left" file="collision/arm/link0.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="link1_collision" file="collision/arm/link1.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link1_collision_left" file="collision/arm/link1.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="link2_collision" file="collision/arm/link2.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link2_collision_left" file="collision/arm/link2.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="link3_collision" file="collision/arm/link3.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link3_collision_left" file="collision/arm/link3.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="link4_collision" file="collision/arm/link4.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link5_collision" file="collision/arm/link5.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link5_collision_left" file="collision/arm/link5.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="link6_collision" file="collision/arm/link6.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link6_collision_left" file="collision/arm/link6.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="link7_collision" file="collision/arm/link7.stl" scale="0.001 0.001 0.001" />
-    <mesh name="link7_collision_left" file="collision/arm/link7.stl" scale="0.001 -0.001 0.001" />
-    <mesh name="hand_collision" file="collision/gripper/hand.stl" scale="0.001 0.001 0.001" />
-    <mesh name="finger_collision" file="collision/gripper/finger.stl" scale="0.001 0.001 0.001" />
-    <mesh name="finger_collision_left" file="collision/gripper/finger.stl" scale="0.001 -0.001 0.001" />
-    
-    <mesh name="body_link0_0.obj" file="visual/body/body_link0_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="body_link0_1.obj" file="visual/body/body_link0_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="body_link0_2.obj" file="visual/body/body_link0_2.obj" scale="0.001 0.001 0.001" />
-    <mesh name="body_link0_3.obj" file="visual/body/body_link0_3.obj" scale="0.001 0.001 0.001" />
-    <mesh name="body_link0_4.obj" file="visual/body/body_link0_4.obj" scale="0.001 0.001 0.001" />
-    <mesh name="body_link0_5.obj" file="visual/body/body_link0_5.obj" scale="0.001 0.001 0.001" />
-    
-    <mesh name="link0_0.obj" file="visual/arm/link0_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link0_1.obj" file="visual/arm/link0_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link1_0.obj" file="visual/arm/link1_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link1_1.obj" file="visual/arm/link1_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link1_2.obj" file="visual/arm/link1_2.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link1_3.obj" file="visual/arm/link1_3.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link2_0.obj" file="visual/arm/link2_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link2_1.obj" file="visual/arm/link2_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link2_2.obj" file="visual/arm/link2_2.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link3_0.obj" file="visual/arm/link3_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link3_1.obj" file="visual/arm/link3_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link3_2.obj" file="visual/arm/link3_2.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link4_0.obj" file="visual/arm/link4_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link4_1.obj" file="visual/arm/link4_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link4_2.obj" file="visual/arm/link4_2.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link5_0.obj" file="visual/arm/link5_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link5_1.obj" file="visual/arm/link5_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link5_2.obj" file="visual/arm/link5_2.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link6_0.obj" file="visual/arm/link6_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link6_1.obj" file="visual/arm/link6_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link6_0_left.obj" file="visual/arm/link6_0.obj" scale="0.001 -0.001 0.001" />
-    <mesh name="link6_1_left.obj" file="visual/arm/link6_1.obj" scale="0.001 -0.001 0.001" />
-    <mesh name="link7_0.obj" file="visual/arm/link7_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link7_1.obj" file="visual/arm/link7_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="link7_0_left.obj" file="visual/arm/link7_0.obj" scale="0.001 -0.001 0.001" />
-    <mesh name="link7_1_left.obj" file="visual/arm/link7_1.obj" scale="0.001 -0.001 0.001" />
+    <material name="default_material" rgba="0.7 0.7 0.7 1"/>
+    <material name="collision_material" rgba="1.0 0.28 0.1 0.9"/>
 
-    <mesh name="hand_0.obj" file="visual/gripper/hand_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="hand_1.obj" file="visual/gripper/hand_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="finger_0.obj" file="visual/gripper/finger_0.obj" scale="0.001 0.001 0.001" />
-    <mesh name="finger_0_flip.obj" file="visual/gripper/finger_0.obj" scale="0.001 -0.001 0.001" />
-    <mesh name="finger_1.obj" file="visual/gripper/finger_1.obj" scale="0.001 0.001 0.001" />
-    <mesh name="finger_1_flip.obj" file="visual/gripper/finger_1.obj" scale="0.001 -0.001 0.001" />
+    <mesh name="body_collision" file="collision/body/body_link0.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="link0_collision" file="collision/arm/link0.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="link0_collision_left" file="collision/arm/link0.stl" scale="0.001 -0.001 0.001"/>
+    <mesh name="link1_collision" file="collision/arm/link1.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="link1_collision_left" file="collision/arm/link1.stl" scale="0.001 -0.001 0.001"/>
+    <mesh name="link2_collision" file="collision/arm/link2.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="link2_collision_left" file="collision/arm/link2.stl" scale="0.001 -0.001 0.001"/>
+    <mesh name="link3_collision" file="collision/arm/link3.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="link3_collision_left" file="collision/arm/link3.stl" scale="0.001 -0.001 0.001"/>
+    <mesh name="link4_collision" file="collision/arm/link4.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="link5_collision" file="collision/arm/link5.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="link5_collision_left" file="collision/arm/link5.stl" scale="0.001 -0.001 0.001"/>
+    <mesh name="link6_collision" file="collision/arm/link6.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="link6_collision_left" file="collision/arm/link6.stl" scale="0.001 -0.001 0.001"/>
+    <mesh name="link7_collision" file="collision/arm/link7.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="link7_collision_left" file="collision/arm/link7.stl" scale="0.001 -0.001 0.001"/>
+    <mesh name="hand_collision" file="collision/gripper/hand.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="finger_collision" file="collision/gripper/finger.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="finger_collision_left" file="collision/gripper/finger.stl" scale="0.001 -0.001 0.001"/>
 
-    <material name="matte_black" rgba="0.24705882 0.24705882 0.24705882 1.0" reflectance="0.05098039000000001" shininess="0.5" />
-    <material name="metal_silver" rgba="0.79607843 0.79607843 0.79607843 1.0" reflectance="1.0" shininess="1.0" />
+    <mesh name="body_link0_0.obj" file="visual/body/body_link0_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="body_link0_1.obj" file="visual/body/body_link0_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="body_link0_2.obj" file="visual/body/body_link0_2.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="body_link0_3.obj" file="visual/body/body_link0_3.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="body_link0_4.obj" file="visual/body/body_link0_4.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="body_link0_5.obj" file="visual/body/body_link0_5.obj" scale="0.001 0.001 0.001"/>
+
+    <mesh name="link0_0.obj" file="visual/arm/link0_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link0_1.obj" file="visual/arm/link0_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link1_0.obj" file="visual/arm/link1_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link1_1.obj" file="visual/arm/link1_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link1_2.obj" file="visual/arm/link1_2.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link1_3.obj" file="visual/arm/link1_3.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link2_0.obj" file="visual/arm/link2_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link2_1.obj" file="visual/arm/link2_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link2_2.obj" file="visual/arm/link2_2.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link3_0.obj" file="visual/arm/link3_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link3_1.obj" file="visual/arm/link3_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link3_2.obj" file="visual/arm/link3_2.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link4_0.obj" file="visual/arm/link4_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link4_1.obj" file="visual/arm/link4_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link4_2.obj" file="visual/arm/link4_2.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link5_0.obj" file="visual/arm/link5_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link5_1.obj" file="visual/arm/link5_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link5_2.obj" file="visual/arm/link5_2.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link6_0.obj" file="visual/arm/link6_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link6_1.obj" file="visual/arm/link6_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link6_0_left.obj" file="visual/arm/link6_0.obj" scale="0.001 -0.001 0.001"/>
+    <mesh name="link6_1_left.obj" file="visual/arm/link6_1.obj" scale="0.001 -0.001 0.001"/>
+    <mesh name="link7_0.obj" file="visual/arm/link7_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link7_1.obj" file="visual/arm/link7_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="link7_0_left.obj" file="visual/arm/link7_0.obj" scale="0.001 -0.001 0.001"/>
+    <mesh name="link7_1_left.obj" file="visual/arm/link7_1.obj" scale="0.001 -0.001 0.001"/>
+
+    <mesh name="hand_0.obj" file="visual/gripper/hand_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="hand_1.obj" file="visual/gripper/hand_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="finger_0.obj" file="visual/gripper/finger_0.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="finger_0_flip.obj" file="visual/gripper/finger_0.obj" scale="0.001 -0.001 0.001"/>
+    <mesh name="finger_1.obj" file="visual/gripper/finger_1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="finger_1_flip.obj" file="visual/gripper/finger_1.obj" scale="0.001 -0.001 0.001"/>
+
+    <material name="matte_black" rgba="0.24705882 0.24705882 0.24705882 1.0" reflectance="0.05098039000000001"
+      shininess="0.5"/>
+    <material name="metal_silver" rgba="0.79607843 0.79607843 0.79607843 1.0" reflectance="1.0" shininess="1.0"/>
   </asset>
 
   <worldbody>
-    
+
     <body name="openarm_body_link0" pos="0 0 0" quat="1.0 0.0 0.0 0.0">
-      <inertial pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" mass="13.89" diaginertia="1.653 1.653 0.051" />
-      <geom name="openarm_body_link0_collision" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="body_link0_3.obj" class="collision" />
-      <geom name="openarm_body_link0_visual_0" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="body_link0_0.obj" class="visual" />
-        <geom name="openarm_body_link0_visual_1" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="body_link0_1.obj" class="visual" />
-        <geom name="openarm_body_link0_visual_2" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="body_link0_2.obj" class="visual" />
-        <geom name="openarm_body_link0_visual_3" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="body_link0_3.obj" class="visual" />
-        <geom name="openarm_body_link0_visual_4" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="body_link0_4.obj" class="visual" />
-        <geom name="openarm_body_link0_visual_5" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="body_link0_5.obj" class="visual" />
+      <inertial pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" mass="13.89" diaginertia="1.653 1.653 0.051"/>
+      <geom name="openarm_body_link0_collision" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" type="mesh"
+        mesh="body_link0_3.obj" class="collision"/>
+      <geom name="openarm_body_link0_visual_0" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="matte_black"
+        type="mesh" mesh="body_link0_0.obj" class="visual"/>
+      <geom name="openarm_body_link0_visual_1" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="metal_silver"
+        type="mesh" mesh="body_link0_1.obj" class="visual"/>
+      <geom name="openarm_body_link0_visual_2" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="matte_black"
+        type="mesh" mesh="body_link0_2.obj" class="visual"/>
+      <geom name="openarm_body_link0_visual_3" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="matte_black"
+        type="mesh" mesh="body_link0_3.obj" class="visual"/>
+      <geom name="openarm_body_link0_visual_4" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="metal_silver"
+        type="mesh" mesh="body_link0_4.obj" class="visual"/>
+      <geom name="openarm_body_link0_visual_5" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="matte_black"
+        type="mesh" mesh="body_link0_5.obj" class="visual"/>
       <body name="openarm_left_link0" pos="0.0 0.031 0.698" quat="0.7071054825112363 -0.7071080798594735 0.0 0.0">
-        <inertial pos="-0.0009483362816297526 0.0001580207020448382 0.03076860287587199" quat="1.0 0.0 0.0 0.0" mass="1.1432284943239561" diaginertia="0.001128 0.000962 0.00147" />
-        <geom name="openarm_left_link0_collision" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link0_collision_left" class="collision" />
-        <geom name="openarm_left_link0_visual_0" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link0_0.obj" class="visual" />
-        <geom name="openarm_left_link0_visual_1" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link0_1.obj" class="visual" />
+        <inertial pos="-0.0009483362816297526 0.0001580207020448382 0.03076860287587199" quat="1.0 0.0 0.0 0.0"
+          mass="1.1432284943239561" diaginertia="0.001128 0.000962 0.00147"/>
+        <geom name="openarm_left_link0_collision" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" type="mesh"
+          mesh="link0_collision_left" class="collision"/>
+        <geom name="openarm_left_link0_visual_0" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="metal_silver"
+          type="mesh" mesh="link0_0.obj" class="visual"/>
+        <geom name="openarm_left_link0_visual_1" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="matte_black"
+          type="mesh" mesh="link0_1.obj" class="visual"/>
         <body name="openarm_left_link1" pos="0.0 0.0 0.0625" quat="1.0 0.0 0.0 0.0">
-          <joint name="openarm_left_joint1" type="hinge" ref="0.0" class="motor" range="-3.490659 1.3962629999999998" axis="0 0 1" />
-          <inertial pos="0.0011467657911800769 3.319987657026362e-05 0.05395284380736254" quat="1.0 0.0 0.0 0.0" mass="1.1416684646202298" diaginertia="0.001567 0.001273 0.001016" />
-          <geom name="openarm_left_link1_collision" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link1_collision_left" class="collision" />
-          <geom name="openarm_left_link1_visual_0" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link1_0.obj" class="visual" />
-        <geom name="openarm_left_link1_visual_2" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link1_2.obj" class="visual" />
-        <geom name="openarm_left_link1_visual_3" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link1_3.obj" class="visual" />
+          <joint name="openarm_left_joint1" type="hinge" ref="0.0" class="motor" range="-3.490659 1.3962629999999998"
+            axis="0 0 1"/>
+          <inertial pos="0.0011467657911800769 3.319987657026362e-05 0.05395284380736254" quat="1.0 0.0 0.0 0.0"
+            mass="1.1416684646202298" diaginertia="0.001567 0.001273 0.001016"/>
+          <geom name="openarm_left_link1_collision" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" type="mesh"
+            mesh="link1_collision_left" class="collision"/>
+          <geom name="openarm_left_link1_visual_0" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" material="matte_black"
+            type="mesh" mesh="link1_0.obj" class="visual"/>
+          <geom name="openarm_left_link1_visual_2" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" material="matte_black"
+            type="mesh" mesh="link1_2.obj" class="visual"/>
+          <geom name="openarm_left_link1_visual_3" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" material="matte_black"
+            type="mesh" mesh="link1_3.obj" class="visual"/>
           <body name="openarm_left_link2" pos="-0.0301 0.0 0.06" quat="0.7071067811882787 -0.7071067811848163 0.0 0.0">
-            <joint name="openarm_left_joint2" type="hinge" ref="0.0" class="motor" range="-3.3161253267948965 0.17453267320510335" axis="-1 0 0" />
-            <inertial pos="0.00839629182351943 -2.0145102027597523e-08 0.03256649300522363" quat="1.0 0.0 0.0 0.0" mass="0.2775092746011571" diaginertia="0.000359 0.000376 0.000232" />
-            <geom name="openarm_left_link2_collision" pos="0.0301 0.0 -0.1225" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link2_collision_left" class="collision" />
-            <geom name="openarm_left_link2_visual_0" pos="0.0301 0.0 -0.1225" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link2_0.obj" class="visual" />
-        <geom name="openarm_left_link2_visual_1" pos="0.0301 0.0 -0.1225" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link2_1.obj" class="visual" />
-        <geom name="openarm_left_link2_visual_2" pos="0.0301 0.0 -0.1225" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link2_2.obj" class="visual" />
+            <joint name="openarm_left_joint2" type="hinge" ref="0.0" class="motor"
+              range="-3.3161253267948965 0.17453267320510335" axis="-1 0 0"/>
+            <inertial pos="0.00839629182351943 -2.0145102027597523e-08 0.03256649300522363" quat="1.0 0.0 0.0 0.0"
+              mass="0.2775092746011571" diaginertia="0.000359 0.000376 0.000232"/>
+            <geom name="openarm_left_link2_collision" pos="0.0301 0.0 -0.1225" quat="1.0 0.0 0.0 0.0" type="mesh"
+              mesh="link2_collision_left" class="collision"/>
+            <geom name="openarm_left_link2_visual_0" pos="0.0301 0.0 -0.1225" quat="1.0 0.0 0.0 0.0"
+              material="matte_black" type="mesh" mesh="link2_0.obj" class="visual"/>
+            <geom name="openarm_left_link2_visual_1" pos="0.0301 0.0 -0.1225" quat="1.0 0.0 0.0 0.0"
+              material="matte_black" type="mesh" mesh="link2_1.obj" class="visual"/>
+            <geom name="openarm_left_link2_visual_2" pos="0.0301 0.0 -0.1225" quat="1.0 0.0 0.0 0.0"
+              material="matte_black" type="mesh" mesh="link2_2.obj" class="visual"/>
             <body name="openarm_left_link3" pos="0.0301 0.0 0.06625" quat="1.0 0.0 0.0 0.0">
-              <joint name="openarm_left_joint3" type="hinge" ref="0.0" class="motor" range="-1.570796 1.570796" axis="0 0 1" />
-              <inertial pos="-0.002104752099628911 0.0005549085042607548 0.08847470545721961" quat="1.0 0.0 0.0 0.0" mass="1.073863338202347" diaginertia="0.004372 0.004319 0.000661" />
-              <geom name="openarm_left_link3_collision" pos="-0.0 -0.0 -0.18875" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link3_collision_left" class="collision" />
-              <geom name="openarm_left_link3_visual_0" pos="-0.0 -0.0 -0.18875" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link3_0.obj" class="visual" />
-        <geom name="openarm_left_link3_visual_1" pos="-0.0 -0.0 -0.18875" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link3_1.obj" class="visual" />
-        <geom name="openarm_left_link3_visual_2" pos="-0.0 -0.0 -0.18875" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link3_2.obj" class="visual" />
+              <joint name="openarm_left_joint3" type="hinge" ref="0.0" class="motor" range="-1.570796 1.570796"
+                axis="0 0 1"/>
+              <inertial pos="-0.002104752099628911 0.0005549085042607548 0.08847470545721961" quat="1.0 0.0 0.0 0.0"
+                mass="1.073863338202347" diaginertia="0.004372 0.004319 0.000661"/>
+              <geom name="openarm_left_link3_collision" pos="-0.0 -0.0 -0.18875" quat="1.0 0.0 0.0 0.0" type="mesh"
+                mesh="link3_collision_left" class="collision"/>
+              <geom name="openarm_left_link3_visual_0" pos="-0.0 -0.0 -0.18875" quat="1.0 0.0 0.0 0.0"
+                material="matte_black" type="mesh" mesh="link3_0.obj" class="visual"/>
+              <geom name="openarm_left_link3_visual_1" pos="-0.0 -0.0 -0.18875" quat="1.0 0.0 0.0 0.0"
+                material="matte_black" type="mesh" mesh="link3_1.obj" class="visual"/>
+              <geom name="openarm_left_link3_visual_2" pos="-0.0 -0.0 -0.18875" quat="1.0 0.0 0.0 0.0"
+                material="metal_silver" type="mesh" mesh="link3_2.obj" class="visual"/>
               <body name="openarm_left_link4" pos="-0.0 0.0315 0.15375" quat="1.0 0.0 0.0 0.0">
-                <joint name="openarm_left_joint4" type="hinge" ref="0.0" class="motor" range="0.0 2.443461" axis="0 1 0" />
-                <inertial pos="-0.0029006831074562967 -0.03030575826634669 0.06339637422196209" quat="1.0 0.0 0.0 0.0" mass="1.3699337287025453" diaginertia="0.001577 0.001346 0.001104" />
-                <geom name="openarm_left_link4_collision" pos="0.0 -0.0315 -0.3425" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link4_collision" class="collision" />
-                <geom name="openarm_left_link4_visual_0" pos="0.0 -0.0315 -0.3425" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link4_0.obj" class="visual" />
-        <geom name="openarm_left_link4_visual_1" pos="0.0 -0.0315 -0.3425" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link4_1.obj" class="visual" />
-        <geom name="openarm_left_link4_visual_2" pos="0.0 -0.0315 -0.3425" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link4_2.obj" class="visual" />
+                <joint name="openarm_left_joint4" type="hinge" ref="0.0" class="motor" range="0.0 2.443461" axis="0 1 0"/>
+                <inertial pos="-0.0029006831074562967 -0.03030575826634669 0.06339637422196209" quat="1.0 0.0 0.0 0.0"
+                  mass="1.3699337287025453" diaginertia="0.001577 0.001346 0.001104"/>
+                <geom name="openarm_left_link4_collision" pos="0.0 -0.0315 -0.3425" quat="1.0 0.0 0.0 0.0" type="mesh"
+                  mesh="link4_collision" class="collision"/>
+                <geom name="openarm_left_link4_visual_0" pos="0.0 -0.0315 -0.3425" quat="1.0 0.0 0.0 0.0"
+                  material="matte_black" type="mesh" mesh="link4_0.obj" class="visual"/>
+                <geom name="openarm_left_link4_visual_1" pos="0.0 -0.0315 -0.3425" quat="1.0 0.0 0.0 0.0"
+                  material="metal_silver" type="mesh" mesh="link4_1.obj" class="visual"/>
+                <geom name="openarm_left_link4_visual_2" pos="0.0 -0.0315 -0.3425" quat="1.0 0.0 0.0 0.0"
+                  material="matte_black" type="mesh" mesh="link4_2.obj" class="visual"/>
                 <body name="openarm_left_link5" pos="0.0 -0.0315 0.0955" quat="1.0 0.0 0.0 0.0">
-                  <joint name="openarm_left_joint5" type="hinge" ref="0.0" class="motor" range="-1.570796 1.570796" axis="0 0 1" />
-                  <inertial pos="-0.003049665024221911 0.0008866902457326625 0.043079803024980934" quat="1.0 0.0 0.0 0.0" mass="0.5506588026168502" diaginertia="0.000423 0.000445 0.000324" />
-                  <geom name="openarm_left_link5_collision" pos="-0.0 -0.0 -0.438" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link5_collision_left" class="collision" />
-                  <geom name="openarm_left_link5_visual_0" pos="-0.0 -0.0 -0.438" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link5_0.obj" class="visual" />
-        <geom name="openarm_left_link5_visual_1" pos="-0.0 -0.0 -0.438" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link5_1.obj" class="visual" />
-        <geom name="openarm_left_link5_visual_2" pos="-0.0 -0.0 -0.438" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link5_2.obj" class="visual" />
+                  <joint name="openarm_left_joint5" type="hinge" ref="0.0" class="motor" range="-1.570796 1.570796"
+                    axis="0 0 1"/>
+                  <inertial pos="-0.003049665024221911 0.0008866902457326625 0.043079803024980934"
+                    quat="1.0 0.0 0.0 0.0" mass="0.5506588026168502" diaginertia="0.000423 0.000445 0.000324"/>
+                  <geom name="openarm_left_link5_collision" pos="-0.0 -0.0 -0.438" quat="1.0 0.0 0.0 0.0" type="mesh"
+                    mesh="link5_collision_left" class="collision"/>
+                  <geom name="openarm_left_link5_visual_0" pos="-0.0 -0.0 -0.438" quat="1.0 0.0 0.0 0.0"
+                    material="matte_black" type="mesh" mesh="link5_0.obj" class="visual"/>
+                  <geom name="openarm_left_link5_visual_1" pos="-0.0 -0.0 -0.438" quat="1.0 0.0 0.0 0.0"
+                    material="metal_silver" type="mesh" mesh="link5_1.obj" class="visual"/>
+                  <geom name="openarm_left_link5_visual_2" pos="-0.0 -0.0 -0.438" quat="1.0 0.0 0.0 0.0"
+                    material="matte_black" type="mesh" mesh="link5_2.obj" class="visual"/>
                   <body name="openarm_left_link6" pos="0.0375 0.0 0.1205" quat="1.0 0.0 0.0 0.0">
-                    <joint name="openarm_left_joint6" type="hinge" ref="0.0" class="motor" range="-0.785398 0.785398" axis="1 0 0" />
-                    <inertial pos="-0.037136587005447405 0.00033230528343419053 -9.498374522309838e-05" quat="1.0 0.0 0.0 0.0" mass="0.3540202773187987" diaginertia="0.000143 0.000157 0.000159" />
-                    <geom name="openarm_left_link6_collision" pos="-0.0375 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link6_collision_left" class="collision" />
-                    <geom name="openarm_left_link6_visual_0" pos="-0.0375 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link6_0_left.obj" class="visual" />
-        <geom name="openarm_left_link6_visual_1" pos="-0.0375 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link6_1_left.obj" class="visual" />
+                    <joint name="openarm_left_joint6" type="hinge" ref="0.0" class="motor" range="-0.785398 0.785398"
+                      axis="1 0 0"/>
+                    <inertial pos="-0.037136587005447405 0.00033230528343419053 -9.498374522309838e-05"
+                      quat="1.0 0.0 0.0 0.0" mass="0.3540202773187987" diaginertia="0.000143 0.000157 0.000159"/>
+                    <geom name="openarm_left_link6_collision" pos="-0.0375 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0"
+                      type="mesh" mesh="link6_collision_left" class="collision"/>
+                    <geom name="openarm_left_link6_visual_0" pos="-0.0375 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0"
+                      material="matte_black" type="mesh" mesh="link6_0_left.obj" class="visual"/>
+                    <geom name="openarm_left_link6_visual_1" pos="-0.0375 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0"
+                      material="metal_silver" type="mesh" mesh="link6_1_left.obj" class="visual"/>
                     <body name="openarm_left_link7" pos="-0.0375 0.0 0.0" quat="1.0 0.0 0.0 0.0">
-                      <joint name="openarm_left_joint7" type="hinge" ref="0.0" class="motor" range="-1.570796 1.570796" axis="0 -1 0" />
-                      <inertial pos="6.875510271106056e-05 -0.01766175250761268 0.06651945409987448" quat="1.0 0.0 0.0 0.0" mass="0.5499771327380578" diaginertia="0.000639 0.000497 0.000342" />
-                      <geom name="openarm_left_link7_collision" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link7_collision_left" class="collision" />
-                      <geom name="openarm_left_link7_visual_0" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link7_0_left.obj" class="visual" />
-        <geom name="openarm_left_link7_visual_1" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link7_1_left.obj" class="visual" />
+                      <joint name="openarm_left_joint7" type="hinge" ref="0.0" class="motor" range="-1.570796 1.570796"
+                        axis="0 -1 0"/>
+                      <inertial pos="6.875510271106056e-05 -0.01766175250761268 0.06651945409987448"
+                        quat="1.0 0.0 0.0 0.0" mass="0.5499771327380578" diaginertia="0.000639 0.000497 0.000342"/>
+                      <geom name="openarm_left_link7_collision" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0"
+                        type="mesh" mesh="link7_collision_left" class="collision"/>
+                      <geom name="openarm_left_link7_visual_0" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0"
+                        material="metal_silver" type="mesh" mesh="link7_0_left.obj" class="visual"/>
+                      <geom name="openarm_left_link7_visual_1" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0"
+                        material="matte_black" type="mesh" mesh="link7_1_left.obj" class="visual"/>
                       <body name="openarm_left_link8" pos="1e-06 0.0205 0.0" quat="1.0 0.0 0.0 0.0">
                         <body name="openarm_left_hand" pos="0 -0.025 0.1001" quat="1.0 0.0 0.0 0.0">
-                          <inertial pos="0.0 0.002 0.01" quat="1.0 0.0 0.0 0.0" mass="0.15" diaginertia="0.0001 0.00025 0.00017" />
-                          <geom name="openarm_left_hand_collision" pos="0.0 0.005 -0.6585" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="hand_collision" class="collision" />
-                          <geom name="openarm_left_hand_visual_0" pos="0.0 0.005 -0.6585" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="hand_0.obj" class="visual" />
-        <geom name="openarm_left_hand_visual_1" pos="0.0 0.005 -0.6585" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="hand_1.obj" class="visual" />
-                          <body name="openarm_left_hand_tcp" pos="0 -0.0 0.08" quat="1.0 0.0 0.0 0.0" />
+                          <inertial pos="0.0 0.002 0.01" quat="1.0 0.0 0.0 0.0" mass="0.15"
+                            diaginertia="0.0001 0.00025 0.00017"/>
+                          <geom name="openarm_left_hand_collision" pos="0.0 0.005 -0.6585" quat="1.0 0.0 0.0 0.0"
+                            type="mesh" mesh="hand_collision" class="collision"/>
+                          <geom name="openarm_left_hand_visual_0" pos="0.0 0.005 -0.6585" quat="1.0 0.0 0.0 0.0"
+                            material="metal_silver" type="mesh" mesh="hand_0.obj" class="visual"/>
+                          <geom name="openarm_left_hand_visual_1" pos="0.0 0.005 -0.6585" quat="1.0 0.0 0.0 0.0"
+                            material="metal_silver" type="mesh" mesh="hand_1.obj" class="visual"/>
+                          <body name="openarm_left_hand_tcp" pos="0 -0.0 0.08" quat="1.0 0.0 0.0 0.0"/>
                           <body name="openarm_left_right_finger" pos="0 0.00 0.015" quat="1.0 0.0 0.0 0.0">
-                            <joint name="openarm_left_finger_joint1" type="slide" ref="0.0" class="motor" range="0.0 0.044" axis="0 -1 0" />
-                            <inertial pos="0.0064528 -0.01702 0.0219685" quat="1.0 0.0 0.0 0.0" mass="0.03602545343277134" diaginertia="2.3749999999999997e-06 2.3749999999999997e-06 7.5e-07" />
-                            <geom name="openarm_left_right_finger_collision" pos="0.0 0.05 -0.673001" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="finger_collision_left" class="collision" />
-                            <geom name="openarm_left_right_finger_visual_0" pos="0.0 0.05 -0.673001" quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="finger_0_flip.obj" class="visual" />
-        <geom name="openarm_left_right_finger_visual_1" pos="0.0 0.05 -0.673001" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="finger_1_flip.obj" class="visual" />
+                            <joint name="openarm_left_finger_joint1" type="slide" ref="0.0" class="motor"
+                              range="0.0 0.044" axis="0 -1 0"/>
+                            <inertial pos="0.0064528 -0.01702 0.0219685" quat="1.0 0.0 0.0 0.0"
+                              mass="0.03602545343277134"
+                              diaginertia="2.3749999999999997e-06 2.3749999999999997e-06 7.5e-07"/>
+                            <geom name="openarm_left_right_finger_collision" pos="0.0 0.05 -0.673001"
+                              quat="1.0 0.0 0.0 0.0" type="mesh" mesh="finger_collision_left" class="collision"/>
+                            <geom name="openarm_left_right_finger_visual_0" pos="0.0 0.05 -0.673001"
+                              quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="finger_0_flip.obj"
+                              class="visual"/>
+                            <geom name="openarm_left_right_finger_visual_1" pos="0.0 0.05 -0.673001"
+                              quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="finger_1_flip.obj"
+                              class="visual"/>
                           </body>
                           <body name="openarm_left_left_finger" pos="0 0.012 0.015" quat="1.0 0.0 0.0 0.0">
-                            <joint name="openarm_left_finger_joint2" type="slide" ref="0.0" class="motor" range="0.0 0.044" axis="0 1 0" />
-                            <inertial pos="0.0064528 0.01702 0.0219685" quat="1.0 0.0 0.0 0.0" mass="0.03602545343277134" diaginertia="2.3749999999999997e-06 2.3749999999999997e-06 7.5e-07" />
-                            <geom name="openarm_left_left_finger_collision" pos="0.0 -0.05 -0.673001" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="finger_collision" class="collision" />
-                            <geom name="openarm_left_left_finger_visual_0" pos="0.0 -0.05 -0.673001" quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="finger_0.obj" class="visual" />
-        <geom name="openarm_left_left_finger_visual_1" pos="0.0 -0.05 -0.673001" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="finger_1.obj" class="visual" />
+                            <joint name="openarm_left_finger_joint2" type="slide" ref="0.0" class="motor"
+                              range="0.0 0.044" axis="0 1 0"/>
+                            <inertial pos="0.0064528 0.01702 0.0219685" quat="1.0 0.0 0.0 0.0"
+                              mass="0.03602545343277134"
+                              diaginertia="2.3749999999999997e-06 2.3749999999999997e-06 7.5e-07"/>
+                            <geom name="openarm_left_left_finger_collision" pos="0.0 -0.05 -0.673001"
+                              quat="1.0 0.0 0.0 0.0" type="mesh" mesh="finger_collision" class="collision"/>
+                            <geom name="openarm_left_left_finger_visual_0" pos="0.0 -0.05 -0.673001"
+                              quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="finger_0.obj"
+                              class="visual"/>
+                            <geom name="openarm_left_left_finger_visual_1" pos="0.0 -0.05 -0.673001"
+                              quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="finger_1.obj"
+                              class="visual"/>
                           </body>
                         </body>
                       </body>
@@ -182,77 +254,141 @@
         </body>
       </body>
       <body name="openarm_right_link0" pos="0.0 -0.031 0.698" quat="0.7071054825112363 0.7071080798594735 0.0 0.0">
-        <inertial pos="-0.0009483362816297526 0.0001580207020448382 0.03076860287587199" quat="1.0 0.0 0.0 0.0" mass="1.1432284943239561" diaginertia="0.001128 0.000962 0.00147" />
-        <geom name="openarm_right_link0_collision" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link0_collision" class="collision" />
-        <geom name="openarm_right_link0_visual_0" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link0_0.obj" class="visual" />
-        <geom name="openarm_right_link0_visual_1" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link0_1.obj" class="visual" />
+        <inertial pos="-0.0009483362816297526 0.0001580207020448382 0.03076860287587199" quat="1.0 0.0 0.0 0.0"
+          mass="1.1432284943239561" diaginertia="0.001128 0.000962 0.00147"/>
+        <geom name="openarm_right_link0_collision" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" type="mesh"
+          mesh="link0_collision" class="collision"/>
+        <geom name="openarm_right_link0_visual_0" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="metal_silver"
+          type="mesh" mesh="link0_0.obj" class="visual"/>
+        <geom name="openarm_right_link0_visual_1" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" material="matte_black"
+          type="mesh" mesh="link0_1.obj" class="visual"/>
         <body name="openarm_right_link1" pos="0.0 0.0 0.0625" quat="1.0 0.0 0.0 0.0">
-          <joint name="openarm_right_joint1" type="hinge" ref="0.0" class="motor" range="-1.396263 3.490659" axis="0 0 1" />
-          <inertial pos="0.0011467657911800769 3.319987657026362e-05 0.05395284380736254" quat="1.0 0.0 0.0 0.0" mass="1.1416684646202298" diaginertia="0.001567 0.001273 0.001016" />
-          <geom name="openarm_right_link1_collision" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link1_collision" class="collision" />
-          <geom name="openarm_right_link1_visual_0" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link1_0.obj" class="visual" />
-        <geom name="openarm_right_link1_visual_2" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link1_2.obj" class="visual" />
-        <geom name="openarm_right_link1_visual_3" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link1_3.obj" class="visual" />
+          <joint name="openarm_right_joint1" type="hinge" ref="0.0" class="motor" range="-1.396263 3.490659"
+            axis="0 0 1"/>
+          <inertial pos="0.0011467657911800769 3.319987657026362e-05 0.05395284380736254" quat="1.0 0.0 0.0 0.0"
+            mass="1.1416684646202298" diaginertia="0.001567 0.001273 0.001016"/>
+          <geom name="openarm_right_link1_collision" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" type="mesh"
+            mesh="link1_collision" class="collision"/>
+          <geom name="openarm_right_link1_visual_0" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" material="matte_black"
+            type="mesh" mesh="link1_0.obj" class="visual"/>
+          <geom name="openarm_right_link1_visual_2" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" material="matte_black"
+            type="mesh" mesh="link1_2.obj" class="visual"/>
+          <geom name="openarm_right_link1_visual_3" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0" material="matte_black"
+            type="mesh" mesh="link1_3.obj" class="visual"/>
           <body name="openarm_right_link2" pos="-0.0301 0.0 0.06" quat="0.7071067811882787 0.7071067811848163 0.0 0.0">
-            <joint name="openarm_right_joint2" type="hinge" ref="0.0" class="motor" range="-0.17453267320510335 3.3161253267948965" axis="-1 0 0" />
-            <inertial pos="0.00839629182351943 -2.0145102027597523e-08 0.03256649300522363" quat="1.0 0.0 0.0 0.0" mass="0.2775092746011571" diaginertia="0.000359 0.000376 0.000232" />
-            <geom name="openarm_right_link2_collision" pos="0.0301 0.0 -0.1225" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link2_collision" class="collision" />
-            <geom name="openarm_right_link2_visual_0" pos="0.0301 0.0 -0.1225" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link2_0.obj" class="visual" />
-        <geom name="openarm_right_link2_visual_1" pos="0.0301 0.0 -0.1225" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link2_1.obj" class="visual" />
-        <geom name="openarm_right_link2_visual_2" pos="0.0301 0.0 -0.1225" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link2_2.obj" class="visual" />
+            <joint name="openarm_right_joint2" type="hinge" ref="0.0" class="motor"
+              range="-0.17453267320510335 3.3161253267948965" axis="-1 0 0"/>
+            <inertial pos="0.00839629182351943 -2.0145102027597523e-08 0.03256649300522363" quat="1.0 0.0 0.0 0.0"
+              mass="0.2775092746011571" diaginertia="0.000359 0.000376 0.000232"/>
+            <geom name="openarm_right_link2_collision" pos="0.0301 0.0 -0.1225" quat="1.0 0.0 0.0 0.0" type="mesh"
+              mesh="link2_collision" class="collision"/>
+            <geom name="openarm_right_link2_visual_0" pos="0.0301 0.0 -0.1225" quat="1.0 0.0 0.0 0.0"
+              material="matte_black" type="mesh" mesh="link2_0.obj" class="visual"/>
+            <geom name="openarm_right_link2_visual_1" pos="0.0301 0.0 -0.1225" quat="1.0 0.0 0.0 0.0"
+              material="matte_black" type="mesh" mesh="link2_1.obj" class="visual"/>
+            <geom name="openarm_right_link2_visual_2" pos="0.0301 0.0 -0.1225" quat="1.0 0.0 0.0 0.0"
+              material="matte_black" type="mesh" mesh="link2_2.obj" class="visual"/>
             <body name="openarm_right_link3" pos="0.0301 0.0 0.06625" quat="1.0 0.0 0.0 0.0">
-              <joint name="openarm_right_joint3" type="hinge" ref="0.0" class="motor" range="-1.570796 1.570796" axis="0 0 1" />
-              <inertial pos="-0.002104752099628911 0.0005549085042607548 0.08847470545721961" quat="1.0 0.0 0.0 0.0" mass="1.073863338202347" diaginertia="0.004372 0.004319 0.000661" />
-              <geom name="openarm_right_link3_collision" pos="-0.0 -0.0 -0.18875" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link3_collision" class="collision" />
-              <geom name="openarm_right_link3_visual_0" pos="-0.0 -0.0 -0.18875" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link3_0.obj" class="visual" />
-        <geom name="openarm_right_link3_visual_1" pos="-0.0 -0.0 -0.18875" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link3_1.obj" class="visual" />
-        <geom name="openarm_right_link3_visual_2" pos="-0.0 -0.0 -0.18875" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link3_2.obj" class="visual" />
+              <joint name="openarm_right_joint3" type="hinge" ref="0.0" class="motor" range="-1.570796 1.570796"
+                axis="0 0 1"/>
+              <inertial pos="-0.002104752099628911 0.0005549085042607548 0.08847470545721961" quat="1.0 0.0 0.0 0.0"
+                mass="1.073863338202347" diaginertia="0.004372 0.004319 0.000661"/>
+              <geom name="openarm_right_link3_collision" pos="-0.0 -0.0 -0.18875" quat="1.0 0.0 0.0 0.0" type="mesh"
+                mesh="link3_collision" class="collision"/>
+              <geom name="openarm_right_link3_visual_0" pos="-0.0 -0.0 -0.18875" quat="1.0 0.0 0.0 0.0"
+                material="matte_black" type="mesh" mesh="link3_0.obj" class="visual"/>
+              <geom name="openarm_right_link3_visual_1" pos="-0.0 -0.0 -0.18875" quat="1.0 0.0 0.0 0.0"
+                material="matte_black" type="mesh" mesh="link3_1.obj" class="visual"/>
+              <geom name="openarm_right_link3_visual_2" pos="-0.0 -0.0 -0.18875" quat="1.0 0.0 0.0 0.0"
+                material="metal_silver" type="mesh" mesh="link3_2.obj" class="visual"/>
               <body name="openarm_right_link4" pos="-0.0 0.0315 0.15375" quat="1.0 0.0 0.0 0.0">
-                <joint name="openarm_right_joint4" type="hinge" ref="0.0" class="motor" range="0.0 2.443461" axis="0 1 0" />
-                <inertial pos="-0.0029006831074562967 -0.03030575826634669 0.06339637422196209" quat="1.0 0.0 0.0 0.0" mass="1.3699337287025453" diaginertia="0.001577 0.001346 0.001104" />
-                <geom name="openarm_right_link4_collision" pos="0.0 -0.0315 -0.3425" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link4_collision" class="collision" />
-                <geom name="openarm_right_link4_visual_0" pos="0.0 -0.0315 -0.3425" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link4_0.obj" class="visual" />
-        <geom name="openarm_right_link4_visual_1" pos="0.0 -0.0315 -0.3425" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link4_1.obj" class="visual" />
-        <geom name="openarm_right_link4_visual_2" pos="0.0 -0.0315 -0.3425" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link4_2.obj" class="visual" />
+                <joint name="openarm_right_joint4" type="hinge" ref="0.0" class="motor" range="0.0 2.443461"
+                  axis="0 1 0"/>
+                <inertial pos="-0.0029006831074562967 -0.03030575826634669 0.06339637422196209" quat="1.0 0.0 0.0 0.0"
+                  mass="1.3699337287025453" diaginertia="0.001577 0.001346 0.001104"/>
+                <geom name="openarm_right_link4_collision" pos="0.0 -0.0315 -0.3425" quat="1.0 0.0 0.0 0.0" type="mesh"
+                  mesh="link4_collision" class="collision"/>
+                <geom name="openarm_right_link4_visual_0" pos="0.0 -0.0315 -0.3425" quat="1.0 0.0 0.0 0.0"
+                  material="matte_black" type="mesh" mesh="link4_0.obj" class="visual"/>
+                <geom name="openarm_right_link4_visual_1" pos="0.0 -0.0315 -0.3425" quat="1.0 0.0 0.0 0.0"
+                  material="metal_silver" type="mesh" mesh="link4_1.obj" class="visual"/>
+                <geom name="openarm_right_link4_visual_2" pos="0.0 -0.0315 -0.3425" quat="1.0 0.0 0.0 0.0"
+                  material="matte_black" type="mesh" mesh="link4_2.obj" class="visual"/>
                 <body name="openarm_right_link5" pos="0.0 -0.0315 0.0955" quat="1.0 0.0 0.0 0.0">
-                  <joint name="openarm_right_joint5" type="hinge" ref="0.0" class="motor" range="-1.570796 1.570796" axis="0 0 1" />
-                  <inertial pos="-0.003049665024221911 0.0008866902457326625 0.043079803024980934" quat="1.0 0.0 0.0 0.0" mass="0.5506588026168502" diaginertia="0.000423 0.000445 0.000324" />
-                  <geom name="openarm_right_link5_collision" pos="-0.0 -0.0 -0.438" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link5_collision" class="collision" />
-                  <geom name="openarm_right_link5_visual_0" pos="-0.0 -0.0 -0.438" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link5_0.obj" class="visual" />
-        <geom name="openarm_right_link5_visual_1" pos="-0.0 -0.0 -0.438" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link5_1.obj" class="visual" />
-        <geom name="openarm_right_link5_visual_2" pos="-0.0 -0.0 -0.438" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link5_2.obj" class="visual" />
+                  <joint name="openarm_right_joint5" type="hinge" ref="0.0" class="motor" range="-1.570796 1.570796"
+                    axis="0 0 1"/>
+                  <inertial pos="-0.003049665024221911 0.0008866902457326625 0.043079803024980934"
+                    quat="1.0 0.0 0.0 0.0" mass="0.5506588026168502" diaginertia="0.000423 0.000445 0.000324"/>
+                  <geom name="openarm_right_link5_collision" pos="-0.0 -0.0 -0.438" quat="1.0 0.0 0.0 0.0" type="mesh"
+                    mesh="link5_collision" class="collision"/>
+                  <geom name="openarm_right_link5_visual_0" pos="-0.0 -0.0 -0.438" quat="1.0 0.0 0.0 0.0"
+                    material="matte_black" type="mesh" mesh="link5_0.obj" class="visual"/>
+                  <geom name="openarm_right_link5_visual_1" pos="-0.0 -0.0 -0.438" quat="1.0 0.0 0.0 0.0"
+                    material="metal_silver" type="mesh" mesh="link5_1.obj" class="visual"/>
+                  <geom name="openarm_right_link5_visual_2" pos="-0.0 -0.0 -0.438" quat="1.0 0.0 0.0 0.0"
+                    material="matte_black" type="mesh" mesh="link5_2.obj" class="visual"/>
                   <body name="openarm_right_link6" pos="0.0375 0.0 0.1205" quat="1.0 0.0 0.0 0.0">
-                    <joint name="openarm_right_joint6" type="hinge" ref="0.0" class="motor" range="-0.785398 0.785398" axis="1 0 0" />
-                    <inertial pos="-0.037136587005447405 0.00033230528343419053 -9.498374522309838e-05" quat="1.0 0.0 0.0 0.0" mass="0.3540202773187987" diaginertia="0.000143 0.000157 0.000159" />
-                    <geom name="openarm_right_link6_collision" pos="-0.0375 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link6_collision" class="collision" />
-                    <geom name="openarm_right_link6_visual_0" pos="-0.0375 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link6_0.obj" class="visual" />
-        <geom name="openarm_right_link6_visual_1" pos="-0.0375 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link6_1.obj" class="visual" />
+                    <joint name="openarm_right_joint6" type="hinge" ref="0.0" class="motor" range="-0.785398 0.785398"
+                      axis="1 0 0"/>
+                    <inertial pos="-0.037136587005447405 0.00033230528343419053 -9.498374522309838e-05"
+                      quat="1.0 0.0 0.0 0.0" mass="0.3540202773187987" diaginertia="0.000143 0.000157 0.000159"/>
+                    <geom name="openarm_right_link6_collision" pos="-0.0375 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0"
+                      type="mesh" mesh="link6_collision" class="collision"/>
+                    <geom name="openarm_right_link6_visual_0" pos="-0.0375 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0"
+                      material="matte_black" type="mesh" mesh="link6_0.obj" class="visual"/>
+                    <geom name="openarm_right_link6_visual_1" pos="-0.0375 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0"
+                      material="metal_silver" type="mesh" mesh="link6_1.obj" class="visual"/>
                     <body name="openarm_right_link7" pos="-0.0375 0.0 0.0" quat="1.0 0.0 0.0 0.0">
-                      <joint name="openarm_right_joint7" type="hinge" ref="0.0" class="motor" range="-1.570796 1.570796" axis="0 1 0" />
-                      <inertial pos="6.875510271106056e-05 -0.01766175250761268 0.06651945409987448" quat="1.0 0.0 0.0 0.0" mass="0.5499771327380578" diaginertia="0.000639 0.000497 0.000342" />
-                      <geom name="openarm_right_link7_collision" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link7_collision" class="collision" />
-                      <geom name="openarm_right_link7_visual_0" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link7_0.obj" class="visual" />
-        <geom name="openarm_right_link7_visual_1" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link7_1.obj" class="visual" />
+                      <joint name="openarm_right_joint7" type="hinge" ref="0.0" class="motor" range="-1.570796 1.570796"
+                        axis="0 1 0"/>
+                      <inertial pos="6.875510271106056e-05 -0.01766175250761268 0.06651945409987448"
+                        quat="1.0 0.0 0.0 0.0" mass="0.5499771327380578" diaginertia="0.000639 0.000497 0.000342"/>
+                      <geom name="openarm_right_link7_collision" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0"
+                        type="mesh" mesh="link7_collision" class="collision"/>
+                      <geom name="openarm_right_link7_visual_0" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0"
+                        material="metal_silver" type="mesh" mesh="link7_0.obj" class="visual"/>
+                      <geom name="openarm_right_link7_visual_1" pos="0.0 -0.0 -0.5585" quat="1.0 0.0 0.0 0.0"
+                        material="matte_black" type="mesh" mesh="link7_1.obj" class="visual"/>
                       <body name="openarm_right_link8" pos="1e-06 0.0205 0.0" quat="1.0 0.0 0.0 0.0">
                         <body name="openarm_right_hand" pos="0 -0.025 0.1001" quat="1.0 0.0 0.0 0.0">
-                          <inertial pos="0.0 0.002 0.01" quat="1.0 0.0 0.0 0.0" mass="0.15" diaginertia="0.0001 0.00025 0.00017" />
-                          <geom name="openarm_right_hand_collision" pos="0.0 0.005 -0.6585" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="hand_collision" class="collision" />
-                          <geom name="openarm_right_hand_visual_0" pos="0.0 0.005 -0.6585" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="hand_0.obj" class="visual" />
-        <geom name="openarm_right_hand_visual_1" pos="0.0 0.005 -0.6585" quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="hand_1.obj" class="visual" />
-                          <body name="openarm_right_hand_tcp" pos="0 -0.0 0.08" quat="1.0 0.0 0.0 0.0" />
+                          <inertial pos="0.0 0.002 0.01" quat="1.0 0.0 0.0 0.0" mass="0.15"
+                            diaginertia="0.0001 0.00025 0.00017"/>
+                          <geom name="openarm_right_hand_collision" pos="0.0 0.005 -0.6585" quat="1.0 0.0 0.0 0.0"
+                            type="mesh" mesh="hand_collision" class="collision"/>
+                          <geom name="openarm_right_hand_visual_0" pos="0.0 0.005 -0.6585" quat="1.0 0.0 0.0 0.0"
+                            material="metal_silver" type="mesh" mesh="hand_0.obj" class="visual"/>
+                          <geom name="openarm_right_hand_visual_1" pos="0.0 0.005 -0.6585" quat="1.0 0.0 0.0 0.0"
+                            material="metal_silver" type="mesh" mesh="hand_1.obj" class="visual"/>
+                          <body name="openarm_right_hand_tcp" pos="0 -0.0 0.08" quat="1.0 0.0 0.0 0.0"/>
                           <body name="openarm_right_right_finger" pos="0 0.00 0.015" quat="1.0 0.0 0.0 0.0">
-                            <joint name="openarm_right_finger_joint1" type="slide" ref="0.0" class="motor" range="0.0 0.044" axis="0 -1 0" />
-                            <inertial pos="0.0064528 -0.01702 0.0219685" quat="1.0 0.0 0.0 0.0" mass="0.03602545343277134" diaginertia="2.3749999999999997e-06 2.3749999999999997e-06 7.5e-07" />
-                            <geom name="openarm_right_right_finger_collision" pos="0.0 0.05 -0.673001" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="finger_collision_left" class="collision" />
-                            <geom name="openarm_right_right_finger_visual_0" pos="0.0 0.05 -0.673001" quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="finger_0_flip.obj" class="visual" />
-        <geom name="openarm_right_right_finger_visual_1" pos="0.0 0.05 -0.673001" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="finger_1_flip.obj" class="visual" />
+                            <joint name="openarm_right_finger_joint1" type="slide" ref="0.0" class="motor"
+                              range="0.0 0.044" axis="0 -1 0"/>
+                            <inertial pos="0.0064528 -0.01702 0.0219685" quat="1.0 0.0 0.0 0.0"
+                              mass="0.03602545343277134"
+                              diaginertia="2.3749999999999997e-06 2.3749999999999997e-06 7.5e-07"/>
+                            <geom name="openarm_right_right_finger_collision" pos="0.0 0.05 -0.673001"
+                              quat="1.0 0.0 0.0 0.0" type="mesh" mesh="finger_collision_left" class="collision"/>
+                            <geom name="openarm_right_right_finger_visual_0" pos="0.0 0.05 -0.673001"
+                              quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="finger_0_flip.obj"
+                              class="visual"/>
+                            <geom name="openarm_right_right_finger_visual_1" pos="0.0 0.05 -0.673001"
+                              quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="finger_1_flip.obj"
+                              class="visual"/>
                           </body>
                           <body name="openarm_right_left_finger" pos="0 0.012 0.015" quat="1.0 0.0 0.0 0.0">
-                            <joint name="openarm_right_finger_joint2" type="slide" ref="0.0" class="motor" range="0.0 0.044" axis="0 1 0" />
-                            <inertial pos="0.0064528 0.01702 0.0219685" quat="1.0 0.0 0.0 0.0" mass="0.03602545343277134" diaginertia="2.3749999999999997e-06 2.3749999999999997e-06 7.5e-07" />
-                            <geom name="openarm_right_left_finger_collision" pos="0.0 -0.05 -0.673001" quat="1.0 0.0 0.0 0.0" type="mesh" mesh="finger_collision" class="collision" />
-                            <geom name="openarm_right_left_finger_visual_0" pos="0.0 -0.05 -0.673001" quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="finger_0.obj" class="visual" />
-        <geom name="openarm_right_left_finger_visual_1" pos="0.0 -0.05 -0.673001" quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="finger_1.obj" class="visual"/>
+                            <joint name="openarm_right_finger_joint2" type="slide" ref="0.0" class="motor"
+                              range="0.0 0.044" axis="0 1 0"/>
+                            <inertial pos="0.0064528 0.01702 0.0219685" quat="1.0 0.0 0.0 0.0"
+                              mass="0.03602545343277134"
+                              diaginertia="2.3749999999999997e-06 2.3749999999999997e-06 7.5e-07"/>
+                            <geom name="openarm_right_left_finger_collision" pos="0.0 -0.05 -0.673001"
+                              quat="1.0 0.0 0.0 0.0" type="mesh" mesh="finger_collision" class="collision"/>
+                            <geom name="openarm_right_left_finger_visual_0" pos="0.0 -0.05 -0.673001"
+                              quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="finger_0.obj"
+                              class="visual"/>
+                            <geom name="openarm_right_left_finger_visual_1" pos="0.0 -0.05 -0.673001"
+                              quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="finger_1.obj"
+                              class="visual"/>
                           </body>
                         </body>
                       </body>
@@ -265,10 +401,12 @@
         </body>
       </body>
     </body>
-    <site name="world_site" pos="0 0 0" quat="1 0 0 0" />
-    <camera name="front_camera" mode="track" fovy="90.0" quat="4.329780281177467e-17 4.329780281177466e-17 0.7071067811865475 0.7071067811865476" pos="0.0 2.0 0.5" />
-    <camera name="side_camera" mode="track" fovy="90.0" quat="-0.5 -0.4999999999999999 0.5 0.5000000000000001" pos="-2.0 0.0 0.5" />
-    
+    <site name="world_site" pos="0 0 0" quat="1 0 0 0"/>
+    <camera name="front_camera" mode="track" fovy="90.0"
+      quat="4.329780281177467e-17 4.329780281177466e-17 0.7071067811865475 0.7071067811865476" pos="0.0 2.0 0.5"/>
+    <camera name="side_camera" mode="track" fovy="90.0" quat="-0.5 -0.4999999999999999 0.5 0.5000000000000001"
+      pos="-2.0 0.0 0.5"/>
+
   </worldbody>
 
   <tendon>
@@ -282,67 +420,68 @@
     </fixed>
   </tendon>
   <equality>
-    <joint joint1="openarm_right_finger_joint1" joint2="openarm_right_finger_joint2" solimp="0.95 0.99 0.001" solref="0.005 1"/>
-    <joint joint1="openarm_left_finger_joint1" joint2="openarm_left_finger_joint2" solimp="0.95 0.99 0.001" solref="0.005 1"/>
+    <joint joint1="openarm_right_finger_joint1" joint2="openarm_right_finger_joint2" solimp="0.95 0.99 0.001"
+      solref="0.005 1"/>
+    <joint joint1="openarm_left_finger_joint1" joint2="openarm_left_finger_joint2" solimp="0.95 0.99 0.001"
+      solref="0.005 1"/>
   </equality>
 
-  
 
   <actuator>
-    <motor name="left_joint1_ctrl" joint="openarm_left_joint1" class="motor" />
-    <motor name="left_joint2_ctrl" joint="openarm_left_joint2" class="motor" />
-    <motor name="left_joint3_ctrl" joint="openarm_left_joint3" class="motor" />
-    <motor name="left_joint4_ctrl" joint="openarm_left_joint4" class="motor" />
-    <motor name="left_joint5_ctrl" joint="openarm_left_joint5" class="motor" />
-    <motor name="left_joint6_ctrl" joint="openarm_left_joint6" class="motor" />
-    <motor name="left_joint7_ctrl" joint="openarm_left_joint7" class="motor" />
-    <motor name="left_finger" joint="openarm_left_finger_joint1" class="motor" ctrlrange="-0.1 0.1" />
-    <motor name="right_joint1_ctrl" joint="openarm_right_joint1" class="motor" />
-    <motor name="right_joint2_ctrl" joint="openarm_right_joint2" class="motor" />
-    <motor name="right_joint3_ctrl" joint="openarm_right_joint3" class="motor" />
-    <motor name="right_joint4_ctrl" joint="openarm_right_joint4" class="motor" />
-    <motor name="right_joint5_ctrl" joint="openarm_right_joint5" class="motor" />
-    <motor name="right_joint6_ctrl" joint="openarm_right_joint6" class="motor" />
-    <motor name="right_joint7_ctrl" joint="openarm_right_joint7" class="motor" />
-    <motor name="right_finger" joint="openarm_right_finger_joint1" class="motor" ctrlrange="-0.1 0.1" />
+    <motor name="left_joint1_ctrl" joint="openarm_left_joint1" class="motor"/>
+    <motor name="left_joint2_ctrl" joint="openarm_left_joint2" class="motor"/>
+    <motor name="left_joint3_ctrl" joint="openarm_left_joint3" class="motor"/>
+    <motor name="left_joint4_ctrl" joint="openarm_left_joint4" class="motor"/>
+    <motor name="left_joint5_ctrl" joint="openarm_left_joint5" class="motor"/>
+    <motor name="left_joint6_ctrl" joint="openarm_left_joint6" class="motor"/>
+    <motor name="left_joint7_ctrl" joint="openarm_left_joint7" class="motor"/>
+    <motor name="left_finger" joint="openarm_left_finger_joint1" class="motor" ctrlrange="-0.1 0.1"/>
+    <motor name="right_joint1_ctrl" joint="openarm_right_joint1" class="motor"/>
+    <motor name="right_joint2_ctrl" joint="openarm_right_joint2" class="motor"/>
+    <motor name="right_joint3_ctrl" joint="openarm_right_joint3" class="motor"/>
+    <motor name="right_joint4_ctrl" joint="openarm_right_joint4" class="motor"/>
+    <motor name="right_joint5_ctrl" joint="openarm_right_joint5" class="motor"/>
+    <motor name="right_joint6_ctrl" joint="openarm_right_joint6" class="motor"/>
+    <motor name="right_joint7_ctrl" joint="openarm_right_joint7" class="motor"/>
+    <motor name="right_finger" joint="openarm_right_finger_joint1" class="motor" ctrlrange="-0.1 0.1"/>
   </actuator>
 
   <contact>
-    <exclude body1="openarm_body_link0" body2="openarm_left_link0" />
-    <exclude body1="openarm_left_link0" body2="openarm_left_link1" />
-    <exclude body1="openarm_left_link0" body2="openarm_left_link2" />
-    <exclude body1="openarm_left_link0" body2="openarm_left_link3" />
-    <exclude body1="openarm_left_link1" body2="openarm_left_link2" />
-    <exclude body1="openarm_left_link1" body2="openarm_left_link3" />
-    <exclude body1="openarm_left_link2" body2="openarm_left_link3" />
-    <exclude body1="openarm_left_link3" body2="openarm_left_link4" />
-    <exclude body1="openarm_left_link4" body2="openarm_left_link5" />
-    <exclude body1="openarm_left_link5" body2="openarm_left_link6" />
-    <exclude body1="openarm_left_link5" body2="openarm_left_link7" />
-    <exclude body1="openarm_left_link6" body2="openarm_left_link7" />
-    <exclude body1="openarm_body_link0" body2="openarm_right_link0" />
-    <exclude body1="openarm_right_link0" body2="openarm_right_link1" />
-    <exclude body1="openarm_right_link0" body2="openarm_right_link2" />
-    <exclude body1="openarm_right_link0" body2="openarm_right_link3" />
-    <exclude body1="openarm_right_link1" body2="openarm_right_link2" />
-    <exclude body1="openarm_right_link1" body2="openarm_right_link3" />
-    <exclude body1="openarm_right_link2" body2="openarm_right_link3" />
-    <exclude body1="openarm_right_link3" body2="openarm_right_link4" />
-    <exclude body1="openarm_right_link4" body2="openarm_right_link5" />
-    <exclude body1="openarm_right_link5" body2="openarm_right_link6" />
-    <exclude body1="openarm_right_link5" body2="openarm_right_link7" />
-    <exclude body1="openarm_right_link6" body2="openarm_right_link7" />
-    <exclude body1="openarm_left_hand" body2="openarm_left_right_finger" />
-    <exclude body1="openarm_left_hand" body2="openarm_left_left_finger" />
-    <exclude body1="openarm_right_hand" body2="openarm_right_right_finger" />
-    <exclude body1="openarm_right_hand" body2="openarm_right_left_finger" />
+    <exclude body1="openarm_body_link0" body2="openarm_left_link0"/>
+    <exclude body1="openarm_left_link0" body2="openarm_left_link1"/>
+    <exclude body1="openarm_left_link0" body2="openarm_left_link2"/>
+    <exclude body1="openarm_left_link0" body2="openarm_left_link3"/>
+    <exclude body1="openarm_left_link1" body2="openarm_left_link2"/>
+    <exclude body1="openarm_left_link1" body2="openarm_left_link3"/>
+    <exclude body1="openarm_left_link2" body2="openarm_left_link3"/>
+    <exclude body1="openarm_left_link3" body2="openarm_left_link4"/>
+    <exclude body1="openarm_left_link4" body2="openarm_left_link5"/>
+    <exclude body1="openarm_left_link5" body2="openarm_left_link6"/>
+    <exclude body1="openarm_left_link5" body2="openarm_left_link7"/>
+    <exclude body1="openarm_left_link6" body2="openarm_left_link7"/>
+    <exclude body1="openarm_body_link0" body2="openarm_right_link0"/>
+    <exclude body1="openarm_right_link0" body2="openarm_right_link1"/>
+    <exclude body1="openarm_right_link0" body2="openarm_right_link2"/>
+    <exclude body1="openarm_right_link0" body2="openarm_right_link3"/>
+    <exclude body1="openarm_right_link1" body2="openarm_right_link2"/>
+    <exclude body1="openarm_right_link1" body2="openarm_right_link3"/>
+    <exclude body1="openarm_right_link2" body2="openarm_right_link3"/>
+    <exclude body1="openarm_right_link3" body2="openarm_right_link4"/>
+    <exclude body1="openarm_right_link4" body2="openarm_right_link5"/>
+    <exclude body1="openarm_right_link5" body2="openarm_right_link6"/>
+    <exclude body1="openarm_right_link5" body2="openarm_right_link7"/>
+    <exclude body1="openarm_right_link6" body2="openarm_right_link7"/>
+    <exclude body1="openarm_left_hand" body2="openarm_left_right_finger"/>
+    <exclude body1="openarm_left_hand" body2="openarm_left_left_finger"/>
+    <exclude body1="openarm_right_hand" body2="openarm_right_right_finger"/>
+    <exclude body1="openarm_right_hand" body2="openarm_right_left_finger"/>
   </contact>
 
   <sensor>
-    <framepos name="world_site_pos" objtype="site" objname="world_site" />
-    <framequat name="world_site_quat" objtype="site" objname="world_site" />
-    <framelinvel name="world_site_linvel" objtype="site" objname="world_site" />
-    <frameangvel name="world_site_angvel" objtype="site" objname="world_site" />
-    <velocimeter name="world_site_vel" site="world_site" />
+    <framepos name="world_site_pos" objtype="site" objname="world_site"/>
+    <framequat name="world_site_quat" objtype="site" objname="world_site"/>
+    <framelinvel name="world_site_linvel" objtype="site" objname="world_site"/>
+    <frameangvel name="world_site_angvel" objtype="site" objname="world_site"/>
+    <velocimeter name="world_site_vel" site="world_site"/>
   </sensor>
 </mujoco>
