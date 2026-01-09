@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openarm_mujoco"
+version = "0.1.0"
+authors = [{name = "Enactic, Inc."}]
+description = "MuJoCo Description Files (MJCF) for OpenArm"
+license = {text = "Apache-2.0"}
+maintainers = [{name = "Enactic, Inc."}]
+readme = "README.md"
+requires-python = ">=3.10"
+
+[tool.setuptools]
+packages = ["openarm_mujoco_v1"]
+
+[tool.setuptools.package-data]
+openarm_mujoco_v1 = [
+    "*.xml",
+    "meshes/**/*",
+]
