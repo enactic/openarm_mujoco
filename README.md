@@ -18,6 +18,37 @@ The motors use torque control, so position and velocity control can be achieved 
 
 <img height="534" alt="image" src="https://github.com/user-attachments/assets/1b003bf4-f0ce-42b9-89df-c8efd073cde7" />
 
+## Python
+
+Install:
+
+```bash
+git clone https://github.com/enactic/openarm_mujoco.git
+cd openarm_mujoco
+pip install .
+```
+
+Use:
+
+```python
+import mujoco
+from mujoco.viewer import launch
+import openarm_mujoco_v1 as openarm_mujoco
+
+openarm_model_path.= openarm_mujoco.asset_path("openarm_bimanual.xml")
+
+model = mujoco.MjModel.from_xml_path(openarm_model_path)
+data = mujoco.MjData(model)
+
+launch(model, data)
+```
+
+Also, You can get the list of the absolute path to bimanual file and the other required files/directories.
+
+```python
+openarm_model_paths = openarm_mujoco.openarm_bimanual_paths()
+```
+
 ## ROS2 Hardware Interface
 
 MuJoCo can be used to simulate realistic hardware interfaces to test low-frequency control without physical hardware. 
