@@ -230,7 +230,7 @@ limitations under the License.
                     <inertial pos="0.0137902 -0.0084073 -0.05938" quat="0.760121 0.648846 -0.0304587 -0.0169317" mass="0.52832" diaginertia="0.000219417 0.000166122 0.000155742" />
                     <joint name="openarm_left_joint7" pos="0 0 0" axis="1 0 0" range="-1.5708 1.5708" actuatorfrcrange="-7 7" class="motor_DM3507" />
                     <geom name="ee_base_link_left_collision_00" pos="0.0205 0 0" quat="1 0 0 0" type="mesh" mesh="ee_base_link_left_collision_00" class="collision" />
-                    <camera name="camera_wrist_left" pos="-0.001 -0.020 0.096" euler="2.8274 0.22689 -1.5708" />
+                    <camera name="camera_wrist_left" pos="0.023 0.0182 -0.10236" euler="-0.366519 0.22689 -1.5708" fovy="66" resolution="960 600"/>
                     <site name="left_ee_control_point" pos="0 0 0.0" size="0.01" rgba="0 1 0 1" />
                     <body name="openarm_left_ee_inner_finger" pos="-0.00143 -0.018 -0.068">
                       <geom name="finger_inner_left_vis" type="mesh" class="visual" mesh="finger_inner_left" material="matte_black" />
@@ -315,7 +315,7 @@ limitations under the License.
                     <inertial pos="0.0137902 0.0084073 -0.05938" quat="0.648846 0.760121 0.0169317 0.0304587" mass="0.52832" diaginertia="0.000219417 0.000166122 0.000155742" />
                     <joint name="openarm_right_joint7" pos="0 0 0" axis="1 0 0" range="-1.5708 1.5708" actuatorfrcrange="-7 7" class="motor_DM3507" />
                     <geom name="ee_base_link_right_collision_00" pos="0.0205 0 0" quat="1 0 0 0" type="mesh" mesh="ee_base_link_right_collision_00" class="collision" />
-                    <camera name="camera_wrist_right" pos="-0.001 0.020 0.096" euler="-2.8274 0.22689 -1.5708" />
+                    <camera name="camera_wrist_right" pos="0.023 -0.0182 -0.10236" euler="0.366519 0.22689 -1.5708" fovy="66" resolution="960 600"/>
                     <site name="right_ee_control_point" pos="0.0 0.0 0.0" size="0.01" rgba="1 0 0 1" />
                     <body name="openarm_right_ee_inner_finger" pos="-0.00143 0.018 -0.068">
                       <geom name="finger_inner_right_vis" type="mesh" class="visual" mesh="finger_inner_right" material="matte_black" />
