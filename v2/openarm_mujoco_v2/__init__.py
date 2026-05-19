@@ -41,6 +41,7 @@ def openarm_bimanual_paths() -> list[str]:
 def openarm_cell_xml() -> str:
     return asset_path("cell.xml")
 
+
 def openarm_demo_xml() -> str:
     return asset_path("demo.xml")
 
