@@ -1,0 +1,114 @@
+# Copyright 2026 Enactic, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Package
+on:
+  push:
+    branches-ignore:
+      - 'copilot/**'
+      - 'dependabot/**'
+    tags:
+      - '**'
+  pull_request:
+concurrency:
+  group: ${{ github.head_ref || github.sha }}-${{ github.workflow }}
+  cancel-in-progress: true
+jobs:
+  source:
+    name: Source
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - name: Prepare environment variables
+        run: |
+          PACKAGE_NAME=$(yq --unwrapScalar .project.name pyproject.toml | tr '-' '_')
+          echo "PACKAGE_NAME=${PACKAGE_NAME}" >> "${GITHUB_ENV}"
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            echo "VERSION=${GITHUB_REF_NAME}" >> "${GITHUB_ENV}"
+          else
+            VERSION=$(yq --unwrapScalar .project.version pyproject.toml)
+            echo "VERSION=${VERSION}" >> "${GITHUB_ENV}"
+          fi
+      - uses: actions/setup-python@v6
+        with:
+          python-version: 3
+      - name: Install dependencies
+        run: |
+          pip install build
+      - name: Create source archive
+        run: |
+          python -m build --sdist
+          cd dist
+          sha256sum \
+            ${PACKAGE_NAME}-${VERSION}.tar.gz > \
+            ${PACKAGE_NAME}-${VERSION}.tar.gz.sha256
+          sha512sum \
+            ${PACKAGE_NAME}-${VERSION}.tar.gz > \
+            ${PACKAGE_NAME}-${VERSION}.tar.gz.sha512
+      - uses: actions/upload-artifact@v7
+        with:
+          name: source
+          path: |
+            dist/${{ env.PACKAGE_NAME }}-${{ env.VERSION }}.tar.gz
+            dist/${{ env.PACKAGE_NAME }}-${{ env.VERSION }}.tar.gz.sha256
+            dist/${{ env.PACKAGE_NAME }}-${{ env.VERSION }}.tar.gz.sha512
+  release:
+    name: Release
+    if: github.ref_type == 'tag'
+    needs:
+      - source
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: release
+    permissions:
+      contents: write
+      discussions: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v8
+        with:
+          name: source
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=${GITHUB_REF_NAME}
+          package_name=$(yq --unwrapScalar .project.name pyproject.toml)
+          gh release create ${version} \
+            --discussion-category Announcements \
+            --generate-notes \
+            --repo ${GITHUB_REPOSITORY} \
+            --title "${package_name} ${version}" \
+            --verify-tag \
+            *.tar.gz*
+  pypi:
+    name: PyPI
+    if: github.ref_type == 'tag'
+    needs:
+      - source
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: source
+      - name: Prepare directory structure
+        run: |
+          mkdir -p dist
+          mv *.tar.gz dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
