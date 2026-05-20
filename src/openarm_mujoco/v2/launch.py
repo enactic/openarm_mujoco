@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Launch MuJoCo Simulator."""
+
 import argparse
 import os
 import sys
@@ -20,12 +22,13 @@ import mujoco
 import mujoco.viewer
 
 import time
-import openarm_mujoco_v2 as openarm_mujoco
+import openarm_mujoco.v2 as openarm_mujoco
 
 _DEFAULT_SCENE = openarm_mujoco.openarm_cell_xml()
 
 
 def main() -> int:
+    """Launch MuJoCo simulator."""
     parser = argparse.ArgumentParser(description="Open a MuJoCo XML in the viewer.")
     parser.add_argument(
         "xml",
@@ -60,11 +63,11 @@ def main() -> int:
 
     if not xml_path.lower().endswith(".xml"):
         print(f"Error: expected an .xml file, got: {xml_path}", file=sys.stderr)
-        return 2
+        sys.exit(2)
 
     if not os.path.exists(xml_path):
         print(f"Error: file not found: {xml_path}", file=sys.stderr)
-        return 2
+        sys.exit(2)
 
     model = mujoco.MjModel.from_xml_path(xml_path)
     data = mujoco.MjData(model)
@@ -129,8 +132,6 @@ def main() -> int:
 
             viewer.sync()
 
-    return 0
-
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    main()

@@ -30,11 +30,36 @@ dependencies = [
     "numpy",
 ]
 
+[project.urls]
+Changelog = "https://github.com/enactic/openarm_dataset/releases"
+Issues = "https://github.com/enactic/openarm_dataset/issues"
+Repository = "https://github.com/enactic/openarm_dataset.git"
+
+[project.scripts]
+openarm-mujoco-launch = "openarm_mujoco.v2.launch:main"
+
+[dependency-groups]
+dev = [
+    "ruff == 0.14.11", # sync with .pre-commit-config.yaml
+]
+
+[tool.ruff.lint]
+extend-select = [
+  "D",   # pydocstyle
+  "UP",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"!src/**.py" = ["D"]
+
 [tool.setuptools]
-packages = ["openarm_mujoco_v2"]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.setuptools.package-data]
-openarm_mujoco_v2 = [
+"openarm_mujoco.v2" = [
     "*.xml",
     "assets/**/*",
 ]
