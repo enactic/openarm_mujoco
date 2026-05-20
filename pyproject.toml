@@ -31,9 +31,9 @@ dependencies = [
 ]
 
 [project.urls]
-Changelog = "https://github.com/enactic/openarm_dataset/releases"
-Issues = "https://github.com/enactic/openarm_dataset/issues"
-Repository = "https://github.com/enactic/openarm_dataset.git"
+Changelog = "https://github.com/enactic/openarm_mujoco/releases"
+Issues = "https://github.com/enactic/openarm_mujoco/issues"
+Repository = "https://github.com/enactic/openarm_mujoco.git"
 
 [project.scripts]
 openarm-mujoco-launch = "openarm_mujoco.v2.launch:main"
