@@ -35,9 +35,9 @@ import numpy as np
 @dataclass(frozen=True)
 class _ArmLayout:
     arm_qpos: np.ndarray  # shape (7,) – qpos indices for joint1..joint7
-    arm_dof: np.ndarray   # shape (7,) – dof indices for joint1..joint7
-    finger_qpos: int      # qpos index for finger_joint1
-    mirror_qpos: int      # qpos index for finger_joint2 (equality mirror)
+    arm_dof: np.ndarray  # shape (7,) – dof indices for joint1..joint7
+    finger_qpos: int  # qpos index for finger_joint1
+    mirror_qpos: int  # qpos index for finger_joint2 (equality mirror)
 
 
 def _resolve_arm(prefix: str, model: mujoco.MjModel) -> _ArmLayout:
@@ -54,14 +54,20 @@ def _resolve_arm(prefix: str, model: mujoco.MjModel) -> _ArmLayout:
         return int(model.jnt_dofadr[jid])
 
     return _ArmLayout(
-        arm_qpos    = np.array([qpos_of(f"{prefix}joint{i}") for i in range(1, 8)], dtype=np.intp),
-        arm_dof     = np.array([dof_of(f"{prefix}joint{i}") for i in range(1, 8)], dtype=np.intp),
-        finger_qpos = qpos_of(f"{prefix}finger_joint1"),
-        mirror_qpos = qpos_of(f"{prefix}finger_joint2"),
+        arm_qpos=np.array(
+            [qpos_of(f"{prefix}joint{i}") for i in range(1, 8)], dtype=np.intp
+        ),
+        arm_dof=np.array(
+            [dof_of(f"{prefix}joint{i}") for i in range(1, 8)], dtype=np.intp
+        ),
+        finger_qpos=qpos_of(f"{prefix}finger_joint1"),
+        mirror_qpos=qpos_of(f"{prefix}finger_joint2"),
     )
+
 
 def _resolve_arm_ctrl(arm: str, model: mujoco.MjModel) -> np.ndarray:
     """Return shape-(8,) ctrl index array for one arm's joints + finger."""
+
     def act_idx(name: str) -> int:
         aid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, name)
         if aid < 0:
@@ -69,7 +75,8 @@ def _resolve_arm_ctrl(arm: str, model: mujoco.MjModel) -> np.ndarray:
         return aid
 
     return np.array(
-        [act_idx(f"{arm}_joint{i}_ctrl") for i in range(1, 8)] + [act_idx(f"{arm}_finger1_ctrl")],
+        [act_idx(f"{arm}_joint{i}_ctrl") for i in range(1, 8)]
+        + [act_idx(f"{arm}_finger1_ctrl")],
         dtype=np.intp,
     )
 
@@ -91,12 +98,14 @@ class JointResolver:
 
     def __init__(self, model: mujoco.MjModel) -> None:
         self._right = _resolve_arm("openarm_right_", model)
-        self._left  = _resolve_arm("openarm_left_",  model)
+        self._left = _resolve_arm("openarm_left_", model)
 
         self._right_ctrl: np.ndarray = _resolve_arm_ctrl("right", model)
-        self._left_ctrl:  np.ndarray = _resolve_arm_ctrl("left",  model)
+        self._left_ctrl: np.ndarray = _resolve_arm_ctrl("left", model)
 
-    def set_qpos(self, qpos: np.ndarray, driver_position: np.ndarray, segment: str) -> np.ndarray:
+    def set_qpos(
+        self, qpos: np.ndarray, driver_position: np.ndarray, segment: str
+    ) -> np.ndarray:
         """Write driver values for one segment into qpos in-place.
 
         Args:
@@ -108,11 +117,11 @@ class JointResolver:
             The same qpos array (modified in-place).
         """
         if segment == "right":
-            qpos[self._right.arm_qpos]    = driver_position[:7]
+            qpos[self._right.arm_qpos] = driver_position[:7]
             qpos[self._right.finger_qpos] = driver_position[7]
             qpos[self._right.mirror_qpos] = driver_position[7]
         elif segment == "left":
-            qpos[self._left.arm_qpos]    = driver_position[:7]
+            qpos[self._left.arm_qpos] = driver_position[:7]
             qpos[self._left.finger_qpos] = driver_position[7]
             qpos[self._left.mirror_qpos] = driver_position[7]
         else:
@@ -135,7 +144,9 @@ class JointResolver:
             return self._left.arm_dof.copy()
         raise ValueError(f"Invalid segment for arm indices: {segment!r}")
 
-    def set_ctrl(self, ctrl: np.ndarray, driver_position: np.ndarray, segment: str) -> np.ndarray:
+    def set_ctrl(
+        self, ctrl: np.ndarray, driver_position: np.ndarray, segment: str
+    ) -> np.ndarray:
         """Write driver values for one segment into data.ctrl in-place.
 
         Args:
@@ -154,7 +165,9 @@ class JointResolver:
             raise ValueError(f"Invalid segment: {segment!r}")
         return ctrl
 
-    def get_driver(self, qpos: np.ndarray, segment: str) -> tuple[np.ndarray, float | np.ndarray]:
+    def get_driver(
+        self, qpos: np.ndarray, segment: str
+    ) -> tuple[np.ndarray, float | np.ndarray]:
         """Read driver values for one segment from qpos (does not mutate qpos).
 
         Args:
