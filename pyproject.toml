@@ -52,8 +52,9 @@ extend-select = [
 [tool.ruff.lint.per-file-ignores]
 "!src/**.py" = ["D"]
 
-[tool.setuptools]
-package-dir = {"" = "src"}
+[tool.setuptools.package-dir]
+"" = "src"
+"openarm_mujoco.v2" = "v2"
 
 [tool.setuptools.packages.find]
 where = ["src"]
