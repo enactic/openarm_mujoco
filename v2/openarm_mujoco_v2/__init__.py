@@ -19,6 +19,7 @@ from .joint_resolver import JointResolver
 
 __all__ = ["JointResolver"]
 
+
 def asset_path(relative: str) -> str:
     """
     Return an absolute filesystem path to an asset inside this package.
@@ -38,6 +39,7 @@ def openarm_bimanual_paths() -> list[str]:
         asset_path("assets"),
     ]
 
+
 def openarm_cell_xml() -> str:
     return asset_path("cell.xml")
 
@@ -45,8 +47,10 @@ def openarm_cell_xml() -> str:
 def openarm_demo_xml() -> str:
     return asset_path("demo.xml")
 
+
 def openarm_pedestal_xml() -> str:
     return asset_path("pedestal.xml")
+
 
 def openarm_bimanual_xml() -> str:
     return asset_path("openarm_v20_bimanual.xml")

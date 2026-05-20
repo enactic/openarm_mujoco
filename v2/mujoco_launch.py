@@ -21,12 +21,12 @@ import mujoco.viewer
 
 import time
 import openarm_mujoco_v2 as openarm_mujoco
+
 _DEFAULT_SCENE = openarm_mujoco.openarm_cell_xml()
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Open a MuJoCo XML in the viewer.")
+    parser = argparse.ArgumentParser(description="Open a MuJoCo XML in the viewer.")
     parser.add_argument(
         "xml",
         nargs="?",
@@ -34,11 +34,14 @@ def main() -> int:
         help=f"Path to MJCF (.xml) file (default: {_DEFAULT_SCENE})",
     )
     parser.add_argument(
-        "--keyframe", "-k", default="home",
+        "--keyframe",
+        "-k",
+        default="home",
         help="Name of keyframe to load as initial state",
     )
     parser.add_argument(
-        "--static", action="store_true",
+        "--static",
+        action="store_true",
         help="Freeze simulation (mj_forward only, no physics stepping)",
     )
     parser.add_argument(
@@ -56,8 +59,7 @@ def main() -> int:
     xml_path = args.xml
 
     if not xml_path.lower().endswith(".xml"):
-        print(
-            f"Error: expected an .xml file, got: {xml_path}", file=sys.stderr)
+        print(f"Error: expected an .xml file, got: {xml_path}", file=sys.stderr)
         return 2
 
     if not os.path.exists(xml_path):
@@ -68,11 +70,12 @@ def main() -> int:
     data = mujoco.MjData(model)
 
     if args.keyframe is not None:
-        key_id = mujoco.mj_name2id(
-            model, mujoco.mjtObj.mjOBJ_KEY, args.keyframe)
+        key_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_KEY, args.keyframe)
         if key_id == -1:
             print(
-                f"Error: keyframe '{args.keyframe}' not found in model.", file=sys.stderr)
+                f"Error: keyframe '{args.keyframe}' not found in model.",
+                file=sys.stderr,
+            )
             return 2
         mujoco.mj_resetDataKeyframe(model, data, key_id)
         # Sync ctrl to qpos so position actuators hold the keyframe pose.
@@ -89,7 +92,7 @@ def main() -> int:
             "cell_right_wall_col",
             "cell_front_wall_col",
             "cell_roof_col",
-            "cell_rail_col"
+            "cell_rail_col",
         ]
 
         for name in wall_names:
