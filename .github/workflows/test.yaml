@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: Lint
+name: Test
 on:
   push:
     branches-ignore:
@@ -25,19 +25,26 @@ concurrency:
   group: ${{ github.head_ref || github.sha }}-${{ github.workflow }}
   cancel-in-progress: true
 jobs:
-  pre-commit:
-    name: pre-commit
+  install:
+    name: Install
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        install-options:
+          - ""
+          - "-e"
     steps:
       - uses: actions/checkout@v6
-      - name: Install pre-commit
-        run: |
-          python -m pip install pre-commit
-      - uses: actions/cache@v5
+      - uses: actions/setup-python@v6
         with:
-          path: ~/.cache/pre-commit
-          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
-      - name: Run pre-commit
+          python-version: '3.x'
+      - name: Install
         run: |
-          pre-commit run --show-diff-on-failure --color=always --all-files
+          pip install ${{ matrix.install-options }} .
+      - name: Test
+        run: |
+          set -x
+          path=$(python -c 'import openarm_mujoco; print(openarm_mujoco.openarm_cell_xml())')
+          [ -f "${path}" ]
