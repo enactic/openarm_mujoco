@@ -12,28 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from importlib.resources import files
-from pathlib import Path
+"""Provide MuJoCo related files and convenient utilities."""
 
-from .joint_resolver import JointResolver
-
-__all__ = ["JointResolver"]
+from .joint_resolver import JointResolver as JointResolver
 
 
 def asset_path(relative: str) -> str:
-    """
-    Return an absolute filesystem path to an asset inside this package.
+    """Return an absolute filesystem path to an asset inside this package.
+
     Example: asset_path("openarm_bimanual.xml")
     """
-    p = files("openarm_mujoco_v2").joinpath(relative)
+    from importlib.resources import files
+    from pathlib import Path
+
+    p = files("openarm_mujoco.v2").joinpath(relative)
     return str(Path(p))
 
 
 def openarm_bimanual_paths() -> list[str]:
-    """
-    Returns the list of the absolute path to bimanual file and
-    the other required files/directories.
-    """
+    """Return the list of the absolute path to bimanual file and the other required files/directories."""
     return [
         asset_path("openarm_v20_bimanual.xml"),
         asset_path("assets"),
@@ -41,16 +38,20 @@ def openarm_bimanual_paths() -> list[str]:
 
 
 def openarm_cell_xml() -> str:
+    """Return the XML path for OpenArm in OpenArm Cell."""
     return asset_path("cell.xml")
 
 
 def openarm_demo_xml() -> str:
+    """Return the XML path for OpenArm Cell demo."""
     return asset_path("demo.xml")
 
 
 def openarm_pedestal_xml() -> str:
+    """Return the XML path with pedestal."""
     return asset_path("pedestal.xml")
 
 
 def openarm_bimanual_xml() -> str:
+    """Return the XML path for bimanual OpenArm."""
     return asset_path("openarm_v20_bimanual.xml")

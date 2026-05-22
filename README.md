@@ -5,8 +5,29 @@ This repository contains assets for OpenArm v2 (above), Cell, v1 and v0.3 (below
 
 ## Usage
 
-1. Install MuJoCo and launch a simulation.
-2. Drag the `*.xml` file into the simulation window.
+Install openarm-mujoco:
+
+```bash
+pip install openarm-mujoco
+```
+
+Launch the simulation:
+
+```bash
+openarm-mujoco-launch
+```
+
+Without White Sheet:
+
+```bash
+openarm-mujoco-launch --no-sheet
+```
+
+With Wall Collisions:
+
+```bash
+openarm-mujoco-launch --walls
+```
 
 ## Collision Visualization
 - To view collision meshes, activate `Rendering`>`Model Elements`>`Convex Hull` and `Group Enable`>`Geom groups`>`Geom 3` in the left sidebar

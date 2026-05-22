@@ -97,6 +97,7 @@ class JointResolver:
     """
 
     def __init__(self, model: mujoco.MjModel) -> None:
+        """Initialize JointResolver."""
         self._right = _resolve_arm("openarm_right_", model)
         self._left = _resolve_arm("openarm_left_", model)
 
@@ -115,6 +116,7 @@ class JointResolver:
 
         Returns:
             The same qpos array (modified in-place).
+
         """
         if segment == "right":
             qpos[self._right.arm_qpos] = driver_position[:7]
@@ -156,6 +158,7 @@ class JointResolver:
 
         Returns:
             The same ctrl array (modified in-place).
+
         """
         if segment == "right":
             ctrl[self._right_ctrl] = driver_position[:8]
@@ -178,6 +181,7 @@ class JointResolver:
             (joints, gripper) where joints is shape (7,) for a single arm or
             shape (14,) for "bimanual", and gripper is a scalar float or a
             length-2 array for "bimanual".
+
         """
         if segment == "right":
             return qpos[self._right.arm_qpos], qpos[self._right.finger_qpos]
