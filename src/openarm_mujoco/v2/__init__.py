@@ -54,7 +54,7 @@ def _source_tree_asset_root() -> Path | None:
 def asset_path(relative: str) -> str:
     """Return an absolute filesystem path to a v2 MJCF asset.
 
-    Example: asset_path("openarm_v20_bimanual.xml")
+    Example: asset_path("openarm_bimanual.xml")
     """
     source_tree_root = _source_tree_asset_root()
     if source_tree_root is not None:
@@ -71,7 +71,7 @@ def asset_path(relative: str) -> str:
 def openarm_bimanual_paths() -> list[str]:
     """Return the list of the absolute path to bimanual file and the other required files/directories."""
     return [
-        asset_path("openarm_v20_bimanual.xml"),
+        asset_path("openarm_bimanual.xml"),
         asset_path("assets"),
     ]
 
@@ -93,4 +93,4 @@ def openarm_pedestal_xml() -> str:
 
 def openarm_bimanual_xml() -> str:
     """Return the XML path for bimanual OpenArm."""
-    return asset_path("openarm_v20_bimanual.xml")
+    return asset_path("openarm_bimanual.xml")
