@@ -25,8 +25,17 @@ def asset_path(relative: str) -> str:
     from importlib.resources import files
     from pathlib import Path
 
-    p = files("openarm_mujoco.v2").joinpath(relative)
-    return str(Path(p))
+    # src/openarm_mujoco/__init__.py ->
+    # src/openarm_mujoco ->
+    # src ->
+    # . ->
+    # ./v2
+    v2_path = Path(__file__).parent.parent.parent / "v2"
+    if v2_path.exists():  # For editable install
+        return str(v2_path / relative)
+    else:
+        p = files("openarm_mujoco.v2").joinpath(relative)
+        return str(Path(p))
 
 
 def openarm_bimanual_paths() -> list[str]:
