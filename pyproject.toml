@@ -36,7 +36,7 @@ Issues = "https://github.com/enactic/openarm_mujoco/issues"
 Repository = "https://github.com/enactic/openarm_mujoco.git"
 
 [project.scripts]
-openarm-mujoco-launch = "openarm_mujoco.v2.launch:main"
+openarm-mujoco-launch = "openarm_mujoco.launch:main"
 
 [dependency-groups]
 dev = [
@@ -56,8 +56,8 @@ extend-select = [
 "" = "src"
 "openarm_mujoco.v2" = "v2"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.setuptools]
+packages = ["openarm_mujoco", "openarm_mujoco_v2", "openarm_mujoco.v2"]
 
 [tool.setuptools.package-data]
 "openarm_mujoco.v2" = [

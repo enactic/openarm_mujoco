@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Alias of openarm_mujoco.v2.
+"""Alias of openarm_mujoco.
 
-This is deprecated. Use openarm_mujoco.v2 instead.
+This is deprecated. Use openarm_mujoco instead.
 """
 
-from openarm_mujoco.v2 import *  # noqa: F403
+from openarm_mujoco import *  # noqa: F403
