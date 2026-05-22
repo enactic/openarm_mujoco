@@ -18,15 +18,23 @@ from .joint_resolver import JointResolver as JointResolver
 
 
 def asset_path(relative: str) -> str:
-    """Return an absolute filesystem path to an asset inside this package.
+    """Return an absolute filesystem path to a v2 MJCF asset.
 
     Example: asset_path("openarm_bimanual.xml")
     """
-    from importlib.resources import files
+    import sysconfig
     from pathlib import Path
 
-    p = files("openarm_mujoco.v2").joinpath(relative)
-    return str(Path(p))
+    current_file = Path(__file__).resolve()
+    for parent in current_file.parents:
+        source_tree_path = parent / "v2" / relative
+        if source_tree_path.exists():
+            return str(source_tree_path)
+
+    installed_path = (
+        Path(sysconfig.get_path("data")) / "share" / "openarm_mujoco" / "v2" / relative
+    )
+    return str(installed_path)
 
 
 def openarm_bimanual_paths() -> list[str]:
