@@ -41,15 +41,16 @@ def _data_files() -> list[tuple[str, list[str]]]:
                 continue
             if path.suffix.lower() not in _ALLOWED_SUFFIXES:
                 continue
-            if any(part.startswith(".") or part in _EXCLUDED_PARTS for part in path.parts):
+            if any(
+                part.startswith(".") or part in _EXCLUDED_PARTS for part in path.parts
+            ):
                 continue
 
             target = Path("share") / "openarm_mujoco" / path.parent
             files_by_target[str(target)].append(str(path))
 
     return [
-        (target, sorted(files))
-        for target, files in sorted(files_by_target.items())
+        (target, sorted(files)) for target, files in sorted(files_by_target.items())
     ]
 
 
