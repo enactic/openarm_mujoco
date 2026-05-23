@@ -39,19 +39,14 @@ def _resolve_asset_path(root: Path, relative: str) -> Path:
 
 def _source_tree_asset_root() -> Path | None:
     current_file = Path(__file__).resolve()
-    for parent in current_file.parents:
-        if not (parent / "pyproject.toml").is_file():
-            continue
-
-        source_package_file = parent / "src" / "openarm_mujoco" / "v2" / "__init__.py"
-        if current_file != source_package_file.resolve():
-            continue
-
-        asset_root = parent / "v2"
-        if asset_root.is_dir():
-            return asset_root
-
+    source_root = current_file.parent.parent.parent.parent
+    source_package_file = source_root / "src" / "openarm_mujoco" / "v2" / "__init__.py"
+    if current_file != source_package_file.resolve():
         return None
+
+    asset_root = source_root / "v2"
+    if asset_root.is_dir():
+        return asset_root
 
     return None
 

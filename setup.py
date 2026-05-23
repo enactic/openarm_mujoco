@@ -1,4 +1,17 @@
-import re
+# Copyright 2026 Enactic, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from collections import defaultdict
 from pathlib import Path
 
@@ -6,7 +19,7 @@ from setuptools import setup
 
 
 _PROJECT_ROOT = Path(__file__).resolve().parent
-_VERSION_DIR_PATTERN = re.compile(r"v\d+(?:\.\d+)*$")
+_BUNDLED_VERSION_DIRS = ("v2",)
 _EXCLUDED_PARTS = {
     ".venv",
     "__pycache__",
@@ -26,11 +39,11 @@ _ALLOWED_SUFFIXES = {
 
 
 def _version_dirs() -> list[Path]:
-    return sorted(
+    return [
         path
-        for path in _PROJECT_ROOT.iterdir()
-        if path.is_dir() and _VERSION_DIR_PATTERN.fullmatch(path.name)
-    )
+        for version_dir in _BUNDLED_VERSION_DIRS
+        if (path := _PROJECT_ROOT / version_dir).is_dir()
+    ]
 
 
 def _data_files() -> list[tuple[str, list[str]]]:
