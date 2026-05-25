@@ -54,13 +54,6 @@ extend-select = [
 
 [tool.setuptools.package-dir]
 "" = "src"
-"openarm_mujoco.v2" = "v2"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
-[tool.setuptools.package-data]
-"openarm_mujoco.v2" = [
-    "*.xml",
-    "assets/**/*",
-]

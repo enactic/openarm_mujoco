@@ -14,19 +14,58 @@
 
 """Provide MuJoCo related files and convenient utilities."""
 
+import sysconfig
+from pathlib import Path
+
 from .joint_resolver import JointResolver as JointResolver
 
 
+def _resolve_asset_path(root: Path, relative: str) -> Path:
+    relative_path = Path(relative)
+    if relative_path.is_absolute():
+        msg = f"Asset path must be relative: {relative}"
+        raise ValueError(msg)
+
+    root = root.resolve()
+    path = (root / relative_path).resolve()
+    try:
+        path.relative_to(root)
+    except ValueError as exc:
+        msg = f"Asset path must stay within asset root: {relative}"
+        raise ValueError(msg) from exc
+
+    return path
+
+
+def _source_tree_asset_root() -> Path | None:
+    current_file = Path(__file__).resolve()
+    source_root = current_file.parent.parent.parent.parent
+    source_package_file = source_root / "src" / "openarm_mujoco" / "v2" / "__init__.py"
+    if current_file != source_package_file.resolve():
+        return None
+
+    asset_root = source_root / "v2"
+    if asset_root.is_dir():
+        return asset_root
+
+    return None
+
+
 def asset_path(relative: str) -> str:
-    """Return an absolute filesystem path to an asset inside this package.
+    """Return an absolute filesystem path to a v2 MJCF asset.
 
-    Example: asset_path("openarm_bimanual.xml")
+    Example: asset_path("openarm_v20_bimanual.xml")
     """
-    from importlib.resources import files
-    from pathlib import Path
+    source_tree_root = _source_tree_asset_root()
+    if source_tree_root is not None:
+        source_tree_path = _resolve_asset_path(source_tree_root, relative)
+        if source_tree_path.exists():
+            return str(source_tree_path)
 
-    p = files("openarm_mujoco.v2").joinpath(relative)
-    return str(Path(p))
+    installed_root = (
+        Path(sysconfig.get_path("data")) / "share" / "openarm_mujoco" / "v2"
+    )
+    return str(_resolve_asset_path(installed_root, relative))
 
 
 def openarm_bimanual_paths() -> list[str]:
