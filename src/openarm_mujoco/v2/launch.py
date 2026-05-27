@@ -111,6 +111,11 @@ def main() -> int:
             model.geom_rgba[sheet_id][3] = 0.0
 
     with mujoco.viewer.launch_passive(model, data) as viewer:
+        viewer.cam.lookat[:] = model.stat.center
+        viewer.cam.distance = model.stat.extent
+        viewer.cam.azimuth = model.vis.global_.azimuth
+        viewer.cam.elevation = model.vis.global_.elevation
+
         while viewer.is_running():
             step_start = time.time()
 
