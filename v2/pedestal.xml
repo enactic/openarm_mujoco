@@ -45,7 +45,7 @@ limitations under the License.
     <mesh name="body_link0"      content_type="model/stl" file="visual/body/body_link0.stl"           scale="0.001 0.001 0.001" />
     <mesh name="body_link0_symp" content_type="model/stl" file="collision/body_link0_symp.stl"   scale="0.001 0.001 0.001" />
 
-    <model name="bimanual" file="openarm_v20_bimanual.xml"/>
+    <model name="bimanual" file="openarm_bimanual.xml"/>
   </asset>
 
   <worldbody>

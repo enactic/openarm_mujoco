@@ -49,7 +49,7 @@ limitations under the License.
     <mesh name="cell_mesh"    file="visual/cell/cell.obj"   scale="0.01  0.01  0.01"/>
     <mesh name="sheet_mesh"   file="visual/cell/sheet.obj"  scale="0.01  0.01  0.01"/>
     <mesh name="body_link0_5" file="visual/cell/cover.obj"  scale="0.001 0.001 0.001"/>
-    <model name="bimanual" file="openarm_v20_bimanual.xml"/>
+    <model name="bimanual" file="openarm_bimanual.xml"/>
   </asset>
 
   <actuator>
