@@ -41,6 +41,7 @@ limitations under the License.
     <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3"
       markrgb="0.8 0.8 0.8" width="300" height="300"/>
     <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+    <material name="openarm_body_link0_material" rgba="0.247 0.247 0.247 1.0" reflectance="0.05" shininess="0.5"/>
 
     <mesh name="body_link0"      content_type="model/stl" file="visual/body/body_link0.stl"           scale="0.001 0.001 0.001" />
     <mesh name="body_link0_symp" content_type="model/stl" file="collision/body_link0_symp.stl"   scale="0.001 0.001 0.001" />
