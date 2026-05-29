@@ -79,7 +79,7 @@ limitations under the License.
 
     <!-- lifter body: arms attach here and slide vertically -->
     <body name="openarm_lifter_link" pos="0.185 0 1.34">
-      <geom name="body_link0_vis_5" pos="0 0 -0.085" type="mesh" mesh="body_link0_5" material="cell_matte_black" class="visual"/>
+      <geom name="body_lifter" type="box" pos="-0.02 0 0"   size="0.045 0.03 0.061"  material="cell_matte_black" contype="0" conaffinity="0"/>
       <inertial pos="0 0 0" mass="5.0" diaginertia="0.1 0.1 0.1"/>
       <joint name="openarm_lifter_joint" class="lifter" axis="0 0 1" range="0 0.3"/>
       <attach model="bimanual" prefix=""/>
