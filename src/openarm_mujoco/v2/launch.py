@@ -95,7 +95,8 @@ def main() -> int:
             "cell_right_wall_col",
             "cell_front_wall_col",
             "cell_roof_col",
-            "cell_rail_col",
+            "cell_rail_col1",
+            "cell_rail_col2",
         ]
 
         for name in wall_names:
