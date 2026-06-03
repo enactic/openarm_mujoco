@@ -32,7 +32,8 @@ repository_name=$(
   python3 <<PY
 import tomllib
 with open("pyproject.toml", "rb") as f:
-  print(tomllib.load(f)["project"]["urls"]["Repository"].split("/")[-1])
+  repository = tomllib.load(f)["project"]["urls"]["Repository"]
+  print(repository.split("/")[-1].removesuffix(".git"))
 PY
 )
 project_name="$(sed -n '1s/^# //p' README.md)"
@@ -48,7 +49,10 @@ fi
 
 if [ "${RELEASE_PULL:-yes}" = "yes" ]; then
   echo "Ensure using the latest commit"
-  git checkout main
+  # refs/remotes/origin/master -> master
+  head_ref="$(git symbolic-ref refs/remotes/origin/HEAD)"
+  default_branch="${head_ref##*/}"
+  git checkout "${default_branch}"
   git pull --ff-only
 fi
 
