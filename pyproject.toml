@@ -18,7 +18,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openarm_mujoco"
-version = "0.2.0"
+version = "2.0.0"
 authors = [{name = "Enactic, Inc."}]
 description = "MuJoCo Description Files (MJCF) for OpenArm"
 license = {text = "Apache-2.0"}
