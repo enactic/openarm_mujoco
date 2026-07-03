@@ -1,12 +1,24 @@
 <!--
 Copyright 2026 Enactic, Inc.
-Licensed under the Apache License, Version 2.0 (the "License").
-Peg-in-hole scene (Phase I, M6): a cylindrical peg standing on a table and a
-CIRCULAR socket (an octagonal ring of walls) a short distance away. The robot
-grasps the peg and inserts it into the socket -- a precise vertical descent
-threading the peg through the round opening (a few mm radial clearance). A
-cylinder is rotationally symmetric, so no yaw alignment is needed (the
-free-yaw case in the round/square/cuboid insertion family). Classical control.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+Peg-in-hole insertion: a cylindrical peg standing on a table and a circular
+socket (an octagonal ring of walls) nearby. The peg threads down through the
+socket opening with a few mm of radial clearance; being rotationally symmetric,
+it needs no yaw alignment.
 -->
 
 <mujoco model="openarm_v20_peg_socket">
@@ -22,10 +34,10 @@ free-yaw case in the round/square/cuboid insertion family). Classical control.
   </default>
 
   <statistic center="0 0 0.6" extent="1.1" meansize="0.05"/>
-  <option timestep="0.002" />
+  <option timestep="0.001" />
 
   <visual>
-    <headlight diffuse="0.6 0.6 0.6" ambient="0.4 0.4 0.4" specular="0 0 0"/>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
     <rgba haze="0.15 0.25 0.35 1"/>
     <global azimuth="150" elevation="-20"/>
     <quality shadowsize="8192"/>
@@ -58,15 +70,19 @@ free-yaw case in the round/square/cuboid insertion family). Classical control.
       <attach model="bimanual" prefix=""/>
     </frame>
 
-    <!-- Table: top at z=0.40. -->
-    <body name="table" pos="0.27 -0.23 0.36">
-      <geom name="table_top" type="box" size="0.22 0.24 0.04" rgba="0.82 0.71 0.55 1"
+    <!-- Table: top at z=0.40, centered on the arm (y=0). Footprint matches the
+         cell workspace table in cell.xml (0.41 x 0.55 half-extents) so tabletop
+         layouts carry over; the cell mounts the arms on a lifter above the
+         table, so absolute heights differ. -->
+    <body name="table" pos="0.47 0.0 0.36">
+      <geom name="table_top" type="box" size="0.41 0.55 0.04" rgba="0.82 0.71 0.55 1"
             friction="1 0.005 0.0001" contype="1" conaffinity="1" />
     </body>
 
-    <!-- The peg: a cylinder (radius 0.014, half-length 0.045) standing on the table. -->
-    <body name="peg" pos="0.19 -0.15 0.445">
-      <freejoint />
+    <!-- The peg: a cylinder (radius 0.014, half-length 0.045) standing on the
+         table, clear of the grippers' home-pose footprint. -->
+    <body name="peg" pos="0.36 -0.10 0.445">
+      <joint name="peg_free" type="free"/>
       <geom name="peg_geom" type="cylinder" size="0.014 0.045" rgba="0.15 0.3 0.85 1"
             mass="0.05" friction="2.0 0.1 0.01" contype="1" conaffinity="1" />
     </body>
@@ -75,7 +91,7 @@ free-yaw case in the round/square/cuboid insertion family). Classical control.
          an octagon (inner apothem 0.020 m, walls 0.05 m tall). The round peg
          (radius 0.014 m) threads down through the centre and rests on the table;
          a cylinder needs no yaw alignment, so any approach orientation works. -->
-    <body name="socket" pos="0.36 -0.30 0.40">
+    <body name="socket" pos="0.36 -0.26 0.40">
       <geom name="socket_0" type="box" size="0.012 0.005 0.025" pos="0.025 0 0.025" euler="0 0 1.5708" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
       <geom name="socket_1" type="box" size="0.012 0.005 0.025" pos="0.01768 0.01768 0.025" euler="0 0 2.3562" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
       <geom name="socket_2" type="box" size="0.012 0.005 0.025" pos="0 0.025 0.025" euler="0 0 3.1416" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
@@ -93,11 +109,15 @@ free-yaw case in the round/square/cuboid insertion family). Classical control.
   </equality>
 
   <keyframe>
-    <!-- nq = left arm(0-8) + right arm(9-17) + peg(18-24) = 25. -->
-    <key name="ready"
-      qpos="0 0 0 0 0 0 0 0 0
-            -0.720369 2.27095 0.290977 1.90389 1.23759 0.785149 0.558776 0 0
-            0.19 -0.15 0.445 1 0 0 0" />
+    <!-- nq = left arm(0-8) + right arm(9-17) + peg(18-24) = 25.
+         Arms at the shared "home" pose (same as pedestal.xml, with ctrl set so
+         the position actuators hold it); peg upright on the table. -->
+    <key name="home"
+      qpos="0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
+            0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
+            0.36 -0.10 0.445 1 0 0 0"
+      ctrl="0 0 0 1.570796 0 0 0 0
+            0 0 0 1.570796 0 0 0 0"/>
   </keyframe>
 
 </mujoco>

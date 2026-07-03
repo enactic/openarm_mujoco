@@ -1,19 +1,24 @@
 <!--
 Copyright 2026 Enactic, Inc.
-Licensed under the Apache License, Version 2.0 (the "License").
 
-Ball-balance scene (Phase B1): the right arm holds a flat PLATE (welded to the
-gripper) on which a free PING-PONG BALL must be kept centred by tilting the plate.
-The arm's 7 DOF are used to (a) hold the plate at a fixed world position and
-(b) command small roll/pitch tilts about the plate centre; only those 2 axes of
-tilt actually do the balancing. The classical ball-on-plate stabilisation problem
-(textbook PID / LQR) lifted onto a 7-DOF manipulator -- distinct from the
-quasi-static manipulation skills the platform already has.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-The weld between plate and gripper is declared INACTIVE here and activated by
-BallBalancer at runtime once arm + plate have been teleported to the chosen
-"hold" pose -- exactly the same pattern PickPlaceController / ArticulatedController
-use for grasp welds, so the plate's resting pose vs gripper is captured exactly.
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+Ball balance: a flat plate (weldable to the right gripper) and a free ball.
+Tilting the plate rolls the ball -- the classic ball-on-plate stabilisation
+task on a 7-DOF arm. The plate weld starts inactive; a controller activates
+it at runtime after posing the arm.
 -->
 <mujoco model="openarm_v20_balance">
   <compiler meshdir="assets" angle="radian"/>
@@ -28,10 +33,10 @@ use for grasp welds, so the plate's resting pose vs gripper is captured exactly.
   </default>
 
   <statistic center="0.30 -0.05 0.60" extent="1.1" meansize="0.05"/>
-  <option timestep="0.002"/>
+  <option timestep="0.001"/>
 
   <visual>
-    <headlight diffuse="0.6 0.6 0.6" ambient="0.4 0.4 0.4" specular="0 0 0"/>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
     <rgba haze="0.15 0.25 0.35 1"/>
     <global azimuth="150" elevation="-20"/>
     <quality shadowsize="8192"/>
@@ -64,46 +69,35 @@ use for grasp welds, so the plate's resting pose vs gripper is captured exactly.
       <attach model="bimanual" prefix=""/>
     </frame>
 
-    <!-- Small backdrop table (the action happens ABOVE it; if the ball drops, the
-         table catches it for visual continuity instead of vanishing to the floor). -->
-    <body name="table" pos="0.30 -0.05 0.36">
-      <geom name="table_top" type="box" size="0.24 0.22 0.04" rgba="0.82 0.71 0.55 1"
+    <!-- Table: top at z=0.40, centered on the arm (y=0). Footprint matches the
+         cell workspace table in cell.xml (0.41 x 0.55 half-extents) so tabletop
+         layouts carry over; the cell mounts the arms on a lifter above the
+         table, so absolute heights differ. -->
+    <body name="table" pos="0.47 0.0 0.36">
+      <geom name="table_top" type="box" size="0.41 0.55 0.04" rgba="0.82 0.71 0.55 1"
             friction="1 0.005 0.0001" contype="1" conaffinity="1"/>
     </body>
 
-    <!-- PLATE: thin square plate. Free joint so the weld constraint can attach it
-         to the right gripper at runtime (same pattern as the existing grasp welds).
-         Visual half-size 7.5x7.5x0.5 cm = 15x15x1 cm; mass 50 g (light plastic).
-         Initial position is well above the workspace; BallBalancer teleports it
-         into place before activating the weld and before the user takes control. -->
-    <body name="plate" pos="0.30 -0.10 1.20">
+    <!-- Plate: 15x15x1 cm, 50 g. Free joint so the weld can attach it to the
+         right gripper at runtime. The riser rod is visual-only (no collision)
+         and reads as the stem the gripper holds. -->
+    <body name="plate" pos="0.30 0.0 0.405">
       <joint name="plate_free" type="free"/>
-      <inertial pos="0 0 0" mass="0.05" diaginertia="3.8e-4 3.8e-4 7.5e-4"/>
+      <inertial pos="0 0 0" mass="0.05" diaginertia="9.42e-5 9.42e-5 1.875e-4"/>
       <geom name="plate_top"   type="box" size="0.075 0.075 0.005" pos="0 0 0"
             rgba="0.35 0.55 0.85 1" contype="1" conaffinity="1"
             condim="6" friction="0.4 0.005 0.0002"
             solref="0.005 1" solimp="0.95 0.99 0.001"/>
-      <!-- Riser rod: a thin vertical cylinder attached to the plate, extending
-           DOWN to the gripper. Visual only (contype/conaffinity=0) so it can
-           pass through arm bodies without dynamics interaction. Reads as
-           "the gripper holds a table on a stem" -- necessary because the arm's
-           link4/5/6 occupy the palm-adjacent space in the ready pose and
-           there is no reachable joint config that gives a clear plate volume
-           above the palm. -->
-      <geom name="plate_riser" type="cylinder" size="0.008 0.060" pos="0 0 -0.065"
+      <geom name="plate_riser" type="cylinder" size="0.008 0.040" pos="0 0 -0.045"
             rgba="0.60 0.60 0.65 1" contype="0" conaffinity="0" group="2"/>
     </body>
 
-    <!-- BALL: real ping-pong specs (40 mm dia, 2.73 g). Restitution is governed by
-         the contact solver -- we deliberately want LOW bounce (the ball should
-         settle on the plate, not pogo). Critically-damped, stiff contact via
-         solref="0.005 1" solimp="0.95 0.99 0.001" combined with the plate's same
-         contact params gives a soft, near-inelastic settle. condim=6 lets the
-         contact resolve rolling friction (mu_roll ~ 1e-4) so the ball actually
-         rolls under tilt instead of jittering or sticking. -->
-    <body name="ball" pos="0.30 -0.10 1.30">
+    <!-- Ball: ping-pong specs (40 mm dia, 2.73 g). Stiff, near-inelastic contact
+         (low bounce); condim=6 resolves rolling friction so the ball rolls under
+         tilt instead of sticking. -->
+    <body name="ball" pos="0.30 0.0 0.430">
       <joint name="ball_free" type="free"/>
-      <inertial pos="0 0 0" mass="0.0027" diaginertia="4.32e-7 4.32e-7 4.32e-7"/>
+      <inertial pos="0 0 0" mass="0.0027" diaginertia="7.2e-7 7.2e-7 7.2e-7"/>
       <geom name="ball_geom" type="sphere" size="0.020"
             rgba="0.95 0.45 0.10 1" contype="1" conaffinity="1"
             condim="6" friction="0.35 0.005 0.0001"
@@ -112,21 +106,18 @@ use for grasp welds, so the plate's resting pose vs gripper is captured exactly.
   </worldbody>
 
   <equality>
-    <!-- Activated at runtime by BallBalancer (sets eq_data with the computed
-         relative pose, then eq_active=1). Until then, the plate is in free-fall. -->
+    <!-- Activated at runtime by a controller (set eq_data to the relative pose,
+         then eq_active=1). Until then, the plate is a free body. -->
+    <!-- Stiffer than the grasp welds in the other scenes: the plate must not
+         lag the wrist or the ball reads phantom accelerations. -->
     <weld name="plate_to_right_ee" body1="openarm_right_ee_base_link" body2="plate"
           active="false" solref="0.005 1"/>
   </equality>
 
   <contact>
-    <!-- The plate is pinned to the right gripper at a fixed offset above the
-         arm; its geometry visually needs to be well above the wrist bodies for
-         the "arm-below-plate-on-top" reading, but the arm's link4/5/6 occupy
-         those heights in the ready pose. Excluding the plate/ball from every
-         right-arm body up to link4 makes the internal-to-welded-system
-         penetrations dynamically inert while the render-only riser rod bridges
-         the visual gap. The finger self-collisions are the natural ones you
-         see in every scene and are left alone. -->
+    <!-- When the plate is welded above the gripper, its volume overlaps the
+         wrist bodies; excluding those pairs makes the internal penetrations of
+         the welded assembly dynamically inert. -->
     <exclude body1="plate" body2="openarm_right_ee_base_link"/>
     <exclude body1="plate" body2="openarm_right_ee_inner_finger"/>
     <exclude body1="plate" body2="openarm_right_ee_outer_finger"/>
@@ -143,14 +134,16 @@ use for grasp welds, so the plate's resting pose vs gripper is captured exactly.
 
   <keyframe>
     <!-- nq = left arm(0-8) + right arm(9-17) + plate_free(18-24) + ball_free(25-31) = 32.
-         Arms at the raised "ready" pose (shared with the other scenes). Plate +
-         ball start in the air above the workspace; BallBalancer immediately
-         teleports them to the correct hold position. -->
-    <key name="ready"
-      qpos="0.720369 -2.27095 -0.290977 1.90389 -1.23759 -0.785149 -0.558776 0 0
-            -0.720369 2.27095 0.290977 1.90389 1.23759 0.785149 0.558776 0 0
-            0.32 -0.12 0.58 1 0 0 0
-            0.32 -0.12 0.625 1 0 0 0"/>
+         Arms at the shared "home" pose (same as pedestal.xml, with ctrl set so
+         the position actuators hold it); plate rests on the table, ball on the
+         plate. -->
+    <key name="home"
+      qpos="0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
+            0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
+            0.30 0.0 0.405 1 0 0 0
+            0.30 0.0 0.430 1 0 0 0"
+      ctrl="0 0 0 1.570796 0 0 0 0
+            0 0 0 1.570796 0 0 0 0"/>
   </keyframe>
 
 </mujoco>

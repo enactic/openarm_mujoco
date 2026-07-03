@@ -1,13 +1,23 @@
 <!--
 Copyright 2026 Enactic, Inc.
-Licensed under the Apache License, Version 2.0 (the "License").
-Articulated-object scene (Phase F1c): three authored articulated fixtures on a
-table for the OpenArm to operate -- a sliding DRAWER (prismatic joint), a hinged
-cabinet DOOR (revolute joint), and a turnable VALVE (revolute joint). Each has a
-graspable handle and both-arm grasp welds. Authored from scratch (no external
-mesh download) so the joints, ranges and handles are fully controllable. The
-articulated-manipulation skills (open drawer/door, turn valve) are built on this
-in phase S3; this scene + its physics-only test only establish the assets.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+Articulated objects: a sliding drawer (prismatic) and a hinged cabinet door
+(revolute) on a table, each with a graspable handle and inactive grasp welds
+for either arm. (The turnable valve lives in valve_scene.xml.)
 -->
 <mujoco model="openarm_v20_articulated">
   <compiler meshdir="assets" angle="radian"/>
@@ -25,10 +35,10 @@ in phase S3; this scene + its physics-only test only establish the assets.
   </default>
 
   <statistic center="0.30 0 0.55" extent="1.2" meansize="0.05"/>
-  <option timestep="0.002"/>
+  <option timestep="0.001"/>
 
   <visual>
-    <headlight diffuse="0.6 0.6 0.6" ambient="0.4 0.4 0.4" specular="0 0 0"/>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
     <rgba haze="0.15 0.25 0.35 1"/>
     <global azimuth="150" elevation="-20"/>
     <quality shadowsize="8192"/>
@@ -61,15 +71,22 @@ in phase S3; this scene + its physics-only test only establish the assets.
       <attach model="bimanual" prefix=""/>
     </frame>
 
-    <!-- Table: top at z=0.40. -->
-    <body name="table" pos="0.30 -0.02 0.36">
-      <geom name="table_top" type="box" size="0.24 0.32 0.04" rgba="0.82 0.71 0.55 1"
+    <!-- Table: top at z=0.40, centered on the arm (y=0). Footprint matches the
+         cell workspace table in cell.xml (0.41 x 0.55 half-extents) so tabletop
+         layouts carry over; the cell mounts the arms on a lifter above the
+         table, so absolute heights differ. -->
+    <body name="table" pos="0.47 0.0 0.36">
+      <geom name="table_top" type="box" size="0.41 0.55 0.04" rgba="0.82 0.71 0.55 1"
             friction="1 0.005 0.0001" contype="1" conaffinity="1"/>
     </body>
 
     <!-- DRAWER: a fixed cabinet shell (opening faces -x, toward the robot) with a
          drawer that slides out toward the robot; horizontal handle bar in front. -->
-    <body name="cabinet_drawer" pos="0.36 -0.22 0.40">
+    <body name="cabinet_drawer" pos="0.50 -0.26 0.46">
+      <!-- Solid base raises the drawer slot to a comfortable operating height
+           (handle ~10 cm above the table) so a frontal, human-like grasp has
+           clearance under the wrist. -->
+      <geom name="drawer_base"   class="fixture" size="0.05 0.055 0.03" pos="0 0 -0.03"/>
       <geom name="drawer_bottom" class="fixture" size="0.05 0.055 0.005" pos="0 0 0.005"/>
       <geom name="drawer_top"    class="fixture" size="0.05 0.055 0.005" pos="0 0 0.105"/>
       <geom name="drawer_back"   class="fixture" size="0.005 0.055 0.05" pos="0.05 0 0.055"/>
@@ -79,30 +96,24 @@ in phase S3; this scene + its physics-only test only establish the assets.
         <joint name="drawer_slide" type="slide" axis="1 0 0" range="-0.10 0" damping="1" frictionloss="0.05"/>
         <geom name="drawer_box"    type="box" size="0.038 0.038 0.03" pos="0 0 0" mass="0.20" friction="0.4 0.01 0.01" rgba="0.30 0.45 0.62 1" contype="1" conaffinity="1"/>
         <geom name="drawer_front"  type="box" size="0.006 0.04 0.028" pos="-0.046 0 0" mass="0.05" friction="0.4 0.01 0.01" rgba="0.22 0.36 0.52 1" contype="1" conaffinity="1"/>
-        <geom name="drawer_handle" type="cylinder" fromto="-0.066 -0.02 0 -0.066 0.02 0" size="0.007" mass="0.02" rgba="0.2 0.2 0.22 1" contype="1" conaffinity="1"/>
-      </body>
-    </body>
-
-    <!-- VALVE: a fixed pipe with a lever that turns about the vertical axis; grasp
-         the knob at the lever tip and sweep it in an arc. -->
-    <body name="valve_base" pos="0.26 -0.10 0.40">
-      <geom name="valve_pipe" class="fixture" type="cylinder" size="0.015 0.0275" pos="0 0 0.0275" rgba="0.4 0.4 0.45 1"/>
-      <body name="valve" pos="0 0 0.065">
-        <joint name="valve_turn" type="hinge" axis="0 0 1" range="-3.0 3.0" damping="0.5" frictionloss="0.05"/>
-        <geom name="valve_hub"   type="cylinder" fromto="0 0 -0.006 0 0 0.006" size="0.014" mass="0.05" rgba="0.3 0.3 0.35 1" contype="1" conaffinity="1"/>
-        <geom name="valve_lever" type="box" size="0.035 0.008 0.006" pos="0.035 0 0" mass="0.05" rgba="0.7 0.2 0.2 1" contype="1" conaffinity="1"/>
-        <geom name="valve_grip"  type="cylinder" fromto="0.062 0 -0.02 0.062 0 0.02" size="0.007" mass="0.02" rgba="0.2 0.2 0.22 1" contype="1" conaffinity="1"/>
+        <!-- Handle bar stands 4 cm proud of the front panel on two stems so a
+             gripper's finger pads can close around the bar without touching
+             the panel. -->
+        <geom name="drawer_handle"      type="cylinder" fromto="-0.092 -0.02 0 -0.092 0.02 0" size="0.007" mass="0.02" rgba="0.2 0.2 0.22 1" contype="1" conaffinity="1"/>
+        <geom name="drawer_handle_stem1" type="cylinder" fromto="-0.052 -0.018 0 -0.092 -0.018 0" size="0.004" mass="0.005" rgba="0.2 0.2 0.22 1" contype="1" conaffinity="1"/>
+        <geom name="drawer_handle_stem2" type="cylinder" fromto="-0.052 0.018 0 -0.092 0.018 0" size="0.004" mass="0.005" rgba="0.2 0.2 0.22 1" contype="1" conaffinity="1"/>
       </body>
     </body>
 
     <!-- DOOR: a fixed post with a hinged panel that swings open about the vertical
          edge; vertical handle bar at the far edge. -->
-    <body name="cabinet_door" pos="0.29 0.13 0.40">
-      <geom name="door_post" class="fixture" size="0.01 0.01 0.06" pos="0 -0.07 0.06" rgba="0.4 0.4 0.45 1"/>
+    <body name="cabinet_door" pos="0.34 0.32 0.40">
+      <geom name="door_post" class="fixture" size="0.007 0.007 0.06" pos="0 -0.07 0.06" rgba="0.4 0.4 0.45 1"/>
       <body name="door" pos="0 -0.07 0.06">
         <joint name="door_hinge" type="hinge" axis="0 0 1" range="0 1.4" damping="0.2" frictionloss="0.02"/>
-        <geom name="door_panel"  type="box" size="0.006 0.06 0.05" pos="0 0.06 0" mass="0.08" rgba="0.55 0.45 0.3 1" contype="1" conaffinity="1"/>
-        <geom name="door_handle" type="cylinder" fromto="0 0.115 -0.02 0 0.115 0.02" size="0.007" mass="0.02" rgba="0.2 0.2 0.22 1" contype="1" conaffinity="1"/>
+        <!-- Panel offset from the hinge post so the swing never binds on it. -->
+        <geom name="door_panel"  type="box" size="0.006 0.06 0.05" pos="0 0.075 0" mass="0.08" rgba="0.55 0.45 0.3 1" contype="1" conaffinity="1"/>
+        <geom name="door_handle" type="cylinder" fromto="0 0.13 -0.02 0 0.13 0.02" size="0.007" mass="0.02" rgba="0.2 0.2 0.22 1" contype="1" conaffinity="1"/>
       </body>
     </body>
   </worldbody>
@@ -110,19 +121,20 @@ in phase S3; this scene + its physics-only test only establish the assets.
   <equality>
     <weld name="grasp_right_drawer" body1="openarm_right_ee_base_link" body2="drawer" active="false" solref="0.02 1"/>
     <weld name="grasp_left_drawer"  body1="openarm_left_ee_base_link"  body2="drawer" active="false" solref="0.02 1"/>
-    <weld name="grasp_right_valve"  body1="openarm_right_ee_base_link" body2="valve"  active="false" solref="0.02 1"/>
-    <weld name="grasp_left_valve"   body1="openarm_left_ee_base_link"  body2="valve"  active="false" solref="0.02 1"/>
     <weld name="grasp_right_door"   body1="openarm_right_ee_base_link" body2="door"   active="false" solref="0.02 1"/>
     <weld name="grasp_left_door"    body1="openarm_left_ee_base_link"  body2="door"   active="false" solref="0.02 1"/>
   </equality>
 
   <keyframe>
-    <!-- nq = left arm(0-8) + right arm(9-17) + drawer(18) + valve(19) + door(20) = 21.
-         Both arms start raised and clear of the fixtures (left = joint mirror of right). -->
-    <key name="ready"
-      qpos="0.720369 -2.27095 -0.290977 1.90389 -1.23759 -0.785149 -0.558776 0 0
-            -0.720369 2.27095 0.290977 1.90389 1.23759 0.785149 0.558776 0 0
-            0 0 0"/>
+    <!-- nq = left arm(0-8) + right arm(9-17) + drawer(18) + door(19) = 20.
+         Arms at the shared "home" pose (same as pedestal.xml, with ctrl set so
+         the position actuators hold it); fixtures closed. -->
+    <key name="home"
+      qpos="0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
+            0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
+            0 0"
+      ctrl="0 0 0 1.570796 0 0 0 0
+            0 0 0 1.570796 0 0 0 0"/>
   </keyframe>
 
 </mujoco>
