@@ -81,7 +81,7 @@ graspable knob at the lever tip and inactive grasp welds for either arm.
 
     <!-- VALVE: a fixed pipe with a lever that turns about the vertical axis; grasp
          the knob at the lever tip and sweep it in an arc. -->
-    <body name="valve_base" pos="0.14 0.0 0.40">
+    <body name="valve_base" pos="0.25 0.0 0.40">
       <geom name="valve_pipe" class="fixture" type="cylinder" size="0.015 0.0275" pos="0 0 0.0275" rgba="0.4 0.4 0.45 1"/>
       <body name="valve" pos="0 0 0.065">
         <joint name="valve_turn" type="hinge" axis="0 0 1" range="-3.0 3.0" damping="0.5" frictionloss="0.05"/>
