@@ -1,0 +1,140 @@
+<!--
+Copyright 2026 Enactic, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+Articulated objects: a sliding drawer (prismatic) and a hinged cabinet door
+(revolute) on a table, each with a graspable handle and inactive grasp welds
+for either arm. (The turnable valve lives in valve_scene.xml.)
+-->
+<mujoco model="openarm_v20_articulated">
+  <compiler meshdir="assets" angle="radian"/>
+
+  <default>
+    <default class="visual">
+      <geom contype="0" conaffinity="0" group="2"/>
+    </default>
+    <default class="collision">
+      <geom condim="3" conaffinity="1" priority="1" group="3" solref="0.005 1" friction="1 0.01 0.01"/>
+    </default>
+    <default class="fixture">
+      <geom type="box" contype="1" conaffinity="1" friction="1 0.01 0.01" rgba="0.55 0.45 0.32 1"/>
+    </default>
+  </default>
+
+  <statistic center="0.30 0 0.55" extent="1.2" meansize="0.05"/>
+  <option timestep="0.001"/>
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <global azimuth="150" elevation="-20"/>
+    <quality shadowsize="8192"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.55 0.55 0.58" rgb2="0.2 0.2 0.2" width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.38 0.38 0.4" rgb2="0.3 0.3 0.32"
+      markrgb="0.6 0.6 0.6" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+
+    <material name="openarm_body_link0_material" rgba="0.247 0.247 0.247 1.0" reflectance="0.05" shininess="0.5"/>
+    <mesh name="body_link0"      content_type="model/stl" file="visual/body/body_link0.stl"     scale="0.001 0.001 0.001"/>
+    <mesh name="body_link0_symp" content_type="model/stl" file="collision/body_link0_symp.stl" scale="0.001 0.001 0.001"/>
+
+    <model name="bimanual" file="openarm_bimanual.xml"/>
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 2" dir="0 0 -1" directional="true"/>
+    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+
+    <camera name="tablecam" pos="0.30 0.0 1.30" xyaxes="1 0 0 0 1 0" fovy="60"/>
+    <camera name="frontcam" pos="1.05 0.0 0.90" xyaxes="0 -1 0 0.3 0 1" fovy="55"/>
+
+    <geom name="openarm_body_link0_visual"    type="mesh" mesh="body_link0"      class="visual"    material="openarm_body_link0_material"/>
+    <geom name="openarm_body_link0_collision" type="mesh" mesh="body_link0_symp" class="collision"/>
+
+    <frame pos="0 0 0.698">
+      <attach model="bimanual" prefix=""/>
+    </frame>
+
+    <!-- Table: top at z=0.40, centered on the arm (y=0). Footprint matches the
+         cell workspace table in cell.xml (0.41 x 0.55 half-extents) so tabletop
+         layouts carry over; the cell mounts the arms on a lifter above the
+         table, so absolute heights differ. -->
+    <body name="table" pos="0.47 0.0 0.36">
+      <geom name="table_top" type="box" size="0.41 0.55 0.04" rgba="0.82 0.71 0.55 1"
+            friction="1 0.005 0.0001" contype="1" conaffinity="1"/>
+    </body>
+
+    <!-- DRAWER: a fixed cabinet shell (opening faces -x, toward the robot) with a
+         drawer that slides out toward the robot; horizontal handle bar in front. -->
+    <body name="cabinet_drawer" pos="0.50 -0.26 0.46">
+      <!-- Solid base raises the drawer slot to a comfortable operating height
+           (handle ~10 cm above the table) so a frontal, human-like grasp has
+           clearance under the wrist. -->
+      <geom name="drawer_base"   class="fixture" size="0.05 0.055 0.03" pos="0 0 -0.03"/>
+      <geom name="drawer_bottom" class="fixture" size="0.05 0.055 0.005" pos="0 0 0.005"/>
+      <geom name="drawer_top"    class="fixture" size="0.05 0.055 0.005" pos="0 0 0.105"/>
+      <geom name="drawer_back"   class="fixture" size="0.005 0.055 0.05" pos="0.05 0 0.055"/>
+      <geom name="drawer_sideL"  class="fixture" size="0.055 0.005 0.05" pos="0 0.05 0.055"/>
+      <geom name="drawer_sideR"  class="fixture" size="0.055 0.005 0.05" pos="0 -0.05 0.055"/>
+      <body name="drawer" pos="0 0 0.045">
+        <joint name="drawer_slide" type="slide" axis="1 0 0" range="-0.10 0" damping="1" frictionloss="0.05"/>
+        <geom name="drawer_box"    type="box" size="0.038 0.038 0.03" pos="0 0 0" mass="0.20" friction="0.4 0.01 0.01" rgba="0.30 0.45 0.62 1" contype="1" conaffinity="1"/>
+        <geom name="drawer_front"  type="box" size="0.006 0.04 0.028" pos="-0.046 0 0" mass="0.05" friction="0.4 0.01 0.01" rgba="0.22 0.36 0.52 1" contype="1" conaffinity="1"/>
+        <!-- Handle bar stands 4 cm proud of the front panel on two stems so a
+             gripper's finger pads can close around the bar without touching
+             the panel. -->
+        <geom name="drawer_handle"      type="cylinder" fromto="-0.092 -0.02 0 -0.092 0.02 0" size="0.007" mass="0.02" rgba="0.2 0.2 0.22 1" contype="1" conaffinity="1"/>
+        <geom name="drawer_handle_stem1" type="cylinder" fromto="-0.052 -0.018 0 -0.092 -0.018 0" size="0.004" mass="0.005" rgba="0.2 0.2 0.22 1" contype="1" conaffinity="1"/>
+        <geom name="drawer_handle_stem2" type="cylinder" fromto="-0.052 0.018 0 -0.092 0.018 0" size="0.004" mass="0.005" rgba="0.2 0.2 0.22 1" contype="1" conaffinity="1"/>
+      </body>
+    </body>
+
+    <!-- DOOR: a fixed post with a hinged panel that swings open about the vertical
+         edge; vertical handle bar at the far edge. -->
+    <body name="cabinet_door" pos="0.34 0.32 0.40">
+      <geom name="door_post" class="fixture" size="0.007 0.007 0.06" pos="0 -0.07 0.06" rgba="0.4 0.4 0.45 1"/>
+      <body name="door" pos="0 -0.07 0.06">
+        <joint name="door_hinge" type="hinge" axis="0 0 1" range="0 1.4" damping="0.2" frictionloss="0.02"/>
+        <!-- Panel offset from the hinge post so the swing never binds on it. -->
+        <geom name="door_panel"  type="box" size="0.006 0.06 0.05" pos="0 0.075 0" mass="0.08" rgba="0.55 0.45 0.3 1" contype="1" conaffinity="1"/>
+        <geom name="door_handle" type="cylinder" fromto="0 0.13 -0.02 0 0.13 0.02" size="0.007" mass="0.02" rgba="0.2 0.2 0.22 1" contype="1" conaffinity="1"/>
+      </body>
+    </body>
+  </worldbody>
+
+  <equality>
+    <weld name="grasp_right_drawer" body1="openarm_right_ee_base_link" body2="drawer" active="false" solref="0.02 1"/>
+    <weld name="grasp_left_drawer"  body1="openarm_left_ee_base_link"  body2="drawer" active="false" solref="0.02 1"/>
+    <weld name="grasp_right_door"   body1="openarm_right_ee_base_link" body2="door"   active="false" solref="0.02 1"/>
+    <weld name="grasp_left_door"    body1="openarm_left_ee_base_link"  body2="door"   active="false" solref="0.02 1"/>
+  </equality>
+
+  <keyframe>
+    <!-- nq = left arm(0-8) + right arm(9-17) + drawer(18) + door(19) = 20.
+         Arms at the shared "home" pose (same as pedestal.xml, with ctrl set so
+         the position actuators hold it); fixtures closed. -->
+    <key name="home"
+      qpos="0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
+            0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
+            0 0"
+      ctrl="0 0 0 1.570796 0 0 0 0
+            0 0 0 1.570796 0 0 0 0"/>
+  </keyframe>
+
+</mujoco>
