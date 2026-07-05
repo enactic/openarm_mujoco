@@ -1,0 +1,110 @@
+<!--
+Copyright 2026 Enactic, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+Non-prehensile pushing: a low puck on the table and two goal markers. The
+robot pushes the puck to a goal with the closed gripper as a pusher -- no
+grasping involved.
+-->
+
+<mujoco model="openarm_v20_push">
+  <compiler meshdir="assets" angle="radian"/>
+
+  <default>
+    <default class="visual">
+      <geom contype="0" conaffinity="0" group="2" />
+    </default>
+    <default class="collision">
+      <geom condim="3" conaffinity="1" priority="1" group="3" solref="0.005 1" friction="1 0.01 0.01" />
+    </default>
+  </default>
+
+  <statistic center="0 0 0.6" extent="1.1" meansize="0.05"/>
+  <option timestep="0.001" />
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <global azimuth="150" elevation="-20"/>
+    <quality shadowsize="8192"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.55 0.55 0.58" rgb2="0.2 0.2 0.2" width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.38 0.38 0.4" rgb2="0.3 0.3 0.32"
+      markrgb="0.6 0.6 0.6" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+
+    <material name="openarm_body_link0_material" rgba="0.247 0.247 0.247 1.0" reflectance="0.05" shininess="0.5"/>
+    <mesh name="body_link0"      content_type="model/stl" file="visual/body/body_link0.stl"        scale="0.001 0.001 0.001" />
+    <mesh name="body_link0_symp" content_type="model/stl" file="collision/body_link0_symp.stl"    scale="0.001 0.001 0.001" />
+
+    <model name="bimanual" file="openarm_bimanual.xml"/>
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 2" dir="0 0 -1" directional="true"/>
+    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+
+    <camera name="tablecam" pos="0.26 -0.18 1.15" xyaxes="1 0 0 0 1 0" fovy="60"/>
+    <camera name="frontcam" pos="0.95 -0.18 0.85" xyaxes="0 -1 0 0.3 0 1" fovy="55"/>
+
+    <geom name="openarm_body_link0_visual"    type="mesh" mesh="body_link0"      class="visual"    material="openarm_body_link0_material" />
+    <geom name="openarm_body_link0_collision" type="mesh" mesh="body_link0_symp" class="collision" />
+
+    <frame pos="0 0 0.698">
+      <attach model="bimanual" prefix=""/>
+    </frame>
+
+    <!-- Table: top at z=0.40, centered on the arm (y=0). Footprint matches the
+         cell workspace table in cell.xml (0.41 x 0.55 half-extents) so tabletop
+         layouts carry over; the cell mounts the arms on a lifter above the
+         table, so absolute heights differ. -->
+    <body name="table" pos="0.47 0.0 0.36">
+      <geom name="table_top" type="box" size="0.41 0.55 0.04" rgba="0.82 0.71 0.55 1"
+            friction="1 0.005 0.0001" contype="1" conaffinity="1" />
+    </body>
+
+    <!-- A low puck (70 x 70 x 44 mm) the gripper pushes (does not grasp),
+         centered between the grippers, clear of their home-pose zone. -->
+    <body name="puck" pos="0.30 0.0 0.422">
+      <freejoint />
+      <geom name="puck_geom" type="box" size="0.035 0.035 0.022" rgba="0.85 0.4 0.1 1"
+            mass="0.12" friction="0.9 0.01 0.001" contype="1" conaffinity="1" />
+    </body>
+
+    <!-- Goal regions (visual markers, non-colliding). -->
+    <body name="goal_a" pos="0.44 -0.16 0.401">
+      <site name="goal_a_site" type="cylinder" size="0.05 0.001" rgba="0.2 0.8 0.3 0.4"/>
+    </body>
+    <body name="goal_b" pos="0.44 0.16 0.401">
+      <site name="goal_b_site" type="cylinder" size="0.05 0.001" rgba="0.3 0.5 0.9 0.4"/>
+    </body>
+  </worldbody>
+
+  <keyframe>
+    <!-- nq = left arm(0-8) + right arm(9-17) + puck(18-24) = 25. Arms at the
+         shared "home" pose (same as pedestal.xml, with ctrl set so the
+         position actuators hold it); puck resting on the table. -->
+    <key name="home"
+      qpos="0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
+            0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
+            0.30 0.0 0.422 1 0 0 0"
+      ctrl="0 0 0 1.570796 0 0 0 0
+            0 0 0 1.570796 0 0 0 0"/>
+  </keyframe>
+
+</mujoco>
