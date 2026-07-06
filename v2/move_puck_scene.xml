@@ -15,12 +15,12 @@ limitations under the License.
 -->
 
 <!--
-Non-prehensile pushing: a low puck on the table and two goal markers. The
-robot pushes the puck to a goal with the closed gripper as a pusher -- no
-grasping involved.
+Move a puck to a goal: a low puck on the table and two goal markers. The
+puck can be pushed to a goal with the closed gripper, or grasped and placed
+(pick-and-place) -- a small target for either style of manipulation.
 -->
 
-<mujoco model="openarm_v20_push">
+<mujoco model="openarm_v20_move_puck">
   <compiler meshdir="assets" angle="radian"/>
 
   <default>
@@ -78,8 +78,8 @@ grasping involved.
             friction="1 0.005 0.0001" contype="1" conaffinity="1" />
     </body>
 
-    <!-- A low puck (70 x 70 x 44 mm) the gripper pushes (does not grasp),
-         centered between the grippers, clear of their home-pose zone. -->
+    <!-- A low puck (70 x 70 x 44 mm) to push or grasp, centered between the
+         grippers, clear of their home-pose zone. -->
     <body name="puck" pos="0.30 0.0 0.422">
       <freejoint />
       <geom name="puck_geom" type="box" size="0.035 0.035 0.022" rgba="0.85 0.4 0.1 1"
