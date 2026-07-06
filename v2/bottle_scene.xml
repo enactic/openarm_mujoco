@@ -1,0 +1,130 @@
+<!--
+Copyright 2026 Enactic, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+Bottle cap: a bottle held in a table fixture, with a threaded cap. The cap's
+turn (hinge) and rise (slide) joints are coupled like a screw thread, so
+turning it counterclockwise lifts it off the neck. Inactive grasp welds on
+the cap let either arm grasp and unscrew it.
+-->
+<mujoco model="openarm_v20_bottle">
+  <compiler meshdir="assets" angle="radian"/>
+
+  <default>
+    <default class="visual">
+      <geom contype="0" conaffinity="0" group="2"/>
+    </default>
+    <default class="collision">
+      <geom condim="3" conaffinity="1" priority="1" group="3" solref="0.005 1" friction="1 0.01 0.01"/>
+    </default>
+    <default class="fixture">
+      <geom type="box" contype="1" conaffinity="1" friction="1 0.01 0.01" rgba="0.55 0.45 0.32 1"/>
+    </default>
+  </default>
+
+  <statistic center="0.30 0 0.55" extent="1.2" meansize="0.05"/>
+  <option timestep="0.001"/>
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <global azimuth="150" elevation="-20"/>
+    <quality shadowsize="8192"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.55 0.55 0.58" rgb2="0.2 0.2 0.2" width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.38 0.38 0.4" rgb2="0.3 0.3 0.32"
+      markrgb="0.6 0.6 0.6" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+
+    <material name="openarm_body_link0_material" rgba="0.247 0.247 0.247 1.0" reflectance="0.05" shininess="0.5"/>
+    <mesh name="body_link0"      content_type="model/stl" file="visual/body/body_link0.stl"     scale="0.001 0.001 0.001"/>
+    <mesh name="body_link0_symp" content_type="model/stl" file="collision/body_link0_symp.stl" scale="0.001 0.001 0.001"/>
+
+    <model name="bimanual" file="openarm_bimanual.xml"/>
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 2" dir="0 0 -1" directional="true"/>
+    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+
+    <camera name="tablecam" pos="0.30 0.0 1.30" xyaxes="1 0 0 0 1 0" fovy="60"/>
+    <camera name="frontcam" pos="1.05 0.0 0.90" xyaxes="0 -1 0 0.3 0 1" fovy="55"/>
+
+    <geom name="openarm_body_link0_visual"    type="mesh" mesh="body_link0"      class="visual"    material="openarm_body_link0_material"/>
+    <geom name="openarm_body_link0_collision" type="mesh" mesh="body_link0_symp" class="collision"/>
+
+    <frame pos="0 0 0.698">
+      <attach model="bimanual" prefix=""/>
+    </frame>
+
+    <!-- Table: top at z=0.40, centered on the arm (y=0). Footprint matches the
+         cell workspace table in cell.xml (0.41 x 0.55 half-extents) so tabletop
+         layouts carry over; the cell mounts the arms on a lifter above the
+         table, so absolute heights differ. -->
+    <body name="table" pos="0.47 0.0 0.36">
+      <geom name="table_top" type="box" size="0.41 0.55 0.04" rgba="0.82 0.71 0.55 1"
+            friction="1 0.005 0.0001" contype="1" conaffinity="1"/>
+    </body>
+
+    <!-- BOTTLE: held in a clamp on the table so unscrewing torque cannot spin it.
+         The cap turns about the vertical axis and the thread coupling (equality
+         below, 15 mm per turn) lifts it as it unscrews; two full turns free it. -->
+    <body name="bottle" pos="0.30 0.0 0.40">
+      <geom name="bottle_clamp" class="fixture" size="0.038 0.038 0.011" pos="0 0 0.011"/>
+      <geom name="bottle_body" type="cylinder" size="0.030 0.019" pos="0 0 0.041"
+            rgba="0.25 0.45 0.55 1" contype="1" conaffinity="1"/>
+      <!-- The neck sits inside the cap like a real threaded pair, so it must not
+           collide with it; grasps target the cap, which stays collidable. -->
+      <geom name="bottle_neck" type="cylinder" size="0.0115 0.015" pos="0 0 0.075"
+            rgba="0.25 0.45 0.55 1" class="visual"/>
+      <body name="bottle_cap" pos="0 0 0.075">
+        <!-- The turn joint is unlimited (hinge limits wrap beyond one revolution);
+             the slide's range bounds it through the thread coupling instead, like
+             threads running out. Armature is the thread's reflected inertia. -->
+        <joint name="cap_turn" type="hinge" axis="0 0 1" damping="0.05" frictionloss="0.02" armature="0.001"/>
+        <joint name="cap_rise" type="slide" axis="0 0 1" range="0 0.032" damping="0.5" armature="0.001"/>
+        <geom name="cap_grip" type="cylinder" fromto="0 0 -0.012 0 0 0.018" size="0.0125" mass="0.02"
+              rgba="0.75 0.25 0.2 1" contype="1" conaffinity="1"/>
+        <!-- Off-center tab on the cap's top face so the turn reads on camera. -->
+        <geom name="cap_mark" type="box" size="0.006 0.0018 0.0008" pos="0.006 0 0.0188" mass="0.001"
+              rgba="0.95 0.85 0.3 1" class="visual"/>
+      </body>
+    </body>
+
+  </worldbody>
+
+  <equality>
+    <!-- Screw thread: cap rise = 15 mm per full counterclockwise turn. -->
+    <joint name="cap_thread" joint1="cap_rise" joint2="cap_turn" polycoef="0 0.0023873 0 0 0" solref="0.005 1"/>
+    <weld name="grasp_right_cap" body1="openarm_right_ee_base_link" body2="bottle_cap" active="false" solref="0.02 1"/>
+    <weld name="grasp_left_cap"  body1="openarm_left_ee_base_link"  body2="bottle_cap" active="false" solref="0.02 1"/>
+  </equality>
+
+  <keyframe>
+    <!-- nq = left arm(0-8) + right arm(9-17) + cap turn/rise(18-19) = 20.
+         Arms at the shared "home" pose (same as pedestal.xml, with ctrl set so
+         the position actuators hold it); cap screwed down. -->
+    <key name="home"
+      qpos="0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
+            0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
+            0 0"
+      ctrl="0 0 0 1.570796 0 0 0 0
+            0 0 0 1.570796 0 0 0 0"/>
+  </keyframe>
+
+</mujoco>
