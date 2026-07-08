@@ -24,15 +24,6 @@ it needs no yaw alignment.
 <mujoco model="openarm_v20_peg_socket">
   <compiler meshdir="assets" angle="radian"/>
 
-  <default>
-    <default class="visual">
-      <geom contype="0" conaffinity="0" group="2" />
-    </default>
-    <default class="collision">
-      <geom condim="3" conaffinity="1" priority="1" group="3" solref="0.005 1" friction="1 0.01 0.01" />
-    </default>
-  </default>
-
   <statistic center="0 0 0.6" extent="1.1" meansize="0.05"/>
   <option timestep="0.001" />
 
@@ -49,11 +40,7 @@ it needs no yaw alignment.
       markrgb="0.6 0.6 0.6" width="300" height="300"/>
     <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
 
-    <material name="openarm_body_link0_material" rgba="0.247 0.247 0.247 1.0" reflectance="0.05" shininess="0.5"/>
-    <mesh name="body_link0"      content_type="model/stl" file="visual/body/body_link0.stl"        scale="0.001 0.001 0.001" />
-    <mesh name="body_link0_symp" content_type="model/stl" file="collision/body_link0_symp.stl"    scale="0.001 0.001 0.001" />
-
-    <model name="bimanual" file="openarm_bimanual.xml"/>
+    <model name="arm_pedestal" file="openarm_pedestal.xml"/>
   </asset>
 
   <worldbody>
@@ -63,12 +50,8 @@ it needs no yaw alignment.
     <camera name="tablecam" pos="0.28 -0.22 1.15" xyaxes="1 0 0 0 1 0" fovy="55"/>
     <camera name="frontcam" pos="0.95 -0.22 0.85" xyaxes="0 -1 0 0.3 0 1" fovy="50"/>
 
-    <geom name="openarm_body_link0_visual"    type="mesh" mesh="body_link0"      class="visual"    material="openarm_body_link0_material" />
-    <geom name="openarm_body_link0_collision" type="mesh" mesh="body_link0_symp" class="collision" />
-
-    <frame pos="0 0 0.698">
-      <attach model="bimanual" prefix=""/>
-    </frame>
+    <!-- bimanual arms mounted on the pedestal -->
+    <attach model="arm_pedestal" prefix=""/>
 
     <!-- Table: top at z=0.40, centered on the arm (y=0). Footprint matches the
          cell workspace table in cell.xml (0.41 x 0.55 half-extents) so tabletop
