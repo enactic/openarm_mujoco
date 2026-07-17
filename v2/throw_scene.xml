@@ -1,0 +1,103 @@
+<!--
+Copyright 2026 Enactic, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+Throwing: the arm picks a ball off a small side table (inactive grasp weld)
+and throws it into a bin sitting on the floor beyond its reach, so a
+ballistic throw is required, not a place. The bin lands on the floor, which
+is why this scene keeps a small side table instead of the shared cell
+table -- the large tabletop would cover the bin's landing area. The
+"throw_ready" keyframe is a wind-up-adjacent start pose for the throw.
+-->
+<mujoco model="openarm_v20_throw">
+  <compiler meshdir="assets" angle="radian"/>
+
+  <statistic center="0.4 -0.1 0.5" extent="1.4" meansize="0.05"/>
+  <option timestep="0.001" />
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <global azimuth="150" elevation="-18"/>
+    <quality shadowsize="8192"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.55 0.55 0.58" rgb2="0.2 0.2 0.2" width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.38 0.38 0.4" rgb2="0.3 0.3 0.32"
+      markrgb="0.6 0.6 0.6" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+
+    <model name="arm_pedestal" file="openarm_pedestal.xml"/>
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 2" dir="0 0 -1" directional="true"/>
+    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+
+    <camera name="frontcam" pos="0.7 -1.4 1.0" xyaxes="1 0 0 0 0.4 1" fovy="55"/>
+
+    <!-- bimanual arms mounted on the pedestal -->
+    <attach model="arm_pedestal" prefix=""/>
+
+    <!-- Small side table holding the ball to throw, outboard of the band the
+         right arm settles over from the home pose. -->
+    <body name="table" pos="0.24 -0.30 0.36">
+      <geom name="table_top" type="box" size="0.12 0.12 0.04" rgba="0.82 0.71 0.55 1"
+            friction="1 0.005 0.0001" contype="1" conaffinity="1" />
+    </body>
+    <body name="ball_orange" pos="0.24 -0.30 0.43">
+      <freejoint />
+      <geom name="ball_orange_geom" type="sphere" size="0.03" rgba="0.95 0.5 0.1 1"
+            mass="0.04" friction="2.0 0.1 0.01" contype="1" conaffinity="1" />
+    </body>
+
+    <!-- Target bin on the floor (must throw, not place). Narrow opening
+         (0.16 m) so throw precision is observable; the walls keep a clean
+         landing in. -->
+    <body name="bin" pos="0.62 -0.10 0.0">
+      <geom name="bin_floor" type="box" size="0.08 0.08 0.01" pos="0 0 0.01" rgba="0.4 0.4 0.45 1" contype="1" conaffinity="1"/>
+      <geom name="bin_wn" type="box" size="0.08 0.01 0.06" pos="0 0.08 0.07" rgba="0.4 0.4 0.45 1" contype="1" conaffinity="1"/>
+      <geom name="bin_ws" type="box" size="0.08 0.01 0.06" pos="0 -0.08 0.07" rgba="0.4 0.4 0.45 1" contype="1" conaffinity="1"/>
+      <geom name="bin_we" type="box" size="0.01 0.08 0.06" pos="0.08 0 0.07" rgba="0.4 0.4 0.45 1" contype="1" conaffinity="1"/>
+      <geom name="bin_ww" type="box" size="0.01 0.08 0.06" pos="-0.08 0 0.07" rgba="0.4 0.4 0.45 1" contype="1" conaffinity="1"/>
+    </body>
+  </worldbody>
+
+  <equality>
+    <weld name="grasp_right_orange" body1="openarm_right_ee_base_link" body2="ball_orange" active="false" solref="0.02 1"/>
+  </equality>
+
+  <keyframe>
+    <!-- nq = left arm(0-8) + right arm(9-17) + ball free joint(18-24) = 25.
+         "home": the shared pedestal pose (ctrl set so the position actuators
+         hold it); ball resting on the side table.
+         "throw_ready": right arm poised over the ball to grasp and throw. -->
+    <key name="home"
+      qpos="0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
+            0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
+            0.24 -0.30 0.43 1 0 0 0"
+      ctrl="0 0 0 1.570796 0 0 0 0
+            0 0 0 1.570796 0 0 0 0"/>
+    <key name="throw_ready"
+      qpos="0 0 0 0 0 0 0 0 0
+            -0.720369 2.27095 0.290977 1.90389 1.23759 0.780000 0.558776 0 0
+            0.24 -0.30 0.43 1 0 0 0"
+      ctrl="0 0 0 0 0 0 0 0
+            -0.720369 2.27095 0.290977 1.90389 1.23759 0.780000 0.558776 0"/>
+  </keyframe>
+
+</mujoco>
