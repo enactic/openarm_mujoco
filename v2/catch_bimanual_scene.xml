@@ -1,0 +1,102 @@
+<!--
+Copyright 2026 Enactic, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+Bimanual catching: a ball is thrown through the air toward EITHER side of
+the robot, and whichever arm can reach it best makes the catch. Two RGB-D
+cameras (ballcam0/1) aim at the centre so throws toward the left or right
+arm both stay in view. Grasp welds on the ball for both arms; the catch is
+weld-based and velocity-matched at the grab, not a simulated impact.
+Loading "catch_ready" launches a default throw toward the right arm; a
+controller can overwrite the ball's pose and velocity for other throws.
+-->
+<mujoco model="openarm_v20_catch_bimanual">
+  <compiler meshdir="assets" angle="radian"/>
+
+  <statistic center="0.3 0 0.9" extent="1.5" meansize="0.05"/>
+  <option timestep="0.001"/>
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <global azimuth="150" elevation="-12" offwidth="1280" offheight="960"/>
+    <quality shadowsize="8192"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.55 0.55 0.58" rgb2="0.2 0.2 0.2" width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.38 0.38 0.4" rgb2="0.3 0.3 0.32"
+      markrgb="0.6 0.6 0.6" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+
+    <model name="arm_pedestal" file="openarm_pedestal.xml"/>
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 2" dir="0 0 -1" directional="true"/>
+    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+
+    <!-- bimanual arms mounted on the pedestal -->
+    <attach model="arm_pedestal" prefix=""/>
+
+    <!-- Two RGB-D cameras (opposite sides) aimed at the centre, so throws toward
+         either arm stay in view across the whole ballistic arc. -->
+    <camera name="ballcam0" pos="1.05 -1.55 1.25" fovy="62"
+            xyaxes="0.9603 0.2788 -0.0000 -0.0343 0.1181 0.9924"/>
+    <camera name="ballcam1" pos="1.05 1.55 1.25" fovy="62"
+            xyaxes="-0.9603 0.2788 0.0000 -0.0343 -0.1181 0.9924"/>
+    <!-- Viewing camera. -->
+    <camera name="catchcam" pos="1.7 0 1.5" xyaxes="0 1 0 -0.6 0 0.8"/>
+
+    <!-- Thrown ball. 70 mm so a parallel gripper can close around it; its body
+         pos is the default launch point (airborne). -->
+    <body name="ball" pos="1.05 -0.25 0.95">
+      <freejoint/>
+      <geom name="ball_geom" type="sphere" size="0.035" rgba="0.95 0.55 0.1 1"
+            mass="0.05" friction="1 0.05 0.01" contype="1" conaffinity="1"/>
+    </body>
+  </worldbody>
+
+  <equality>
+    <weld name="grasp_right_ball" body1="openarm_right_ee_base_link" body2="ball" active="false" solref="0.02 1"/>
+    <weld name="grasp_left_ball"  body1="openarm_left_ee_base_link"  body2="ball" active="false" solref="0.02 1"/>
+  </equality>
+
+  <keyframe>
+    <!-- nq = left arm(0-8) + right arm(9-17) + ball free joint(18-24) = 25.
+         "home": the shared pedestal pose (ctrl set so the position actuators
+         hold it); ball at the default launch point.
+         "catch_ready": both arms in mirrored interception-ready poses with the
+         grippers OPEN (left opens at +0.7854, right at -0.7854), and the ball
+         launched toward the right arm by default. -->
+    <key name="home"
+      qpos="0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
+            0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
+            1.05 -0.25 0.95 1 0 0 0"
+      ctrl="0 0 0 1.570796 0 0 0 0
+            0 0 0 1.570796 0 0 0 0"/>
+    <key name="catch_ready"
+      qpos="-1.63955 -0.67234 0.68604 1.32130 0.69509 -0.33258 -0.43927 0.7854 0.7854
+            1.63955 0.67234 -0.68604 1.32130 -0.69509 0.33258 0.43927 -0.7854 -0.7854
+            1.05 -0.25 0.95 1 0 0 0"
+      qvel="0 0 0 0 0 0 0 0 0
+            0 0 0 0 0 0 0 0 0
+            -1.701 0.067 2.052 0 0 0"
+      ctrl="-1.63955 -0.67234 0.68604 1.32130 0.69509 -0.33258 -0.43927 0.7854
+            1.63955 0.67234 -0.68604 1.32130 -0.69509 0.33258 0.43927 -0.7854"/>
+  </keyframe>
+
+</mujoco>
