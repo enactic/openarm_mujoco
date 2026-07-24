@@ -171,6 +171,10 @@ limitations under the License.
     <mesh name="finger_outer_right_collision_03" content_type="model/stl" file="collision/finger_outer_part_03.stl" />
   </asset>
   <worldbody>
+    <!-- arm origin site: pose origin for FK/IK, placed at the model root so it
+         lands on the attach frame wherever the bimanual arms are mounted
+         (group 4 = hidden by default) -->
+    <site name="arm_origin" pos="0 0 0" size="0.02" rgba="1 0.8 0 1" group="4"/>
     <body name="openarm_left_base_link" pos="0 0.031 0">
       <inertial pos="-0.00253124 0.0258186 -2.70658e-05" quat="-1.46856942085e-06 0.70739772103 0.706815721259 2.1457591538e-05" mass="1.14323" diaginertia="0.00159935 0.00113608 0.000750542" />
       <geom name="base_link_left_00" type="mesh" mesh="base_link_left_00" class="visual" material="matte_black" quat="0 0 1 0" />
