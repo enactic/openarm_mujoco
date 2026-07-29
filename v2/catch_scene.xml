@@ -23,6 +23,10 @@ in flight (inactive grasp weld on the ball) or falls to the floor.
 The "catch_ready" keyframe is an interception-ready start pose (gripper
 raised toward the throw, fingers open) -- catching leaves no time to get
 into position after launch.
+Harder variants are easy to build from this scene: add a left-arm grasp
+weld and a mirrored ready pose to catch throws toward either arm, or
+duplicate the ball (with welds for both arms) for a simultaneous
+two-ball catch.
 -->
 <mujoco model="openarm_v20_catch">
   <compiler meshdir="assets" angle="radian"/>
