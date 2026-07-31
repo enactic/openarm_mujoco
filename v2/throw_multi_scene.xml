@@ -1,0 +1,147 @@
+<!--
+Copyright 2026 Enactic, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+Multi-bin throwing: five balls on a small side table and five narrow bins
+at different spots on the floor across the throwing envelope, so one scene
+supports repeated throws to distinct targets. The bins sit on the floor,
+which is why this scene keeps a small side table instead of the shared
+cell table. The "throw_ready" keyframe is a wind-up-adjacent start pose.
+-->
+<mujoco model="openarm_v20_throw_multi">
+  <compiler meshdir="assets" angle="radian"/>
+
+  <statistic center="0.4 -0.1 0.5" extent="1.4" meansize="0.05"/>
+  <option timestep="0.001" />
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <global azimuth="150" elevation="-18"/>
+    <quality shadowsize="8192"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.55 0.55 0.58" rgb2="0.2 0.2 0.2" width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.38 0.38 0.4" rgb2="0.3 0.3 0.32"
+      markrgb="0.6 0.6 0.6" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+
+    <model name="arm_pedestal" file="openarm_pedestal.xml"/>
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 2" dir="0 0 -1" directional="true"/>
+    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+
+    <camera name="frontcam" pos="0.7 -1.4 1.0" xyaxes="1 0 0 0 0.4 1" fovy="55"/>
+
+    <!-- bimanual arms mounted on the pedestal -->
+    <attach model="arm_pedestal" prefix=""/>
+
+    <!-- Small side table holding the five balls, outboard of the band the
+         right arm settles over from the home pose. -->
+    <body name="table" pos="0.24 -0.30 0.36">
+      <geom name="table_top" type="box" size="0.15 0.11 0.04" rgba="0.82 0.71 0.55 1"
+            friction="1 0.005 0.0001" contype="1" conaffinity="1" />
+    </body>
+
+    <!-- Five balls (size 0.03, mass 0.04) spread on the table. -->
+    <body name="ball_orange" pos="0.15 -0.35 0.43"><freejoint/>
+      <geom name="ball_orange_geom" type="sphere" size="0.03" rgba="0.95 0.5 0.1 1" mass="0.04" friction="2.0 0.1 0.01" contype="1" conaffinity="1"/></body>
+    <body name="ball_red" pos="0.24 -0.36 0.43"><freejoint/>
+      <geom name="ball_red_geom" type="sphere" size="0.03" rgba="0.85 0.15 0.15 1" mass="0.04" friction="2.0 0.1 0.01" contype="1" conaffinity="1"/></body>
+    <body name="ball_green" pos="0.33 -0.35 0.43"><freejoint/>
+      <geom name="ball_green_geom" type="sphere" size="0.03" rgba="0.15 0.7 0.2 1" mass="0.04" friction="2.0 0.1 0.01" contype="1" conaffinity="1"/></body>
+    <body name="ball_blue" pos="0.18 -0.24 0.43"><freejoint/>
+      <geom name="ball_blue_geom" type="sphere" size="0.03" rgba="0.15 0.3 0.85 1" mass="0.04" friction="2.0 0.1 0.01" contype="1" conaffinity="1"/></body>
+    <body name="ball_purple" pos="0.30 -0.24 0.43"><freejoint/>
+      <geom name="ball_purple_geom" type="sphere" size="0.03" rgba="0.6 0.2 0.8 1" mass="0.04" friction="2.0 0.1 0.01" contype="1" conaffinity="1"/></body>
+
+    <!-- Five narrow bins (12 cm openings) across the throwing envelope. -->
+    <body name="bin0" pos="0.58 -0.30 0.0">
+      <geom name="bin0_floor" type="box" size="0.06 0.06 0.01" pos="0 0 0.01" rgba="0.95 0.5 0.1 0.7" contype="1" conaffinity="1"/>
+      <geom name="bin0_n" type="box" size="0.06 0.01 0.06" pos="0 0.06 0.07" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+      <geom name="bin0_s" type="box" size="0.06 0.01 0.06" pos="0 -0.06 0.07" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+      <geom name="bin0_e" type="box" size="0.01 0.06 0.06" pos="0.06 0 0.07" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+      <geom name="bin0_w" type="box" size="0.01 0.06 0.06" pos="-0.06 0 0.07" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+    </body>
+    <body name="bin1" pos="0.66 -0.20 0.0">
+      <geom name="bin1_floor" type="box" size="0.06 0.06 0.01" pos="0 0 0.01" rgba="0.85 0.15 0.15 0.7" contype="1" conaffinity="1"/>
+      <geom name="bin1_n" type="box" size="0.06 0.01 0.06" pos="0 0.06 0.07" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+      <geom name="bin1_s" type="box" size="0.06 0.01 0.06" pos="0 -0.06 0.07" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+      <geom name="bin1_e" type="box" size="0.01 0.06 0.06" pos="0.06 0 0.07" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+      <geom name="bin1_w" type="box" size="0.01 0.06 0.06" pos="-0.06 0 0.07" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+    </body>
+    <body name="bin2" pos="0.58 -0.08 0.0">
+      <geom name="bin2_floor" type="box" size="0.06 0.06 0.01" pos="0 0 0.01" rgba="0.15 0.7 0.2 0.7" contype="1" conaffinity="1"/>
+      <geom name="bin2_n" type="box" size="0.06 0.01 0.06" pos="0 0.06 0.07" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+      <geom name="bin2_s" type="box" size="0.06 0.01 0.06" pos="0 -0.06 0.07" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+      <geom name="bin2_e" type="box" size="0.01 0.06 0.06" pos="0.06 0 0.07" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+      <geom name="bin2_w" type="box" size="0.01 0.06 0.06" pos="-0.06 0 0.07" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+    </body>
+    <body name="bin3" pos="0.66 0.02 0.0">
+      <geom name="bin3_floor" type="box" size="0.06 0.06 0.01" pos="0 0 0.01" rgba="0.15 0.3 0.85 0.7" contype="1" conaffinity="1"/>
+      <geom name="bin3_n" type="box" size="0.06 0.01 0.06" pos="0 0.06 0.07" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+      <geom name="bin3_s" type="box" size="0.06 0.01 0.06" pos="0 -0.06 0.07" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+      <geom name="bin3_e" type="box" size="0.01 0.06 0.06" pos="0.06 0 0.07" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+      <geom name="bin3_w" type="box" size="0.01 0.06 0.06" pos="-0.06 0 0.07" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+    </body>
+    <body name="bin4" pos="0.58 0.12 0.0">
+      <geom name="bin4_floor" type="box" size="0.06 0.06 0.01" pos="0 0 0.01" rgba="0.6 0.2 0.8 0.7" contype="1" conaffinity="1"/>
+      <geom name="bin4_n" type="box" size="0.06 0.01 0.06" pos="0 0.06 0.07" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+      <geom name="bin4_s" type="box" size="0.06 0.01 0.06" pos="0 -0.06 0.07" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+      <geom name="bin4_e" type="box" size="0.01 0.06 0.06" pos="0.06 0 0.07" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+      <geom name="bin4_w" type="box" size="0.01 0.06 0.06" pos="-0.06 0 0.07" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+    </body>
+  </worldbody>
+
+  <equality>
+    <weld name="grasp_right_orange" body1="openarm_right_ee_base_link" body2="ball_orange" active="false" solref="0.02 1"/>
+    <weld name="grasp_right_red"    body1="openarm_right_ee_base_link" body2="ball_red"    active="false" solref="0.02 1"/>
+    <weld name="grasp_right_green"  body1="openarm_right_ee_base_link" body2="ball_green"  active="false" solref="0.02 1"/>
+    <weld name="grasp_right_blue"   body1="openarm_right_ee_base_link" body2="ball_blue"   active="false" solref="0.02 1"/>
+    <weld name="grasp_right_purple" body1="openarm_right_ee_base_link" body2="ball_purple" active="false" solref="0.02 1"/>
+  </equality>
+
+  <keyframe>
+    <!-- nq = left arm(0-8) + right arm(9-17) + 5 balls x 7 (18-52) = 53.
+         "home": the shared pedestal pose (ctrl set so the position actuators
+         hold it); balls resting on the side table.
+         "throw_ready": right arm poised to grasp and throw. -->
+    <key name="home"
+      qpos="0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
+            0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
+            0.15 -0.35 0.43 1 0 0 0
+            0.24 -0.36 0.43 1 0 0 0
+            0.33 -0.35 0.43 1 0 0 0
+            0.18 -0.24 0.43 1 0 0 0
+            0.30 -0.24 0.43 1 0 0 0"
+      ctrl="0 0 0 1.570796 0 0 0 0
+            0 0 0 1.570796 0 0 0 0"/>
+    <key name="throw_ready"
+      qpos="0 0 0 0 0 0 0 0 0
+            -0.720369 2.27095 0.290977 1.90389 1.23759 0.780000 0.558776 0 0
+            0.15 -0.35 0.43 1 0 0 0
+            0.24 -0.36 0.43 1 0 0 0
+            0.33 -0.35 0.43 1 0 0 0
+            0.18 -0.24 0.43 1 0 0 0
+            0.30 -0.24 0.43 1 0 0 0"
+      ctrl="0 0 0 0 0 0 0 0
+            -0.720369 2.27095 0.290977 1.90389 1.23759 0.780000 0.558776 0"/>
+  </keyframe>
+
+</mujoco>
