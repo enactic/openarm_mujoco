@@ -1,0 +1,63 @@
+<!--
+Copyright 2026 Enactic, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+Cell variant of tool_scene.xml: the same graspable stick, out-of-reach block
+and far goal marker, placed on the cell workspace table. Objects keep their
+pose relative to the arm base (pedestal scene -> cell: x+0.185, z+0.605;
+pedestal table top z=0.40, cell table top z=1.005). The cell provides floor,
+lights, cameras and the "home" keyframe via <attach>; the stick and block start
+at their body-pos defaults.
+-->
+<mujoco model="openarm_v20_tool_cell">
+  <visual>
+    <global offwidth="1280" offheight="720"/>
+  </visual>
+
+  <asset>
+    <model name="cell" file="cell.xml"/>
+  </asset>
+
+  <worldbody>
+    <attach model="cell" prefix=""/>
+
+    <!-- The stick (360 mm long, along x), grasped at its centre and used as a pusher
+         that extends the reach forward. The tool lane sits at y=-0.26, outside the
+         band the right fingers settle over from the home keyframe. -->
+    <body name="stick" pos="0.405 -0.26 1.019">
+      <freejoint />
+      <geom name="stick_geom" type="box" size="0.18 0.013 0.014" rgba="0.55 0.35 0.15 1"
+            mass="0.06" friction="1 0.01 0.001" contype="1" conaffinity="1" />
+    </body>
+
+    <!-- Block to move, just past the gripper's top-down reach (~0.36 m). -->
+    <body name="block" pos="0.645 -0.26 1.028">
+      <freejoint />
+      <geom name="block_geom" type="box" size="0.03 0.03 0.023" rgba="0.2 0.55 0.85 1"
+            mass="0.1" friction="0.6 0.01 0.001" contype="1" conaffinity="1" />
+    </body>
+
+    <!-- Far goal (out of bare reach; reachable only via the stick's tip). -->
+    <body name="goal" pos="0.705 -0.26 1.007">
+      <site name="goal_site" type="cylinder" size="0.05 0.001" rgba="0.2 0.8 0.3 0.4"/>
+    </body>
+  </worldbody>
+
+  <equality>
+    <weld name="grasp_right_stick" body1="openarm_right_ee_base_link" body2="stick" active="false" solref="0.02 1"/>
+  </equality>
+
+</mujoco>
