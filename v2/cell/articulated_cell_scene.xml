@@ -42,7 +42,7 @@ defaults.
 
     <!-- DRAWER: a fixed cabinet shell (opening faces -x, toward the robot) with a
          drawer that slides out toward the robot; horizontal handle bar in front. -->
-    <body name="cabinet_drawer" pos="0.585 -0.16 1.065">
+    <body name="cabinet_drawer" pos="0.685 -0.26 1.065">
       <!-- Solid base raises the drawer slot to a comfortable operating height
            (handle ~10 cm above the table) so a frontal, human-like grasp has
            clearance under the wrist. -->
@@ -66,14 +66,21 @@ defaults.
     </body>
 
     <!-- DOOR: a fixed post with a hinged panel that swings open about the vertical
-         edge; vertical handle bar at the far edge. -->
-    <body name="cabinet_door" pos="0.425 0.22 1.005">
-      <geom name="door_post" class="fixture" size="0.007 0.007 0.06" pos="0 -0.07 0.06" rgba="0.4 0.4 0.45 1"/>
-      <body name="door" pos="0 -0.07 0.06">
-        <joint name="door_hinge" type="hinge" axis="0 0 1" range="0 1.4" damping="0.2" frictionloss="0.02"/>
+         edge; vertical handle bar on two stems in front of the free edge. The
+         assembly sits 4 cm higher than in the pedestal scene because the cell
+         "home" pose holds the wrists ~4 cm higher above the table. -->
+    <body name="cabinet_door" pos="0.525 0.32 1.005">
+      <geom name="door_post" class="fixture" size="0.007 0.007 0.08" pos="0 -0.07 0.08" rgba="0.4 0.4 0.45 1"/>
+      <body name="door" pos="0 -0.07 0.10">
+        <joint name="door_hinge" type="hinge" axis="0 0 1" range="0 1.4" damping="0.03" frictionloss="0.02"/>
         <!-- Panel offset from the hinge post so the swing never binds on it. -->
         <geom name="door_panel"  type="box" size="0.006 0.06 0.05" pos="0 0.075 0" mass="0.08" rgba="0.55 0.45 0.3 1" contype="1" conaffinity="1"/>
-        <geom name="door_handle" type="cylinder" fromto="0 0.13 -0.02 0 0.13 0.02" size="0.007" mass="0.02" rgba="0.2 0.2 0.22 1" contype="1" conaffinity="1"/>
+        <!-- Handle bar stands 4 cm proud of the panel on two stems so a
+             gripper's finger pads can close around the bar without touching
+             the panel (same recipe as the drawer handle). -->
+        <geom name="door_handle"       type="cylinder" fromto="-0.046 0.115 -0.02 -0.046 0.115 0.02" size="0.007" mass="0.02" rgba="0.2 0.2 0.22 1" contype="1" conaffinity="1"/>
+        <geom name="door_handle_stem1" type="cylinder" fromto="-0.006 0.115 -0.018 -0.046 0.115 -0.018" size="0.004" mass="0.005" rgba="0.2 0.2 0.22 1" contype="1" conaffinity="1"/>
+        <geom name="door_handle_stem2" type="cylinder" fromto="-0.006 0.115 0.018 -0.046 0.115 0.018" size="0.004" mass="0.005" rgba="0.2 0.2 0.22 1" contype="1" conaffinity="1"/>
       </body>
     </body>
   </worldbody>
