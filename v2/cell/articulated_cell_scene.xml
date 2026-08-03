@@ -23,6 +23,8 @@ cameras and the "home" keyframe via <attach>; task joints start at their zero
 defaults.
 -->
 <mujoco model="openarm_v20_articulated_cell">
+  <compiler angle="radian"/>
+
   <default>
     <default class="fixture">
       <geom type="box" contype="1" conaffinity="1" friction="1 0.01 0.01" rgba="0.55 0.45 0.32 1"/>

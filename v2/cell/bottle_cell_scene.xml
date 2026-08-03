@@ -22,6 +22,8 @@ cell table top z=1.005). The cell provides floor, lights, cameras and the
 "home" keyframe via <attach>; task joints start at their zero defaults.
 -->
 <mujoco model="openarm_v20_bottle_cell">
+  <compiler angle="radian"/>
+
   <default>
     <default class="visual">
       <geom contype="0" conaffinity="0" group="2"/>

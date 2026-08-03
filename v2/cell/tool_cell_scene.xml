@@ -23,6 +23,8 @@ lights, cameras and the "home" keyframe via <attach>; the stick and block start
 at their body-pos defaults.
 -->
 <mujoco model="openarm_v20_tool_cell">
+  <compiler angle="radian"/>
+
   <visual>
     <global offwidth="1280" offheight="720"/>
   </visual>

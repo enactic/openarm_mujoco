@@ -22,6 +22,8 @@ cell table top z=1.005). The cell provides floor, lights, cameras and the
 "home" keyframe via <attach>; the puck starts at its body-pos default.
 -->
 <mujoco model="openarm_v20_move_puck_cell">
+  <compiler angle="radian"/>
+
   <visual>
     <global offwidth="1280" offheight="720"/>
   </visual>
