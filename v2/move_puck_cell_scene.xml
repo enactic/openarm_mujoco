@@ -1,0 +1,53 @@
+<!--
+Copyright 2026 Enactic, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+Cell variant of move_puck_scene.xml: the same low puck and two goal markers,
+placed on the cell workspace table. Objects keep their pose relative to the
+arm base (pedestal scene -> cell: x+0.185, z+0.605; pedestal table top z=0.40,
+cell table top z=1.005). The cell provides floor, lights, cameras and the
+"home" keyframe via <attach>; the puck starts at its body-pos default.
+-->
+<mujoco model="openarm_v20_move_puck_cell">
+  <visual>
+    <global offwidth="1280" offheight="720"/>
+  </visual>
+
+  <asset>
+    <model name="cell" file="cell.xml"/>
+  </asset>
+
+  <worldbody>
+    <attach model="cell" prefix=""/>
+
+    <!-- A low puck (70 x 70 x 44 mm) to push or grasp, centered between the
+         grippers, clear of their home-pose zone. -->
+    <body name="puck" pos="0.485 0.0 1.027">
+      <freejoint />
+      <geom name="puck_geom" type="box" size="0.035 0.035 0.022" rgba="0.85 0.4 0.1 1"
+            mass="0.12" friction="0.9 0.01 0.001" contype="1" conaffinity="1" />
+    </body>
+
+    <!-- Goal regions (visual markers, non-colliding). -->
+    <body name="goal_a" pos="0.625 -0.16 1.007">
+      <site name="goal_a_site" type="cylinder" size="0.05 0.001" rgba="0.2 0.8 0.3 0.4"/>
+    </body>
+    <body name="goal_b" pos="0.625 0.16 1.007">
+      <site name="goal_b_site" type="cylinder" size="0.05 0.001" rgba="0.3 0.5 0.9 0.4"/>
+    </body>
+  </worldbody>
+
+</mujoco>
