@@ -21,7 +21,7 @@ turning it counterclockwise lifts it off the neck. Inactive grasp welds on
 the cap let either arm grasp and unscrew it.
 -->
 <mujoco model="openarm_v20_bottle">
-  <compiler meshdir="assets" angle="radian"/>
+  <compiler meshdir="../assets" angle="radian"/>
 
   <default>
     <default class="visual">

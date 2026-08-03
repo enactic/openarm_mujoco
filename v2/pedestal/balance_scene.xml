@@ -21,7 +21,7 @@ task on a 7-DOF arm. The plate weld starts inactive; a controller activates
 it at runtime after posing the arm.
 -->
 <mujoco model="openarm_v20_balance">
-  <compiler meshdir="assets" angle="radian"/>
+  <compiler meshdir="../assets" angle="radian"/>
 
   <statistic center="0.30 -0.05 0.60" extent="1.1" meansize="0.05"/>
   <option timestep="0.001"/>

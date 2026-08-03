@@ -22,7 +22,7 @@ it needs no yaw alignment.
 -->
 
 <mujoco model="openarm_v20_peg_socket">
-  <compiler meshdir="assets" angle="radian"/>
+  <compiler meshdir="../assets" angle="radian"/>
 
   <statistic center="0 0 0.6" extent="1.1" meansize="0.05"/>
   <option timestep="0.001" />

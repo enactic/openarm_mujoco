@@ -23,7 +23,7 @@ table -- the large tabletop would cover the bin's landing area. The
 "throw_ready" keyframe is a wind-up-adjacent start pose for the throw.
 -->
 <mujoco model="openarm_v20_throw">
-  <compiler meshdir="assets" angle="radian"/>
+  <compiler meshdir="../assets" angle="radian"/>
 
   <statistic center="0.4 -0.1 0.5" extent="1.4" meansize="0.05"/>
   <option timestep="0.001" />

@@ -20,7 +20,7 @@ Articulated objects: a sliding drawer (prismatic) and a hinged cabinet door
 for either arm. (The turnable valve lives in valve_scene.xml.)
 -->
 <mujoco model="openarm_v20_articulated">
-  <compiler meshdir="assets" angle="radian"/>
+  <compiler meshdir="../assets" angle="radian"/>
 
   <default>
     <default class="fixture">

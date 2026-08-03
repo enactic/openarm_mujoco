@@ -78,17 +78,17 @@ def openarm_bimanual_paths() -> list[str]:
 
 def openarm_cell_xml() -> str:
     """Return the XML path for OpenArm in OpenArm Cell."""
-    return asset_path("cell.xml")
+    return asset_path("cell/cell.xml")
 
 
 def openarm_demo_xml() -> str:
     """Return the XML path for OpenArm Cell demo."""
-    return asset_path("demo.xml")
+    return asset_path("cell/demo.xml")
 
 
 def openarm_pedestal_xml() -> str:
     """Return the XML path with pedestal."""
-    return asset_path("pedestal.xml")
+    return asset_path("pedestal/pedestal.xml")
 
 
 def openarm_bimanual_xml() -> str:
