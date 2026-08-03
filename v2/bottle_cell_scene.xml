@@ -1,0 +1,77 @@
+<!--
+Copyright 2026 Enactic, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+Cell variant of bottle_scene.xml: the same clamped bottle with a threaded cap,
+placed on the cell workspace table. Objects keep their pose relative to the
+arm base (pedestal scene -> cell: x+0.185, z+0.605; pedestal table top z=0.40,
+cell table top z=1.005). The cell provides floor, lights, cameras and the
+"home" keyframe via <attach>; task joints start at their zero defaults.
+-->
+<mujoco model="openarm_v20_bottle_cell">
+  <default>
+    <default class="visual">
+      <geom contype="0" conaffinity="0" group="2"/>
+    </default>
+    <default class="fixture">
+      <geom type="box" contype="1" conaffinity="1" friction="1 0.01 0.01" rgba="0.55 0.45 0.32 1"/>
+    </default>
+  </default>
+
+  <visual>
+    <global offwidth="1280" offheight="720"/>
+  </visual>
+
+  <asset>
+    <model name="cell" file="cell.xml"/>
+  </asset>
+
+  <worldbody>
+    <attach model="cell" prefix=""/>
+
+    <!-- BOTTLE: held in a clamp on the cell table so unscrewing torque cannot
+         spin it. Same threaded-cap mechanism as bottle_scene.xml. -->
+    <body name="bottle" pos="0.485 0.0 1.005">
+      <geom name="bottle_clamp" class="fixture" size="0.038 0.038 0.011" pos="0 0 0.011"/>
+      <geom name="bottle_body" type="cylinder" size="0.030 0.019" pos="0 0 0.041"
+            rgba="0.25 0.45 0.55 1" contype="1" conaffinity="1"/>
+      <!-- The neck sits inside the cap like a real threaded pair, so it must not
+           collide with it; grasps target the cap, which stays collidable. -->
+      <geom name="bottle_neck" type="cylinder" size="0.0115 0.015" pos="0 0 0.075"
+            rgba="0.25 0.45 0.55 1" class="visual"/>
+      <body name="bottle_cap" pos="0 0 0.075">
+        <!-- The turn joint is unlimited (hinge limits wrap beyond one revolution);
+             the slide's range bounds it through the thread coupling instead, like
+             threads running out. Armature is the thread's reflected inertia. -->
+        <joint name="cap_turn" type="hinge" axis="0 0 1" damping="0.05" frictionloss="0.02" armature="0.001"/>
+        <joint name="cap_rise" type="slide" axis="0 0 1" range="0 0.032" damping="0.5" armature="0.001"/>
+        <geom name="cap_grip" type="cylinder" fromto="0 0 -0.012 0 0 0.018" size="0.0125" mass="0.02"
+              rgba="0.75 0.25 0.2 1" contype="1" conaffinity="1"/>
+        <!-- Off-center tab on the cap's top face so the turn reads on camera. -->
+        <geom name="cap_mark" type="box" size="0.006 0.0018 0.0008" pos="0.006 0 0.0188" mass="0.001"
+              rgba="0.95 0.85 0.3 1" class="visual"/>
+      </body>
+    </body>
+  </worldbody>
+
+  <equality>
+    <!-- Screw thread: cap rise = 15 mm per full counterclockwise turn. -->
+    <joint name="cap_thread" joint1="cap_rise" joint2="cap_turn" polycoef="0 0.0023873 0 0 0" solref="0.005 1"/>
+    <weld name="grasp_right_cap" body1="openarm_right_ee_base_link" body2="bottle_cap" active="false" solref="0.02 1"/>
+    <weld name="grasp_left_cap"  body1="openarm_left_ee_base_link"  body2="bottle_cap" active="false" solref="0.02 1"/>
+  </equality>
+
+</mujoco>
