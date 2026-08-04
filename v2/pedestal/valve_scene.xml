@@ -15,16 +15,20 @@ limitations under the License.
 -->
 
 <!--
-Move a puck to a goal: a low puck on the table and two goal markers. The
-puck can be pushed to a goal with the closed gripper, or grasped and placed
-(pick-and-place) -- a small target for either style of manipulation.
+Valve: a fixed pipe with a turnable lever (revolute joint) on a table, with a
+graspable knob at the lever tip and inactive grasp welds for either arm.
 -->
+<mujoco model="openarm_v20_valve">
+  <compiler meshdir="../assets" angle="radian"/>
 
-<mujoco model="openarm_v20_move_puck">
-  <compiler meshdir="assets" angle="radian"/>
+  <default>
+    <default class="fixture">
+      <geom type="box" contype="1" conaffinity="1" friction="1 0.01 0.01" rgba="0.55 0.45 0.32 1"/>
+    </default>
+  </default>
 
-  <statistic center="0 0 0.6" extent="1.1" meansize="0.05"/>
-  <option timestep="0.001" />
+  <statistic center="0.30 0 0.55" extent="1.2" meansize="0.05"/>
+  <option timestep="0.001"/>
 
   <visual>
     <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
@@ -46,8 +50,8 @@ puck can be pushed to a goal with the closed gripper, or grasped and placed
     <light pos="0 0 2" dir="0 0 -1" directional="true"/>
     <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
 
-    <camera name="tablecam" pos="0.26 -0.18 1.15" xyaxes="1 0 0 0 1 0" fovy="60"/>
-    <camera name="frontcam" pos="0.95 -0.18 0.85" xyaxes="0 -1 0 0.3 0 1" fovy="55"/>
+    <camera name="tablecam" pos="0.30 0.0 1.30" xyaxes="1 0 0 0 1 0" fovy="60"/>
+    <camera name="frontcam" pos="1.05 0.0 0.90" xyaxes="0 -1 0 0.3 0 1" fovy="55"/>
 
     <!-- bimanual arms mounted on the pedestal -->
     <attach model="arm_pedestal" prefix=""/>
@@ -58,34 +62,36 @@ puck can be pushed to a goal with the closed gripper, or grasped and placed
          table, so absolute heights differ. -->
     <body name="table" pos="0.47 0.0 0.36">
       <geom name="table_top" type="box" size="0.41 0.55 0.04" rgba="0.82 0.71 0.55 1"
-            friction="1 0.005 0.0001" contype="1" conaffinity="1" />
+            friction="1 0.005 0.0001" contype="1" conaffinity="1"/>
     </body>
 
-    <!-- A low puck (70 x 70 x 44 mm) to push or grasp, centered between the
-         grippers, clear of their home-pose zone. -->
-    <body name="puck" pos="0.30 0.0 0.422">
-      <freejoint />
-      <geom name="puck_geom" type="box" size="0.035 0.035 0.022" rgba="0.85 0.4 0.1 1"
-            mass="0.12" friction="0.9 0.01 0.001" contype="1" conaffinity="1" />
+    <!-- VALVE: a fixed pipe with a lever that turns about the vertical axis; grasp
+         the knob at the lever tip and sweep it in an arc. -->
+    <body name="valve_base" pos="0.25 0.0 0.40">
+      <geom name="valve_pipe" class="fixture" type="cylinder" size="0.015 0.0275" pos="0 0 0.0275" rgba="0.4 0.4 0.45 1"/>
+      <body name="valve" pos="0 0 0.065">
+        <joint name="valve_turn" type="hinge" axis="0 0 1" range="-3.0 3.0" damping="0.5" frictionloss="0.05"/>
+        <geom name="valve_hub"   type="cylinder" fromto="0 0 -0.006 0 0 0.006" size="0.014" mass="0.05" rgba="0.3 0.3 0.35 1" contype="1" conaffinity="1"/>
+        <geom name="valve_lever" type="box" size="0.035 0.008 0.006" pos="0.035 0 0" mass="0.05" rgba="0.7 0.2 0.2 1" contype="1" conaffinity="1"/>
+        <geom name="valve_grip"  type="cylinder" fromto="0.062 0 -0.02 0.062 0 0.02" size="0.007" mass="0.02" rgba="0.2 0.2 0.22 1" contype="1" conaffinity="1"/>
+      </body>
     </body>
 
-    <!-- Goal regions (visual markers, non-colliding). -->
-    <body name="goal_a" pos="0.44 -0.16 0.401">
-      <site name="goal_a_site" type="cylinder" size="0.05 0.001" rgba="0.2 0.8 0.3 0.4"/>
-    </body>
-    <body name="goal_b" pos="0.44 0.16 0.401">
-      <site name="goal_b_site" type="cylinder" size="0.05 0.001" rgba="0.3 0.5 0.9 0.4"/>
-    </body>
   </worldbody>
 
+  <equality>
+    <weld name="grasp_right_valve" body1="openarm_right_ee_base_link" body2="valve" active="false" solref="0.02 1"/>
+    <weld name="grasp_left_valve"  body1="openarm_left_ee_base_link"  body2="valve" active="false" solref="0.02 1"/>
+  </equality>
+
   <keyframe>
-    <!-- nq = left arm(0-8) + right arm(9-17) + puck(18-24) = 25. Arms at the
-         shared "home" pose (same as pedestal.xml, with ctrl set so the
-         position actuators hold it); puck resting on the table. -->
+    <!-- nq = left arm(0-8) + right arm(9-17) + valve(18) = 19.
+         Arms at the shared "home" pose (same as pedestal.xml, with ctrl set so
+         the position actuators hold it); valve closed. -->
     <key name="home"
       qpos="0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
             0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
-            0.30 0.0 0.422 1 0 0 0"
+            0"
       ctrl="0 0 0 1.570796 0 0 0 0
             0 0 0 1.570796 0 0 0 0"/>
   </keyframe>

@@ -29,7 +29,7 @@ duplicate the ball (with welds for both arms) for a simultaneous
 two-ball catch.
 -->
 <mujoco model="openarm_v20_catch">
-  <compiler meshdir="assets" angle="radian"/>
+  <compiler meshdir="../assets" angle="radian"/>
 
   <statistic center="0.3 -0.2 0.9" extent="1.4" meansize="0.05"/>
   <option timestep="0.001"/>

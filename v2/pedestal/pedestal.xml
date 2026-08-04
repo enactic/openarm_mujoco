@@ -15,7 +15,7 @@ limitations under the License.
 -->
 
 <mujoco model="openarm_v20_pedestal">
-  <compiler meshdir="assets" angle="radian"/>
+  <compiler meshdir="../assets" angle="radian"/>
 
   <statistic center="1.3 0 0.6" extent="3.5" meansize="0.05"/>
   <option timestep="0.001" />

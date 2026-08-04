@@ -15,13 +15,18 @@ limitations under the License.
 -->
 
 <!--
-Valve: a fixed pipe with a turnable lever (revolute joint) on a table, with a
-graspable knob at the lever tip and inactive grasp welds for either arm.
+Bottle cap: a bottle held in a table fixture, with a threaded cap. The cap's
+turn (hinge) and rise (slide) joints are coupled like a screw thread, so
+turning it counterclockwise lifts it off the neck. Inactive grasp welds on
+the cap let either arm grasp and unscrew it.
 -->
-<mujoco model="openarm_v20_valve">
-  <compiler meshdir="assets" angle="radian"/>
+<mujoco model="openarm_v20_bottle">
+  <compiler meshdir="../assets" angle="radian"/>
 
   <default>
+    <default class="visual">
+      <geom contype="0" conaffinity="0" group="2"/>
+    </default>
     <default class="fixture">
       <geom type="box" contype="1" conaffinity="1" friction="1 0.01 0.01" rgba="0.55 0.45 0.32 1"/>
     </default>
@@ -65,33 +70,48 @@ graspable knob at the lever tip and inactive grasp welds for either arm.
             friction="1 0.005 0.0001" contype="1" conaffinity="1"/>
     </body>
 
-    <!-- VALVE: a fixed pipe with a lever that turns about the vertical axis; grasp
-         the knob at the lever tip and sweep it in an arc. -->
-    <body name="valve_base" pos="0.25 0.0 0.40">
-      <geom name="valve_pipe" class="fixture" type="cylinder" size="0.015 0.0275" pos="0 0 0.0275" rgba="0.4 0.4 0.45 1"/>
-      <body name="valve" pos="0 0 0.065">
-        <joint name="valve_turn" type="hinge" axis="0 0 1" range="-3.0 3.0" damping="0.5" frictionloss="0.05"/>
-        <geom name="valve_hub"   type="cylinder" fromto="0 0 -0.006 0 0 0.006" size="0.014" mass="0.05" rgba="0.3 0.3 0.35 1" contype="1" conaffinity="1"/>
-        <geom name="valve_lever" type="box" size="0.035 0.008 0.006" pos="0.035 0 0" mass="0.05" rgba="0.7 0.2 0.2 1" contype="1" conaffinity="1"/>
-        <geom name="valve_grip"  type="cylinder" fromto="0.062 0 -0.02 0.062 0 0.02" size="0.007" mass="0.02" rgba="0.2 0.2 0.22 1" contype="1" conaffinity="1"/>
+    <!-- BOTTLE: held in a clamp on the table so unscrewing torque cannot spin it.
+         The cap turns about the vertical axis and the thread coupling (equality
+         below, 15 mm per turn) lifts it as it unscrews; two full turns free it. -->
+    <body name="bottle" pos="0.30 0.0 0.40">
+      <geom name="bottle_clamp" class="fixture" size="0.038 0.038 0.011" pos="0 0 0.011"/>
+      <geom name="bottle_body" type="cylinder" size="0.030 0.019" pos="0 0 0.041"
+            rgba="0.25 0.45 0.55 1" contype="1" conaffinity="1"/>
+      <!-- The neck sits inside the cap like a real threaded pair, so it must not
+           collide with it; grasps target the cap, which stays collidable. -->
+      <geom name="bottle_neck" type="cylinder" size="0.0115 0.015" pos="0 0 0.075"
+            rgba="0.25 0.45 0.55 1" class="visual"/>
+      <body name="bottle_cap" pos="0 0 0.075">
+        <!-- The turn joint is unlimited (hinge limits wrap beyond one revolution);
+             the slide's range bounds it through the thread coupling instead, like
+             threads running out. Armature is the thread's reflected inertia. -->
+        <joint name="cap_turn" type="hinge" axis="0 0 1" damping="0.05" frictionloss="0.02" armature="0.001"/>
+        <joint name="cap_rise" type="slide" axis="0 0 1" range="0 0.032" damping="0.5" armature="0.001"/>
+        <geom name="cap_grip" type="cylinder" fromto="0 0 -0.012 0 0 0.018" size="0.0125" mass="0.02"
+              rgba="0.75 0.25 0.2 1" contype="1" conaffinity="1"/>
+        <!-- Off-center tab on the cap's top face so the turn reads on camera. -->
+        <geom name="cap_mark" type="box" size="0.006 0.0018 0.0008" pos="0.006 0 0.0188" mass="0.001"
+              rgba="0.95 0.85 0.3 1" class="visual"/>
       </body>
     </body>
 
   </worldbody>
 
   <equality>
-    <weld name="grasp_right_valve" body1="openarm_right_ee_base_link" body2="valve" active="false" solref="0.02 1"/>
-    <weld name="grasp_left_valve"  body1="openarm_left_ee_base_link"  body2="valve" active="false" solref="0.02 1"/>
+    <!-- Screw thread: cap rise = 15 mm per full counterclockwise turn. -->
+    <joint name="cap_thread" joint1="cap_rise" joint2="cap_turn" polycoef="0 0.0023873 0 0 0" solref="0.005 1"/>
+    <weld name="grasp_right_cap" body1="openarm_right_ee_base_link" body2="bottle_cap" active="false" solref="0.02 1"/>
+    <weld name="grasp_left_cap"  body1="openarm_left_ee_base_link"  body2="bottle_cap" active="false" solref="0.02 1"/>
   </equality>
 
   <keyframe>
-    <!-- nq = left arm(0-8) + right arm(9-17) + valve(18) = 19.
+    <!-- nq = left arm(0-8) + right arm(9-17) + cap turn/rise(18-19) = 20.
          Arms at the shared "home" pose (same as pedestal.xml, with ctrl set so
-         the position actuators hold it); valve closed. -->
+         the position actuators hold it); cap screwed down. -->
     <key name="home"
       qpos="0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
             0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
-            0"
+            0 0"
       ctrl="0 0 0 1.570796 0 0 0 0
             0 0 0 1.570796 0 0 0 0"/>
   </keyframe>
