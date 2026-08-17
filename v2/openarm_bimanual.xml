@@ -36,7 +36,11 @@ limitations under the License.
         <motor forcelimited="true" forcerange="-7 7" />
       </default>
       <default class="motor_finger">
-        <joint limited="true" type="hinge" damping="2" />
+        <!-- The finger joints are the only driven joints without rotor inertia;
+             holding an object with a partly closed jaw made them ring against
+             the contact at ~11 Hz.  Matches the DM4310 armature the finger
+             actuator is tuned as. -->
+        <joint limited="true" type="hinge" damping="2" armature="0.01" />
         <position forcelimited="true" forcerange="-333 333" ctrllimited="true" ctrlrange="0 0.7854" />
       </default>
       <default class="lifter">
