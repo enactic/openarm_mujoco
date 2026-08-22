@@ -19,7 +19,7 @@ Throwing: the arm picks a ball off a small side table (inactive grasp weld)
 and throws it into a bin sitting on the floor beyond its reach, so a
 ballistic throw is required, not a place. The bin lands on the floor, which
 is why this scene keeps a small side table instead of the shared cell
-table -- the large tabletop would cover the bin's landing area. The
+table - the large tabletop would cover the bin's landing area. The
 "throw_ready" keyframe is a wind-up-adjacent start pose for the throw.
 -->
 <mujoco model="openarm_v20_throw">
