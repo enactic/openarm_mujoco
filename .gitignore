@@ -17,4 +17,7 @@
 *.pyc
 .DS_Store
 /build/
+/web/node_modules/
+/web/playwright-report/
+/web/test-results/
 __pycache__/
