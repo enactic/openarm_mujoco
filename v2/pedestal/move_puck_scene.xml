@@ -17,7 +17,7 @@ limitations under the License.
 <!--
 Move a puck to a goal: a low puck on the table and two goal markers. The
 puck can be pushed to a goal with the closed gripper, or grasped and placed
-(pick-and-place) -- a small target for either style of manipulation.
+(pick-and-place) - a small target for either style of manipulation.
 -->
 
 <mujoco model="openarm_v20_move_puck">

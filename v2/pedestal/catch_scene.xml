@@ -15,13 +15,13 @@ limitations under the License.
 -->
 
 <!--
-Catching: a ball is thrown through the air toward the right arm -- a
+Catching: a ball is thrown through the air toward the right arm - a
 controller sets the ball's launch pose and velocity at reset, and under
 gravity it flies a parabola. Two RGB-D cameras (ballcam0/1) face the flight
 corridor for vision-based tracking. There is no table: the ball is caught
 in flight (inactive grasp weld on the ball) or falls to the floor.
 The "catch_ready" keyframe is an interception-ready start pose (gripper
-raised toward the throw, fingers open) -- catching leaves no time to get
+raised toward the throw, fingers open) - catching leaves no time to get
 into position after launch.
 Harder variants are easy to build from this scene: add a left-arm grasp
 weld and a mirrored ready pose to catch throws toward either arm, or
@@ -88,7 +88,7 @@ two-ball catch.
          "home": the shared pedestal pose (ctrl set so the position actuators
          hold it); ball at the default launch point.
          "catch_ready": right arm raised toward the throw with the fingers
-         open, left arm hanging -- the recommended start for catching. -->
+         open, left arm hanging - the recommended start for catching. -->
     <key name="home"
       qpos="0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0
             0.0 0.0 0.0 1.570796 0.0 0.0 0.0 0.0 0.0

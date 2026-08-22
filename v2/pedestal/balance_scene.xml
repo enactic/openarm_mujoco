@@ -16,7 +16,7 @@ limitations under the License.
 
 <!--
 Ball balance: a flat plate (weldable to the right gripper) and a free ball.
-Tilting the plate rolls the ball -- the classic ball-on-plate stabilisation
+Tilting the plate rolls the ball - the classic ball-on-plate stabilisation
 task on a 7-DOF arm. The plate weld starts inactive; a controller activates
 it at runtime after posing the arm.
 -->
