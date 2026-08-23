@@ -12,19 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-repos:
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.11
-    hooks:
-      - id: ruff-check
-        args:
-          - --fix
-      - id: ruff-format
-  - repo: https://github.com/biomejs/pre-commit
-    rev: v2.5.3
-    hooks:
-      - id: biome-check
-  - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.12.0-2
-    hooks:
-      - id: shfmt
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci: "
+    open-pull-requests-limit: 10
+  - package-ecosystem: "npm"
+    directory: "/web"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "web: "
+    open-pull-requests-limit: 10

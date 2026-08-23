@@ -1,0 +1,25 @@
+{
+  "default": "cell/demo.xml",
+  "scenes": [
+    "openarm_bimanual.xml",
+    "cell/cell.xml",
+    "cell/demo.xml",
+    "cell/articulated_cell_scene.xml",
+    "cell/bottle_cell_scene.xml",
+    "cell/move_puck_cell_scene.xml",
+    "cell/peg_socket_cell_scene.xml",
+    "cell/tool_cell_scene.xml",
+    "cell/valve_cell_scene.xml",
+    "pedestal/pedestal.xml",
+    "pedestal/articulated_scene.xml",
+    "pedestal/balance_scene.xml",
+    "pedestal/bottle_scene.xml",
+    "pedestal/catch_scene.xml",
+    "pedestal/move_puck_scene.xml",
+    "pedestal/peg_socket_scene.xml",
+    "pedestal/throw_scene.xml",
+    "pedestal/throw_multi_scene.xml",
+    "pedestal/tool_scene.xml",
+    "pedestal/valve_scene.xml"
+  ]
+}

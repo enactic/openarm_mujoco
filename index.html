@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!--
+  Copyright 2026 Enactic, Inc.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>OpenArm MuJoCo Web</title>
+    <style>
+      body { margin: 0; overflow: hidden; font-family: system-ui, sans-serif; }
+      #panel {
+        position: fixed; top: 10px; left: 10px; width: 270px;
+        background: rgba(255, 255, 255, 0.92); border-radius: 8px;
+        padding: 10px 14px; font-size: 12px; max-height: calc(100vh - 40px);
+        overflow-y: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      }
+      #panel h3 { margin: 4px 0 6px; font-size: 13px; }
+      #status { margin-top: 8px; white-space: pre; font-family: monospace; font-size: 11px; }
+      #help { font-size: 10px; margin: 4px 0; }
+      button { margin-right: 6px; }
+    </style>
+  </head>
+  <body>
+    <div id="panel">
+      <h3>OpenArm MuJoCo Web</h3>
+      <div style="margin-bottom: 6px">
+        <select id="scene-select" style="max-width: 100%"></select>
+      </div>
+      <div>
+        <button id="reset-button">Reset</button>
+      </div>
+      <details open>
+        <summary>key bindings</summary>
+        <pre id="help"></pre>
+      </details>
+      <div id="status">loading…</div>
+    </div>
+    <script>
+      // Build the import map at runtime from web/package-lock.json, so the
+      // page and the tests always use the same dependency versions and there
+      // is a single place to bump them. The import map just has to be
+      // registered before any module resolution starts, which this loader
+      // guarantees by inserting the module script afterwards.
+      (async () => {
+        try {
+          const lock = await (await fetch("web/package-lock.json")).json();
+          const v = (name) => lock.packages[`node_modules/${name}`].version;
+          const importmap = document.createElement("script");
+          importmap.type = "importmap";
+          importmap.textContent = JSON.stringify({
+            imports: {
+              "three": `https://cdn.jsdelivr.net/npm/three@${v("three")}/build/three.module.js`,
+              "three/examples/jsm/controls/OrbitControls.js":
+                `https://cdn.jsdelivr.net/npm/three@${v("three")}/examples/jsm/controls/OrbitControls.js`,
+              "@mujoco/mujoco":
+                `https://cdn.jsdelivr.net/npm/@mujoco/mujoco@${v("@mujoco/mujoco")}/mujoco.js`,
+            },
+          });
+          document.head.appendChild(importmap);
+          const main = document.createElement("script");
+          main.type = "module";
+          main.src = "web/main.js";
+          document.head.appendChild(main);
+        } catch (e) {
+          document.getElementById("status").textContent = `load failed: ${e.message ?? e}`;
+          throw e;
+        }
+      })();
+    </script>
+  </body>
+</html>

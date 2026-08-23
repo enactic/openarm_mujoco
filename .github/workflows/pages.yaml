@@ -1,0 +1,59 @@
+# Copyright 2026 Enactic, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Pages
+on:
+  push:
+    branches-ignore:
+      - 'copilot/**'
+      - 'dependabot/**'
+    tags:
+      - '**'
+  pull_request:
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Collect the published files
+        # OpenArm MuJoCo Web only needs the page (index.html), its modules
+        # (web/*.js; three and @mujoco/mujoco come from the jsDelivr CDN),
+        # web/package-lock.json (the page builds its import map from it) and
+        # the v2 model files the page fetches.
+        run: |
+          mkdir -p _site/web
+          cp index.html _site/
+          cp web/*.js web/package-lock.json _site/web/
+          cp -r v2 _site/
+      - uses: actions/upload-pages-artifact@v4
+  deploy:
+    name: Deploy
+    if: github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
