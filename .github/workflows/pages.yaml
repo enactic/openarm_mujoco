@@ -42,7 +42,7 @@ jobs:
           cp index.html _site/
           cp web/*.js web/package-lock.json _site/web/
           cp -r v2 _site/
-      - uses: actions/upload-pages-artifact@v4
+      - uses: actions/upload-pages-artifact@v5
   deploy:
     name: Deploy
     if: github.event_name == 'push'
