@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Prepare environment variables
         run: |
           PACKAGE_NAME=$(yq --unwrapScalar .project.name pyproject.toml | tr '-' '_')
@@ -76,7 +76,7 @@ jobs:
       contents: write
       discussions: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/download-artifact@v8
         with:
           name: source
