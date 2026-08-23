@@ -41,7 +41,7 @@ jobs:
             VERSION=$(yq --unwrapScalar .project.version pyproject.toml)
             echo "VERSION=${VERSION}" >> "${GITHUB_ENV}"
           fi
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: 3
       - name: Install dependencies
