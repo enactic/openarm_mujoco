@@ -15,6 +15,9 @@
 name: Preview comment
 on:
   pull_request_target:
+    branches-ignore:
+      - 'copilot/**'
+      - 'dependabot/**'
     types:
       - opened
 permissions:
