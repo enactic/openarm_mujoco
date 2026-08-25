@@ -92,7 +92,10 @@ function materialHasTexture(model, matId) {
   // mat_texid is nmat × mjNTEXROLE; any non-negative role means textured.
   const texIds = asArray(model.mat_texid);
   if (!texIds || matId < 0) return false;
-  const nrole = Math.max(1, Math.floor(texIds.length / Math.max(model.nmat, 1)));
+  const nrole = Math.max(
+    1,
+    Math.floor(texIds.length / Math.max(model.nmat, 1)),
+  );
   const base = matId * nrole;
   for (let r = 0; r < nrole; r += 1) {
     if (texIds[base + r] >= 0) return true;
