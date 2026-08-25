@@ -58,6 +58,103 @@ async function fetchModelFile(path) {
 const fetchModelBytes = async (path) =>
   new Uint8Array(await (await fetchModelFile(path)).arrayBuffer());
 
+function asArray(value) {
+  if (!value) return value;
+  if (typeof value.getView === "function") return value.getView();
+  return value;
+}
+
+function createCheckerTexture(repeatX = 5, repeatY = 5) {
+  const size = 256;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  const cells = 8;
+  const cell = size / cells;
+  for (let y = 0; y < cells; y += 1) {
+    for (let x = 0; x < cells; x += 1) {
+      const dark = (x + y) % 2 === 0;
+      ctx.fillStyle = dark ? "#334455" : "#1a2833";
+      ctx.fillRect(x * cell, y * cell, cell, cell);
+    }
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(repeatX, repeatY);
+  texture.colorSpace = THREE.NoColorSpace;
+  texture.anisotropy = 4;
+  return texture;
+}
+
+function materialHasTexture(model, matId) {
+  // mat_texid is nmat × mjNTEXROLE; any non-negative role means textured.
+  const texIds = asArray(model.mat_texid);
+  if (!texIds || matId < 0) return false;
+  const nrole = Math.max(
+    1,
+    Math.floor(texIds.length / Math.max(model.nmat, 1)),
+  );
+  const base = matId * nrole;
+  for (let r = 0; r < nrole; r += 1) {
+    if (texIds[base + r] >= 0) return true;
+  }
+  return false;
+}
+
+function resolveGeomAppearance(model, geomIndex, textureCache) {
+  const geomRgba = asArray(model.geom_rgba);
+  const geomMatid = asArray(model.geom_matid);
+  let rgba = [
+    geomRgba[geomIndex * 4],
+    geomRgba[geomIndex * 4 + 1],
+    geomRgba[geomIndex * 4 + 2],
+    geomRgba[geomIndex * 4 + 3],
+  ];
+
+  // Defaults match MuJoCo's Phong-like material model (not PBR metalness).
+  let shininess = 50;
+  let specular = 0.5;
+  let emission = 0;
+  let map = null;
+  const matId = geomMatid?.[geomIndex] ?? -1;
+
+  if (matId >= 0) {
+    // MuJoCo applies material rgba over the geom default (often 0.5 gray).
+    const matRgba = asArray(model.mat_rgba);
+    rgba = [
+      matRgba[matId * 4],
+      matRgba[matId * 4 + 1],
+      matRgba[matId * 4 + 2],
+      matRgba[matId * 4 + 3],
+    ];
+
+    const matShininess = asArray(model.mat_shininess)?.[matId] ?? 0.5;
+    const matSpecular = asArray(model.mat_specular)?.[matId] ?? 0.5;
+    const matEmission = asArray(model.mat_emission)?.[matId] ?? 0;
+    shininess = Math.max(1, matShininess * 100);
+    specular = matSpecular;
+    emission = matEmission;
+
+    if (materialHasTexture(model, matId)) {
+      const texRepeat = asArray(model.mat_texrepeat);
+      const repeatX = texRepeat?.[matId * 2] ?? 1;
+      const repeatY = texRepeat?.[matId * 2 + 1] ?? 1;
+      const key = `${Math.max(repeatX, 1)},${Math.max(repeatY, 1)}`;
+      if (!textureCache.has(key)) {
+        textureCache.set(
+          key,
+          createCheckerTexture(Math.max(repeatX, 1), Math.max(repeatY, 1)),
+        );
+      }
+      map = textureCache.get(key);
+    }
+  }
+
+  return { rgba, shininess, specular, emission, map };
+}
+
 class App {
   constructor() {
     this.mjvPerturb = new mujoco.MjvPerturb();
@@ -66,6 +163,7 @@ class App {
     this.maxGeoms = 2 ** 14;
     this.meshes = [];
     this.bufferGeometryCache = new Map();
+    this.checkerTextureCache = new Map();
     this.teleop = new TeleopState();
     this.held = new Set();
     this.lifterHeight = 0;
@@ -76,6 +174,8 @@ class App {
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+    // MuJoCo material rgba is authored for direct display (not Three's sRGB workflow).
+    this.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     document.body.appendChild(this.renderer.domElement);
 
     this.camera = new THREE.PerspectiveCamera(
@@ -106,6 +206,8 @@ class App {
     this.meshes = [];
     for (const geom of this.bufferGeometryCache.values()) geom.dispose();
     this.bufferGeometryCache.clear();
+    for (const texture of this.checkerTextureCache.values()) texture.dispose();
+    this.checkerTextureCache.clear();
     if (this.markers) {
       for (const side of SIDES) this.scene.remove(this.markers[side]);
       this.markers = null;
@@ -311,6 +413,54 @@ class App {
     return geom;
   }
 
+  applyGeomAppearance(mesh, g) {
+    const mat = mesh.material;
+    let rgba = g.rgba;
+    let shininess = 50;
+    let specular = 0.5;
+    let emission = 0;
+    let map = null;
+    if (
+      g.objtype === mujoco.mjtObj.mjOBJ_GEOM.value &&
+      g.objid >= 0 &&
+      this.mjModel
+    ) {
+      const appearance = resolveGeomAppearance(
+        this.mjModel,
+        g.objid,
+        this.checkerTextureCache,
+      );
+      rgba = appearance.rgba;
+      shininess = appearance.shininess;
+      specular = appearance.specular;
+      emission = appearance.emission;
+      map = appearance.map;
+    }
+
+    mat.color.setRGB(rgba[0], rgba[1], rgba[2]);
+    let opacity = rgba[3];
+    let transparent = opacity < 0.999;
+    let depthWrite = true;
+    if (
+      g.objtype === mujoco.mjtObj.mjOBJ_GEOM.value &&
+      this.transparentGeomIds.has(g.objid)
+    ) {
+      opacity = 0.15;
+      transparent = true;
+      depthWrite = false;
+    }
+    mat.opacity = opacity;
+    mat.transparent = transparent;
+    mat.depthWrite = depthWrite;
+    mat.shininess = shininess;
+    mat.specular.setRGB(specular, specular, specular);
+    mat.emissive.setRGB(emission, emission, emission);
+    if (mat.map !== map) {
+      mat.map = map;
+      mat.needsUpdate = true;
+    }
+  }
+
   update(dt) {
     this.controls.update();
     if (!this.mjModel) return; // scene is loading
@@ -354,19 +504,7 @@ class App {
         this.scene.add(mesh);
       }
       mesh.visible = true;
-      mesh.material.color.setRGB(g.rgba[0], g.rgba[1], g.rgba[2]);
-      mesh.material.opacity = g.rgba[3];
-      mesh.material.transparent = g.rgba[3] < 1;
-      if (
-        g.objtype === mujoco.mjtObj.mjOBJ_GEOM.value &&
-        this.transparentGeomIds.has(g.objid)
-      ) {
-        mesh.material.opacity = 0.15;
-        mesh.material.transparent = true;
-        mesh.material.depthWrite = false;
-      } else {
-        mesh.material.depthWrite = true;
-      }
+      this.applyGeomAppearance(mesh, g);
       mesh.matrixAutoUpdate = false;
       mesh.matrix.set(
         g.mat[0],
