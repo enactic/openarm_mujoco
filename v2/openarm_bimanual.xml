@@ -36,7 +36,11 @@ limitations under the License.
         <motor forcelimited="true" forcerange="-7 7" />
       </default>
       <default class="motor_finger">
-        <joint limited="true" type="hinge" damping="2" />
+        <!-- The finger joints are the only driven joints without rotor inertia;
+             holding an object with a partly closed jaw made them ring against
+             the contact at ~11 Hz.  Matches the DM4310 armature the finger
+             actuator is tuned as. -->
+        <joint limited="true" type="hinge" damping="2" armature="0.01" />
         <position forcelimited="true" forcerange="-333 333" ctrllimited="true" ctrlrange="0 0.7854" />
       </default>
       <default class="lifter">
@@ -61,6 +65,13 @@ limitations under the License.
       <default class="collision">
         <geom material="collision_material" condim="3" conaffinity="1" priority="1" group="3" solref="0.005 1" friction="1 0.01 0.01" />
         <equality solimp="0.99 0.999 1e-05" solref="0.005 1" />
+        <!-- The fingertips grip with condim=4, which activates the torsional
+             friction coefficient (the second entry of friction) so a pinched
+             object cannot spin about the pinch axis.  0.01 m is the effective
+             radius of the pad's contact patch; rolling friction stays off. -->
+        <default class="fingertip">
+          <geom condim="4" />
+        </default>
       </default>
       <default class="visual">
         <geom material="visualgeom" contype="0" conaffinity="0" group="2" />
@@ -68,6 +79,15 @@ limitations under the License.
     </default>
   </default>
   <compiler angle="radian" meshdir="assets" />
+
+  <!-- Grasping needs the elliptic friction cone: under the default pyramidal
+       cone a pinched object creeps out of the jaws under load however high the
+       friction coefficients are, and impratio raises the stiffness of the
+       friction constraints relative to the normal ones so a firmly held object
+       stops sliding on the pads.  <option> does not carry across <attach>, so
+       every scene repeats these two settings. -->
+  <option cone="elliptic" impratio="10"/>
+
   <asset>
     <material name="collision_material" rgba="0.8 0.2 0.2 0.5" />
     <material name="visualgeom" rgba="0.7 0.7 0.7 1" />
@@ -239,10 +259,10 @@ limitations under the License.
                       <geom name="finger_inner_left_00" type="mesh" mesh="finger_inner_left_00" class="visual" material="matte_black" />
                       <geom name="finger_inner_left_01" type="mesh" mesh="finger_inner_left_01" class="visual" material="matte_black" />
                       <geom name="finger_inner_left_02" type="mesh" mesh="finger_inner_left_02" class="visual" material="pale_silver" />
-                      <geom name="finger_inner_left_collision_00" type="mesh" mesh="finger_inner_left_collision_00" class="collision" />
-                      <geom name="finger_inner_left_collision_01" type="mesh" mesh="finger_inner_left_collision_01" class="collision" />
-                      <geom name="finger_inner_left_collision_02" type="mesh" mesh="finger_inner_left_collision_02" class="collision" />
-                      <geom name="finger_inner_left_collision_03" type="mesh" mesh="finger_inner_left_collision_03" class="collision" />
+                      <geom name="finger_inner_left_collision_00" type="mesh" mesh="finger_inner_left_collision_00" class="fingertip" />
+                      <geom name="finger_inner_left_collision_01" type="mesh" mesh="finger_inner_left_collision_01" class="fingertip" />
+                      <geom name="finger_inner_left_collision_02" type="mesh" mesh="finger_inner_left_collision_02" class="fingertip" />
+                      <geom name="finger_inner_left_collision_03" type="mesh" mesh="finger_inner_left_collision_03" class="fingertip" />
                     </body>
                     <body name="openarm_left_ee_outer_finger" pos="-0.00143 0.018 -0.068">
                       <inertial pos="-0.012796 0.0020183 -0.026792" quat="0.982097 -0.0906989 -0.165079 0.00294117" mass="0.11372" diaginertia="3.70662e-05 3.60159e-05 1.33599e-05" />
@@ -250,10 +270,10 @@ limitations under the License.
                       <geom name="finger_outer_left_00" type="mesh" mesh="finger_outer_left_00" class="visual" material="matte_black" />
                       <geom name="finger_outer_left_01" type="mesh" mesh="finger_outer_left_01" class="visual" material="matte_black" />
                       <geom name="finger_outer_left_02" type="mesh" mesh="finger_outer_left_02" class="visual" material="pale_silver" />
-                      <geom name="finger_outer_left_collision_00" type="mesh" mesh="finger_outer_left_collision_00" class="collision" />
-                      <geom name="finger_outer_left_collision_01" type="mesh" mesh="finger_outer_left_collision_01" class="collision" />
-                      <geom name="finger_outer_left_collision_02" type="mesh" mesh="finger_outer_left_collision_02" class="collision" />
-                      <geom name="finger_outer_left_collision_03" type="mesh" mesh="finger_outer_left_collision_03" class="collision" />
+                      <geom name="finger_outer_left_collision_00" type="mesh" mesh="finger_outer_left_collision_00" class="fingertip" />
+                      <geom name="finger_outer_left_collision_01" type="mesh" mesh="finger_outer_left_collision_01" class="fingertip" />
+                      <geom name="finger_outer_left_collision_02" type="mesh" mesh="finger_outer_left_collision_02" class="fingertip" />
+                      <geom name="finger_outer_left_collision_03" type="mesh" mesh="finger_outer_left_collision_03" class="fingertip" />
                     </body>
                   </body>
                 </body>
@@ -327,10 +347,10 @@ limitations under the License.
                       <geom name="finger_inner_right_00" type="mesh" mesh="finger_inner_right_00" class="visual" material="matte_black" />
                       <geom name="finger_inner_right_01" type="mesh" mesh="finger_inner_right_01" class="visual" material="matte_black" />
                       <geom name="finger_inner_right_02" type="mesh" mesh="finger_inner_right_02" class="visual" material="pale_silver" />
-                      <geom name="finger_inner_right_collision_00" type="mesh" mesh="finger_inner_right_collision_00" class="collision" />
-                      <geom name="finger_inner_right_collision_01" type="mesh" mesh="finger_inner_right_collision_01" class="collision" />
-                      <geom name="finger_inner_right_collision_02" type="mesh" mesh="finger_inner_right_collision_02" class="collision" />
-                      <geom name="finger_inner_right_collision_03" type="mesh" mesh="finger_inner_right_collision_03" class="collision" />
+                      <geom name="finger_inner_right_collision_00" type="mesh" mesh="finger_inner_right_collision_00" class="fingertip" />
+                      <geom name="finger_inner_right_collision_01" type="mesh" mesh="finger_inner_right_collision_01" class="fingertip" />
+                      <geom name="finger_inner_right_collision_02" type="mesh" mesh="finger_inner_right_collision_02" class="fingertip" />
+                      <geom name="finger_inner_right_collision_03" type="mesh" mesh="finger_inner_right_collision_03" class="fingertip" />
                     </body>
                     <body name="openarm_right_ee_outer_finger" pos="-0.00143 -0.018 -0.068">
                       <inertial pos="-0.012796 -0.0020183 -0.026792" quat="0.982097 0.0906989 -0.165079 -0.00294117" mass="0.11372" diaginertia="3.70662e-05 3.60159e-05 1.33599e-05" />
@@ -338,10 +358,10 @@ limitations under the License.
                       <geom name="finger_outer_right_00" type="mesh" mesh="finger_outer_right_00" class="visual" material="matte_black" />
                       <geom name="finger_outer_right_01" type="mesh" mesh="finger_outer_right_01" class="visual" material="matte_black" />
                       <geom name="finger_outer_right_02" type="mesh" mesh="finger_outer_right_02" class="visual" material="pale_silver" />
-                      <geom name="finger_outer_right_collision_00" type="mesh" mesh="finger_outer_right_collision_00" class="collision" />
-                      <geom name="finger_outer_right_collision_01" type="mesh" mesh="finger_outer_right_collision_01" class="collision" />
-                      <geom name="finger_outer_right_collision_02" type="mesh" mesh="finger_outer_right_collision_02" class="collision" />
-                      <geom name="finger_outer_right_collision_03" type="mesh" mesh="finger_outer_right_collision_03" class="collision" />
+                      <geom name="finger_outer_right_collision_00" type="mesh" mesh="finger_outer_right_collision_00" class="fingertip" />
+                      <geom name="finger_outer_right_collision_01" type="mesh" mesh="finger_outer_right_collision_01" class="fingertip" />
+                      <geom name="finger_outer_right_collision_02" type="mesh" mesh="finger_outer_right_collision_02" class="fingertip" />
+                      <geom name="finger_outer_right_collision_03" type="mesh" mesh="finger_outer_right_collision_03" class="fingertip" />
                     </body>
                   </body>
                 </body>

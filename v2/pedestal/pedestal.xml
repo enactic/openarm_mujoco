@@ -18,7 +18,7 @@ limitations under the License.
   <compiler meshdir="../assets" angle="radian"/>
 
   <statistic center="1.3 0 0.6" extent="3.5" meansize="0.05"/>
-  <option timestep="0.001" />
+  <option timestep="0.001" cone="elliptic" impratio="10" />
 
   <visual>
     <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>

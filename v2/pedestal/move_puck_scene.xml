@@ -24,7 +24,7 @@ puck can be pushed to a goal with the closed gripper, or grasped and placed
   <compiler meshdir="../assets" angle="radian"/>
 
   <statistic center="0 0 0.6" extent="1.1" meansize="0.05"/>
-  <option timestep="0.001" />
+  <option timestep="0.001" cone="elliptic" impratio="10" />
 
   <visual>
     <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>

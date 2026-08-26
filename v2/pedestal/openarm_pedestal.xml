@@ -24,6 +24,8 @@ Scene furniture (floor, lights, cameras, keyframes) stays in the scenes.
 <mujoco model="openarm_pedestal">
   <compiler meshdir="../assets" angle="radian"/>
 
+  <option cone="elliptic" impratio="10"/>
+
   <default>
     <default class="pedestal_visual">
       <geom contype="0" conaffinity="0" group="2" />
