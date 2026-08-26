@@ -224,6 +224,10 @@ class App {
 
   async loadScene(scenePath) {
     this.disposeScene();
+    // The scene-switch handler writes "loading…" straight into the status
+    // element behind updateStatus's cache; drop the cache, or a scene that
+    // settles to the exact same status text would never repaint over it.
+    this.lastStatus = null;
     this.scenePath = scenePath;
     this.teleop.reset();
     this.lifterHeight = 0;
