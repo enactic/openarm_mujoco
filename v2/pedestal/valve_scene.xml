@@ -23,7 +23,7 @@ graspable knob at the lever tip and inactive grasp welds for either arm.
 
   <default>
     <default class="fixture">
-      <geom type="box" contype="1" conaffinity="1" friction="1 0.01 0.01" rgba="0.55 0.45 0.32 1"/>
+      <geom contype="1" conaffinity="1" friction="1 0.01 0.01"/>
     </default>
   </default>
 

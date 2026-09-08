@@ -18,21 +18,15 @@ limitations under the License.
   <compiler meshdir="../assets" angle="radian"/>
 
   <default>
-    <default class="visual">
-      <geom contype="0" conaffinity="0" group="2" />
-    </default>
     <default class="cell_collision">
       <geom material="collision_material" condim="3" contype="1" conaffinity="1" priority="1" group="4" solref="0.005 1" friction="1 0.005 0.001" />
-      <equality solimp="0.99 0.999 1e-05" solref="0.005 1" />
     </default>
     <default class="cell_visual">
       <geom contype="0" conaffinity="0" group="1" />
     </default>
     <default class="lifter">
       <joint limited="true" type="slide" damping="50" />
-    </default>
-    <default class="position_lifter">
-      <position kp="8000" kv="4000" forcelimited="true" forcerange="-3000 3000" />
+      <position kp="8000" kv="4000" forcelimited="true" forcerange="-3000 3000" ctrllimited="true" />
     </default>
   </default>
 
@@ -60,8 +54,8 @@ limitations under the License.
   </asset>
 
   <actuator>
-    <position name="lifter_ctrl" joint="openarm_lifter_joint" class="position_lifter"
-              kp="8000" kv="4000" ctrllimited="true" ctrlrange="0 0.3"/>
+    <position name="lifter_ctrl" joint="openarm_lifter_joint" class="lifter"
+              kp="8000" kv="4000" ctrlrange="0 0.3"/>
   </actuator>
 
   <worldbody>
