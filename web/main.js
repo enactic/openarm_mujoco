@@ -24,8 +24,16 @@ import loadMuJoCo from "@mujoco/mujoco";
 // The pose targets come from TeleopState (teleop.js), which integrates held
 // keys exactly like dora-openarm-keyboard: hold to move, tool-frame rotation,
 // +/- speed scaling, Backspace to return home.
+//
+// In a WebXR session the targets come from the VR controllers instead:
+// xr-frame.js reads each frame the way dora-openarm-webxr's client does, and
+// XRTeleop (xr-pose.js, a port of that project's Python node) converts the
+// controller poses into arm_origin-frame targets and writes them into the
+// same TeleopState. The MuJoCo world is placed in the headset's reference
+// space so that the virtual grippers coincide with the controllers.
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { VRButton } from "three/examples/jsm/webxr/VRButton.js";
 import { PoseController } from "./ik.js";
 import {
   HELP_TEXT,
@@ -36,6 +44,14 @@ import {
 } from "./keymap.js";
 import { buildVFS } from "./model-vfs.js";
 import { TeleopState } from "./teleop.js";
+import { readFrame } from "./xr-frame.js";
+import { XRHud } from "./xr-hud.js";
+import {
+  DEFAULT_NECK_PIVOT_OFFSET,
+  headAnchor,
+  worldPlacement,
+  XRTeleop,
+} from "./xr-pose.js";
 
 let mujoco;
 
@@ -45,6 +61,36 @@ const SIDES = ["left", "right"];
 // directory. The path is resolved against the page URL (index.html at
 // the repository root), so serve the repository root.
 const MODEL_BASE = "v2/";
+
+// A measured neck pivot offset outlives the page (dora-openarm-webxr keeps
+// it in neck_pivot.yaml): the whole point of measuring an operator is
+// keeping the number they measured.
+const NECK_PIVOT_STORAGE_KEY = "openarm-mujoco-web.neck_pivot_offset";
+
+function loadNeckPivotOffset() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(NECK_PIVOT_STORAGE_KEY));
+    if (
+      Array.isArray(stored) &&
+      stored.length === 3 &&
+      stored.every((v) => Number.isFinite(v))
+    ) {
+      return stored;
+    }
+  } catch {
+    // no storage, or a value that is not ours: use the estimate
+  }
+  return DEFAULT_NECK_PIVOT_OFFSET;
+}
+
+function saveNeckPivotOffset(offset) {
+  try {
+    localStorage.setItem(NECK_PIVOT_STORAGE_KEY, JSON.stringify(offset));
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 // fetch() resolves on HTTP errors, so check ok here: a missing model file
 // must fail with its name, not as a later, unrelated MuJoCo parse error on
@@ -171,12 +217,27 @@ class App {
 
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x263238);
+    // Everything MuJoCo draws lives in this group, in MuJoCo's z-up world
+    // coordinates. On the desktop it is the identity; in a WebXR session it
+    // is moved so that the arm_origin frame lands where the operator is
+    // (see placeWorld), since WebXR's reference space is y-up and anchored
+    // to the headset.
+    this.world = new THREE.Group();
+    this.scene.add(this.world);
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     // MuJoCo material rgba is authored for direct display (not Three's sRGB workflow).
     this.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     document.body.appendChild(this.renderer.domElement);
+    this.renderer.xr.enabled = true;
+    // "local" like dora-openarm-webxr: the origin is where the headset was
+    // when the session started, which is also what the world is placed from.
+    this.renderer.xr.setReferenceSpaceType("local");
+    this.renderer.xr.addEventListener("sessionstart", () =>
+      this.onSessionStart(),
+    );
+    this.renderer.xr.addEventListener("sessionend", () => this.onSessionEnd());
 
     this.camera = new THREE.PerspectiveCamera(
       45,
@@ -191,6 +252,17 @@ class App {
     this.controls.target.set(0.4, 0, 1.15);
     this.initLights();
 
+    // The headset panel rides on the camera, which WebXR moves with the
+    // head; on the desktop it is hidden.
+    this.scene.add(this.camera);
+    this.hud = new XRHud();
+    this.camera.add(this.hud.mesh);
+    this.calibrationEnabled = false;
+    this.calibrationMessage = null;
+    this.xrTeleop = null; // one per session
+    this.xrPlaced = false;
+    this.xrButtonX = false; // last frame's X, for the press edge
+
     window.addEventListener("resize", () => {
       this.camera.aspect = window.innerWidth / window.innerHeight;
       this.camera.updateProjectionMatrix();
@@ -200,7 +272,7 @@ class App {
 
   disposeScene() {
     for (const mesh of this.meshes) {
-      this.scene.remove(mesh);
+      this.world.remove(mesh);
       mesh.material.dispose();
     }
     this.meshes = [];
@@ -209,7 +281,7 @@ class App {
     for (const texture of this.checkerTextureCache.values()) texture.dispose();
     this.checkerTextureCache.clear();
     if (this.markers) {
-      for (const side of SIDES) this.scene.remove(this.markers[side]);
+      for (const side of SIDES) this.world.remove(this.markers[side]);
       this.markers = null;
     }
     this.mjvScene?.delete();
@@ -232,6 +304,7 @@ class App {
     this.teleop.reset();
     this.lifterHeight = 0;
     this.held.clear();
+    this.xrPlaced = false; // a new scene is placed afresh mid-session
 
     try {
       const vfs = await buildVFS(mujoco, scenePath, fetchModelBytes, DOMParser);
@@ -298,23 +371,122 @@ class App {
   }
 
   initLights() {
+    // In the world group, so they keep lighting the scene from above when
+    // the group is turned y-up for a headset.
     const ambient = new THREE.AmbientLight(0xffffff, 0.6);
-    this.scene.add(ambient);
+    this.world.add(ambient);
     const dir = new THREE.DirectionalLight(0xffffff, 1.2);
     dir.position.set(2, 1, 2);
-    this.scene.add(dir);
+    this.world.add(dir);
     const dir2 = new THREE.DirectionalLight(0xffffff, 0.5);
     dir2.position.set(-2, -1, 1);
-    this.scene.add(dir2);
+    this.world.add(dir2);
   }
 
   initTargetMarkers() {
     this.markers = {};
     for (const side of SIDES) {
       const marker = new THREE.AxesHelper(0.08);
-      this.scene.add(marker);
+      this.world.add(marker);
       this.markers[side] = marker;
     }
+  }
+
+  // --- WebXR ---------------------------------------------------------------
+  onSessionStart() {
+    // Fresh smoothers and calibration per session, like dora-openarm-webxr's
+    // session-start; the measured neck pivot offset is the one thing kept.
+    this.xrTeleop = new XRTeleop({
+      neckPivotOffset: loadNeckPivotOffset(),
+      calibration: this.calibrationEnabled,
+      onCalibrationResult: (result) => this.onCalibrationResult(result),
+    });
+    this.xrPlaced = false;
+    this.xrButtonX = false;
+    this.calibrationMessage = null;
+    this.hud.mesh.visible = true;
+  }
+
+  onSessionEnd() {
+    this.xrTeleop = null;
+    this.xrPlaced = false;
+    this.hud.mesh.visible = false;
+    this.world.position.set(0, 0, 0);
+    this.world.quaternion.identity();
+    // The arms hold the last controller pose; Backspace / Reset return home.
+  }
+
+  onCalibrationResult(result) {
+    if (result.accepted) {
+      const saved = saveNeckPivotOffset(result.offset);
+      const formatted = result.offset.map((v) => v.toFixed(3)).join(", ");
+      this.calibrationMessage =
+        `neck pivot calibration applied from ${result.samples} poses: ` +
+        `the pivot held to ${result.residualMm.toFixed(1)} mm while the ` +
+        `headset moved ${result.headsetMm.toFixed(1)} mm.\n` +
+        `  neck_pivot_offset: [${formatted}]` +
+        (saved ? " (saved in this browser)" : "");
+    } else {
+      this.calibrationMessage = `neck pivot calibration rejected: ${result.reason}`;
+    }
+    console.log(this.calibrationMessage);
+  }
+
+  // Place the MuJoCo world in the headset's reference space, anchored to
+  // the headset pose of the first frame: the headset starts where the
+  // robot's head would be (HEAD_OFFSET above the arm_origin site), so the
+  // arms hang below the operator like their own. A head turn then moves
+  // neither the world nor (thanks to the neck pivot) the targets.
+  placeWorld(reference) {
+    const origin = this.controller.originPose(this.mjData);
+    const { pos, quat } = worldPlacement(
+      origin,
+      reference,
+      this.xrTeleop,
+      headAnchor(origin, reference),
+    );
+    this.world.position.set(pos[0], pos[1], pos[2]);
+    this.world.quaternion.set(quat[1], quat[2], quat[3], quat[0]);
+    this.xrPlaced = true;
+  }
+
+  // Leave the immersive session (the B button); no-op outside one.
+  endSession() {
+    this.renderer.xr.getSession()?.end();
+  }
+
+  // Feed one frame object (xr-frame.js's readFrame, or a test's) at `time`
+  // seconds to the controller pipeline. No-op outside a session.
+  applyXRFrame(response, time) {
+    if (!this.xrTeleop || !this.controller) return;
+    if (!this.xrPlaced && response.pose_reference) {
+      this.placeWorld(response.pose_reference);
+    }
+    this.xrTeleop.processFrame(response, time, this.teleop);
+    // X resets the environment (the Reset button / Backspace), once per
+    // press: the button state comes every frame, so the edge is found here.
+    const x = response.button_x === true;
+    if (x && !this.xrButtonX) this.reset();
+    this.xrButtonX = x;
+    // Like dora-openarm-webxr's --quit-button: a press ends the session.
+    if (response.button_b === true) this.endSession();
+  }
+
+  hudText() {
+    const lines = [];
+    if (this.calibrationEnabled) {
+      const running = this.xrTeleop?.calibration.collecting;
+      lines.push(
+        running
+          ? "CALIBRATING: keep the body still, turn the head side to side " +
+              "and up and down, then release Y"
+          : "neck pivot calibration: hold Y, turn the head, release",
+      );
+    }
+    if (this.calibrationMessage) lines.push(this.calibrationMessage);
+    lines.push(this.lastStatus ?? "");
+    lines.push("X: reset    B: leave VR");
+    return lines.join("\n");
   }
 
   applyTargets() {
@@ -465,10 +637,20 @@ class App {
     }
   }
 
-  update(dt) {
-    this.controls.update();
+  update(dt, now, xrFrame) {
+    // OrbitControls would fight the headset for the camera.
+    if (!this.renderer.xr.isPresenting) this.controls.update();
     if (!this.mjModel) return; // scene is loading
 
+    // Controller poses overwrite the targets; held keys still integrate on
+    // top (the desktop keyboard keeps working alongside a headset).
+    if (xrFrame && this.renderer.xr.isPresenting) {
+      const session = this.renderer.xr.getSession();
+      const space = this.renderer.xr.getReferenceSpace();
+      if (session && space) {
+        this.applyXRFrame(readFrame(session, space, xrFrame), now / 1000);
+      }
+    }
     this.teleop.step(dt, this.held);
 
     this.applyTargets();
@@ -505,7 +687,7 @@ class App {
         });
         mesh = new THREE.Mesh(this.getBufferGeometry(g), material);
         this.meshes.push(mesh);
-        this.scene.add(mesh);
+        this.world.add(mesh);
       }
       mesh.visible = true;
       this.applyGeomAppearance(mesh, g);
@@ -554,31 +736,35 @@ class App {
     // The values are quantized by toFixed, so while settled the text is
     // stable: skip the DOM write (and its style invalidation) entirely.
     const text = lines.join("\n");
-    if (text === this.lastStatus) return;
-    this.lastStatus = text;
-    this.statusElement.textContent = text;
+    if (text !== this.lastStatus) {
+      this.lastStatus = text;
+      this.statusElement.textContent = text;
+    }
+    if (this.hud.mesh.visible) this.hud.setText(this.hudText());
   }
 
   run() {
     let last = null;
-    const animate = (now) => {
-      // requestAnimationFrame pauses in background tabs: clamp dt so that
-      // returning to the tab does not fast-forward all the missed time in
-      // one frame.
+    // The renderer's animation loop, not requestAnimationFrame: inside a
+    // WebXR session frames come from the session, and the renderer hands
+    // the XRFrame along.
+    const animate = (now, xrFrame) => {
+      // The loop pauses in background tabs: clamp dt so that returning to
+      // the tab does not fast-forward all the missed time in one frame.
       const dt = last === null ? 0 : Math.min((now - last) / 1000, 0.1);
       last = now;
       try {
-        this.update(dt);
+        this.update(dt, now, xrFrame);
         this.renderer.render(this.scene, this.camera);
       } catch (e) {
         // Stop the loop and rethrow: a swallowed error would repeat at 60 fps
         // with a frozen scene and would never reach pageerror listeners.
+        this.renderer.setAnimationLoop(null);
         this.statusElement.textContent = `error: ${e.message ?? e}`;
         throw e;
       }
-      requestAnimationFrame(animate);
     };
-    requestAnimationFrame(animate);
+    this.renderer.setAnimationLoop(animate);
   }
 }
 
@@ -656,6 +842,16 @@ async function main() {
   setupKeyboard(app);
   document.getElementById("help").textContent = HELP_TEXT;
   document.getElementById("reset-button").onclick = () => app.reset();
+
+  // WebXR: three's button (bottom center of the page) says "VR NOT
+  // SUPPORTED" / "WEBXR NEEDS HTTPS" itself where a session cannot start.
+  document.body.appendChild(VRButton.createButton(app.renderer));
+  const calibration = document.getElementById("calibration");
+  calibration.onchange = () => {
+    app.calibrationEnabled = calibration.checked;
+    // Takes effect with the next session, like --calibration at startup;
+    // the running one keeps the state it started with.
+  };
   app.run();
 }
 main();

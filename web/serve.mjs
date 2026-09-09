@@ -17,11 +17,19 @@ import fs from "node:fs/promises";
 // for `python3 -m http.server` with no dependencies. Serves the repository
 // root (one level above web/) so the top-level index.html, web/*.js, and the
 // v2/ model files are all reachable. Run with: node serve.mjs [port]
+//
+// WebXR only runs on an HTTPS page (or on localhost), so a headset on the
+// LAN needs TLS: set TLS_CERTIFICATE_FILE and TLS_KEY_FILE (the same
+// variables dora-openarm-webxr uses) to serve HTTPS instead.
 import http from "node:http";
+import https from "node:https";
+import os from "node:os";
 import path from "node:path";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const PORT = Number(process.argv[2] ?? process.env.PORT ?? 8080);
+const TLS_CERTIFICATE_FILE = process.env.TLS_CERTIFICATE_FILE;
+const TLS_KEY_FILE = process.env.TLS_KEY_FILE;
 
 // Module scripts are MIME-checked by browsers, so .js/.mjs must be
 // text/javascript. Everything else here is served for completeness; fetch()
@@ -41,7 +49,7 @@ const MIME = {
   ".md": "text/markdown; charset=utf-8",
 };
 
-const server = http.createServer(async (req, res) => {
+const handler = async (req, res) => {
   const url = new URL(req.url, "http://localhost");
   let filePath = path.normalize(
     path.join(ROOT, decodeURIComponent(url.pathname)),
@@ -65,8 +73,30 @@ const server = http.createServer(async (req, res) => {
   } catch {
     res.writeHead(404).end("Not Found");
   }
-});
+};
+
+let server;
+let scheme = "http";
+if (TLS_CERTIFICATE_FILE || TLS_KEY_FILE) {
+  if (!TLS_CERTIFICATE_FILE || !TLS_KEY_FILE) {
+    console.error("TLS_CERTIFICATE_FILE and TLS_KEY_FILE must be set together");
+    process.exit(1);
+  }
+  server = https.createServer(
+    {
+      cert: await fs.readFile(TLS_CERTIFICATE_FILE),
+      key: await fs.readFile(TLS_KEY_FILE),
+    },
+    handler,
+  );
+  scheme = "https";
+} else {
+  server = http.createServer(handler);
+}
 
 server.listen(PORT, () => {
-  console.log(`Serving ${ROOT} at http://localhost:${PORT}/`);
+  console.log(`Serving ${ROOT} at ${scheme}://localhost:${PORT}/`);
+  if (scheme === "https") {
+    console.log(`  from another device: ${scheme}://${os.hostname()}:${PORT}/`);
+  }
 });
