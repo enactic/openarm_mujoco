@@ -66,17 +66,20 @@ limitations under the License.
     <material name="metal_silver" rgba="0.65 0.65 0.65 1.0" specular="1.0" shininess="0.9" reflectance="0.8" />
     <material name="matte_black" rgba="0.247 0.247 0.247 1.0" reflectance="0.05" shininess="0.5" />
 
+    <!-- Pre-mirrored left collision meshes: temporary workaround for
+         https://github.com/google-deepmind/mujoco/issues/3604.
+         Regenerate with dev/mirror_meshes.py. -->
     <mesh name="base_link_left_00" content_type="model/obj" file="visual/arm/base_link_00.obj" scale="1 -1 1" />
     <mesh name="base_link_left_01" content_type="model/obj" file="visual/arm/base_link_01.obj" scale="1 -1 1" />
-    <mesh name="base_link_left_collision_00" content_type="model/stl" file="collision/base_link.stl" scale="1 -1 1" />
+    <mesh name="base_link_left_collision_00" content_type="model/stl" file="collision/base_link_left.stl" />
     <mesh name="link1_left_00" content_type="model/obj" file="visual/arm/link1_00.obj" scale="1 -1 1" />
     <mesh name="link1_left_01" content_type="model/obj" file="visual/arm/link1_01.obj" scale="1 -1 1" />
     <mesh name="link1_left_02" content_type="model/obj" file="visual/arm/link1_02.obj" scale="1 -1 1" />
-    <mesh name="link1_left_collision_00" content_type="model/stl" file="collision/link1.stl" scale="1 -1 1" />
+    <mesh name="link1_left_collision_00" content_type="model/stl" file="collision/link1_left.stl" />
     <mesh name="link2_left_00" content_type="model/obj" file="visual/arm/link2_00.obj" scale="1 -1 1" />
     <mesh name="link2_left_01" content_type="model/obj" file="visual/arm/link2_01.obj" scale="1 -1 1" />
     <mesh name="link2_left_02" content_type="model/obj" file="visual/arm/link2_02.obj" scale="1 -1 1" />
-    <mesh name="link2_left_collision_00" content_type="model/stl" file="collision/link2.stl" scale="1 -1 1" />
+    <mesh name="link2_left_collision_00" content_type="model/stl" file="collision/link2_left.stl" />
     <mesh name="link3_left_00" content_type="model/obj" file="visual/arm/link3_00.obj" />
     <mesh name="link3_left_01" content_type="model/obj" file="visual/arm/link3_01.obj" />
     <mesh name="link3_left_02" content_type="model/obj" file="visual/arm/link3_02.obj" />
@@ -88,31 +91,31 @@ limitations under the License.
     <mesh name="link5_left_00" content_type="model/obj" file="visual/arm/link5_00.obj" scale="1 -1 1" />
     <mesh name="link5_left_01" content_type="model/obj" file="visual/arm/link5_01.obj" scale="1 -1 1" />
     <mesh name="link5_left_02" content_type="model/obj" file="visual/arm/link5_02.obj" scale="1 -1 1" />
-    <mesh name="link5_left_collision_00" content_type="model/stl" file="collision/link5_part_00.stl" scale="1 -1 1" />
-    <mesh name="link5_left_collision_01" content_type="model/stl" file="collision/link5_part_01.stl" scale="1 -1 1" />
-    <mesh name="link5_left_collision_02" content_type="model/stl" file="collision/link5_part_02.stl" scale="1 -1 1" />
+    <mesh name="link5_left_collision_00" content_type="model/stl" file="collision/link5_part_00_left.stl" />
+    <mesh name="link5_left_collision_01" content_type="model/stl" file="collision/link5_part_01_left.stl" />
+    <mesh name="link5_left_collision_02" content_type="model/stl" file="collision/link5_part_02_left.stl" />
     <mesh name="link6_left_00" content_type="model/obj" file="visual/arm/link6_00.obj" scale="1 -1 1" />
     <mesh name="link6_left_01" content_type="model/obj" file="visual/arm/link6_01.obj" scale="1 -1 1" />
     <mesh name="link6_left_02" content_type="model/obj" file="visual/arm/link6_02.obj" scale="1 -1 1" />
-    <mesh name="link6_left_collision_00" content_type="model/stl" file="collision/link6.stl" scale="1 -1 1" />
+    <mesh name="link6_left_collision_00" content_type="model/stl" file="collision/link6_left.stl" />
     <mesh name="ee_base_link_left_00" content_type="model/obj" file="visual/gripper/ee_base_link_00.obj" scale="1 -1 1" />
     <mesh name="ee_base_link_left_01" content_type="model/obj" file="visual/gripper/ee_base_link_01.obj" scale="1 -1 1" />
     <mesh name="ee_base_link_left_02" content_type="model/obj" file="visual/gripper/ee_base_link_02.obj" scale="1 -1 1" />
-    <mesh name="ee_base_link_left_collision_00" content_type="model/stl" file="collision/ee_base_link.stl" scale="1 -1 1" />
+    <mesh name="ee_base_link_left_collision_00" content_type="model/stl" file="collision/ee_base_link_left.stl" />
     <mesh name="finger_inner_left_00" content_type="model/obj" file="visual/gripper/finger_inner_00.obj" scale="1 -1 1" />
     <mesh name="finger_inner_left_01" content_type="model/obj" file="visual/gripper/finger_inner_01.obj" scale="1 -1 1" />
     <mesh name="finger_inner_left_02" content_type="model/obj" file="visual/gripper/finger_inner_02.obj" scale="1 -1 1" />
-    <mesh name="finger_inner_left_collision_00" content_type="model/stl" file="collision/finger_inner_part_00.stl" scale="1 -1 1" />
-    <mesh name="finger_inner_left_collision_01" content_type="model/stl" file="collision/finger_inner_part_01.stl" scale="1 -1 1" />
-    <mesh name="finger_inner_left_collision_02" content_type="model/stl" file="collision/finger_inner_part_02.stl" scale="1 -1 1" />
-    <mesh name="finger_inner_left_collision_03" content_type="model/stl" file="collision/finger_inner_part_03.stl" scale="1 -1 1" />
+    <mesh name="finger_inner_left_collision_00" content_type="model/stl" file="collision/finger_inner_part_00_left.stl" />
+    <mesh name="finger_inner_left_collision_01" content_type="model/stl" file="collision/finger_inner_part_01_left.stl" />
+    <mesh name="finger_inner_left_collision_02" content_type="model/stl" file="collision/finger_inner_part_02_left.stl" />
+    <mesh name="finger_inner_left_collision_03" content_type="model/stl" file="collision/finger_inner_part_03_left.stl" />
     <mesh name="finger_outer_left_00" content_type="model/obj" file="visual/gripper/finger_outer_00.obj" scale="1 -1 1" />
     <mesh name="finger_outer_left_01" content_type="model/obj" file="visual/gripper/finger_outer_01.obj" scale="1 -1 1" />
     <mesh name="finger_outer_left_02" content_type="model/obj" file="visual/gripper/finger_outer_02.obj" scale="1 -1 1" />
-    <mesh name="finger_outer_left_collision_00" content_type="model/stl" file="collision/finger_outer_part_00.stl" scale="1 -1 1" />
-    <mesh name="finger_outer_left_collision_01" content_type="model/stl" file="collision/finger_outer_part_01.stl" scale="1 -1 1" />
-    <mesh name="finger_outer_left_collision_02" content_type="model/stl" file="collision/finger_outer_part_02.stl" scale="1 -1 1" />
-    <mesh name="finger_outer_left_collision_03" content_type="model/stl" file="collision/finger_outer_part_03.stl" scale="1 -1 1" />
+    <mesh name="finger_outer_left_collision_00" content_type="model/stl" file="collision/finger_outer_part_00_left.stl" />
+    <mesh name="finger_outer_left_collision_01" content_type="model/stl" file="collision/finger_outer_part_01_left.stl" />
+    <mesh name="finger_outer_left_collision_02" content_type="model/stl" file="collision/finger_outer_part_02_left.stl" />
+    <mesh name="finger_outer_left_collision_03" content_type="model/stl" file="collision/finger_outer_part_03_left.stl" />
     <mesh name="base_link_right_00" content_type="model/obj" file="visual/arm/base_link_00.obj" />
     <mesh name="base_link_right_01" content_type="model/obj" file="visual/arm/base_link_01.obj" />
     <mesh name="base_link_right_collision_00" content_type="model/stl" file="collision/base_link.stl" />
