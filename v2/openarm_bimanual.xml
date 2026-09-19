@@ -30,7 +30,7 @@ limitations under the License.
       <default class="motor_DM4310">
         <joint frictionloss="0.04" damping="0.9" armature="0.0100" limited="true" type="hinge" />
         <position kp="200" kv="5" forcelimited="true" forcerange="-7 7" ctrllimited="true" />
-        <!-- Keep gripper-specific friction and damping; inherit DM4310 inertia and limits. -->
+        <!-- Keep gripper-specific friction; inherit DM4310 inertia and limits. -->
         <default class="motor_finger">
           <joint frictionloss="0"/>
         </default>
