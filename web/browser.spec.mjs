@@ -121,6 +121,110 @@ test("the lifter carries the arms up, Backspace resets it", async () => {
   await settle();
 });
 
+test("the WebXR button is offered, and says why it cannot start here", async () => {
+  // Headless Chromium has no headset: three's VRButton reports that instead
+  // of an "ENTER VR" button.
+  const button = page.locator("body > button", {
+    hasText: /VR NOT SUPPORTED|VR NOT ALLOWED|WEBXR NEEDS HTTPS|ENTER VR/,
+  });
+  await expect(button).toHaveCount(1);
+});
+
+test("controller frames drive the arms through the same pipeline", async () => {
+  // No headset in the test browser, so the session is stood up by hand
+  // (onSessionStart is what the renderer calls) and frames are fed straight
+  // to applyXRFrame, which is where readFrame's output would go.
+  await page.keyboard.press("Backspace"); // the previous test left R's target
+  await settle();
+  const before = await rightEE();
+  const beforeLeft = await leftEE();
+  const moved = await page.evaluate(async () => {
+    const { robotPoseToXR } = await import("/web/xr-pose.js");
+    const THREE = await import("three");
+    const app = window.__app;
+    app.onSessionStart();
+    const identity = { x: 0, y: 0, z: 0, qx: 0, qy: 0, qz: 0, qw: 1 };
+    // right hand 5 cm ahead of its home target, left hand at home, both in
+    // the home orientation
+    const hand = (side, dx) => {
+      const { homePos, homeQuat } = app.teleop.arms[side];
+      const pos = [homePos[0] + dx, homePos[1], homePos[2]];
+      return robotPoseToXR(pos, homeQuat, identity, app.xrTeleop);
+    };
+    const frame = {
+      pose_reference: identity,
+      pose_right: hand("right", 0.05),
+      pose_left: hand("left", 0),
+      trigger_right: 0.4,
+      trigger_left: 0,
+    };
+    // a second of frames: the One Euro filter has settled by then
+    for (let i = 0; i < 72; i++) app.applyXRFrame(frame, i / 72);
+    // where the robot's head position (HEAD_OFFSET above arm_origin) ended
+    // up in the headset's space
+    const { HEAD_OFFSET } = await import("/web/xr-pose.js");
+    const origin = app.controller.originPose(app.mjData);
+    const camera = new THREE.Vector3(...origin.pos).add(
+      new THREE.Vector3(...HEAD_OFFSET),
+    );
+    app.world.updateMatrixWorld(true);
+    app.world.localToWorld(camera);
+    return {
+      target: [...app.teleop.arms.right.pos],
+      grip: app.teleop.arms.right.grip,
+      placed: app.xrPlaced,
+      worldUp: app.world.quaternion.toArray(),
+      camera: camera.toArray(),
+    };
+  });
+  expect(moved.placed).toBe(true);
+  expect(moved.grip).toBeCloseTo(0.4);
+  expect(moved.worldUp).not.toEqual([0, 0, 0, 1]); // turned y-up for the headset
+  // the head position is drawn at the headset (identity pose here)
+  expect(Math.hypot(...moved.camera)).toBeLessThan(1e-3); // lifter sag
+  await expect
+    .poll(async () => (await rightEE())[0], { timeout: 20_000 })
+    .toBeGreaterThan(before[0] + 0.03);
+  await settle();
+  const after = await rightEE();
+  expect(after[0] - before[0]).toBeCloseTo(0.05, 2);
+  expect(Math.abs(after[1] - before[1])).toBeLessThan(0.01);
+  expect(Math.abs(after[2] - before[2])).toBeLessThan(0.01);
+  const afterLeft = await leftEE();
+  expect(
+    Math.hypot(...afterLeft.map((v, i) => v - beforeLeft[i])),
+  ).toBeLessThan(0.01);
+  // X resets the environment once per press, B ends the session
+  const presses = await page.evaluate(() => {
+    const app = window.__app;
+    const calls = { reset: 0, end: 0 };
+    app.reset = () => {
+      calls.reset++;
+    };
+    app.endSession = () => {
+      calls.end++;
+    };
+    const identity = { x: 0, y: 0, z: 0, qx: 0, qy: 0, qz: 0, qw: 1 };
+    let t = 2;
+    for (const button_x of [true, true, false, true, false]) {
+      app.applyXRFrame({ pose_reference: identity, button_x }, t++);
+    }
+    app.applyXRFrame({ pose_reference: identity, button_b: true }, t++);
+    delete app.reset;
+    delete app.endSession;
+    return calls;
+  });
+  expect(presses).toEqual({ reset: 2, end: 1 });
+  // ending the session puts the world back and keeps the last pose
+  await page.evaluate(() => window.__app.onSessionEnd());
+  expect(
+    await page.evaluate(() => window.__app.world.quaternion.toArray()),
+  ).toEqual([0, 0, 0, 1]);
+  expect(await page.evaluate(() => window.__app.xrTeleop)).toBeNull();
+  await page.keyboard.press("Backspace");
+  await settle();
+});
+
 test("teleop still works after switching scenes", async () => {
   await page.selectOption("#scene-select", "pedestal/bottle_scene.xml");
   await page.waitForFunction(

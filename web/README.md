@@ -64,11 +64,74 @@ solution of that pose.
 | +Roll / -Roll | T / B | P / / |
 | Gripper close / open | G / V | ; / . |
 
+## WebXR (VR controllers)
+
+The page also runs as a WebXR session: open it in the browser of a
+headset such as Meta Quest 3 or PICO 4 and press **ENTER VR** at the
+bottom of the page. The MuJoCo world is drawn around the operator,
+turned y-up for the headset, and the arms follow the controllers: the
+trigger closes the gripper, turning the head moves neither the world
+nor the targets, the **X** button resets the environment (like the
+Reset button and Backspace) and the **B** button leaves the session. A text panel
+below the view shows the status lines.
+
+The headset starts where the robot's head would be: OpenArm has none,
+so `HEAD_OFFSET` in `xr-pose.js` puts the eyes a human 22 cm above (and
+3 cm ahead of) the `arm_origin` site between the shoulder joints, in
+every scene. The arms hang below the operator like their own.
+
+The processing that
+[dora-openarm-webxr](https://github.com/enactic/dora-openarm-webxr) does
+in its Python node runs in the browser here, as direct ports of that
+project's sources:
+
+| Module           | Ported from                    | What it does |
+|------------------|--------------------------------|--------------|
+| `xr-frame.js`    | `static/ar.js`                 | reads the headset pose, the controllers' target-ray poses, triggers, squeezes, thumbsticks and A/B/X/Y buttons out of an `XRFrame` into the frame object the dora client sends. |
+| `xr-pose.js`     | `main.py`, `smoothing.py`      | converts a controller pose into an `arm_origin`-frame target (WebXR to robot axes, neck pivot subtraction, aim pose to gripper turn, frame offset), smooths it with the same One Euro filter, and writes it into `TeleopState` for the IK. |
+| `calibration.js` | `calibration.py`, `main.py`    | the neck pivot calibration: the least-squares fit of the point the head turns about, and the checks that accept or reject a run. |
+
+The constants (`ROBOT_ROTATION`, the frame offset `[-0.085, 0, -0.14]`,
+the neck pivot estimate `[0, -0.075, 0.08]`, the filter parameters) are
+the node's defaults. Nothing goes over the network: there is no dora
+node, no WebRTC and no camera panel, since the simulation itself is what
+the operator sees.
+
+**Neck pivot calibration.** Tick *neck pivot calibration* under
+**WebXR** in the panel before entering VR, then hold the **Y** button (left controller), keep the body
+still, turn the head side to side twice and up and down twice, and
+release. The hands stop following while Y is held. The result (or the
+reason a run was rejected, and what to do differently) appears on the
+panel in the headset and in the browser console. An accepted offset is
+kept in the browser's `localStorage`, so it survives reloads; the box
+only says whether the Y button measures, and only from the next session
+on.
+
+**HTTPS.** WebXR only runs on a secure page. The GitHub Pages deployment
+is one; a page served from `localhost` is too (that is how the
+[Immersive Web
+Emulator](https://chromewebstore.google.com/detail/immersive-web-emulator/cgffilbpcibhmcfbgggfhfolhkfbhmik)
+can drive it on a desktop Chrome without a headset). A headset on the
+LAN needs TLS, so `serve.mjs` serves HTTPS when it is given a
+certificate, with the same variables dora-openarm-webxr uses. A
+self-signed one is enough (the headset browser shows a warning to step
+through under "Advanced"):
+
+```sh
+name=$(hostname).local  # a name the headset can resolve
+openssl req -x509 -newkey rsa:2048 -nodes -days 365 \
+  -subj "/CN=${name}" -addext "subjectAltName=DNS:${name}" \
+  -keyout server.key -out server.crt
+TLS_CERTIFICATE_FILE=server.crt TLS_KEY_FILE=server.key npm run serve
+# then open https://${name}:8080/ in the headset
+```
+
 ## Tests
 
 ```sh
 npm test              # node:test-based headless tests: IK convergence,
-                      # teleop semantics, and every scene loading
+                      # teleop semantics, every scene loading, and the
+                      # WebXR pipeline (pose mapping, smoothing, calibration)
 npm run test:browser  # Playwright end-to-end test (starts serve.mjs itself);
                       # first run: npx playwright install chromium
 ```
