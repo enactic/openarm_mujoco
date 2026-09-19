@@ -29,6 +29,12 @@ With Wall Collisions:
 openarm-mujoco-launch --walls
 ```
 
+For v1 Bimanual Model (from the source checkout):
+
+```bash
+openarm-mujoco-launch v1/scene.xml --keyframe home
+```
+
 ## OpenArm MuJoCo Web
 
 [OpenArm MuJoCo Web](web/README.md) runs these models right in the

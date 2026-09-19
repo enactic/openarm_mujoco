@@ -25,7 +25,7 @@ defaults.
 <mujoco model="openarm_v20_articulated_cell">
   <compiler angle="radian"/>
 
-  <option cone="elliptic" impratio="10"/>
+  <option integrator="implicitfast" cone="elliptic" impratio="10"/>
 
   <default>
     <default class="fixture">

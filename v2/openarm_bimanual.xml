@@ -57,8 +57,8 @@ limitations under the License.
        friction coefficients are, and impratio raises the stiffness of the
        friction constraints relative to the normal ones so a firmly held object
        stops sliding on the pads.  <option> does not carry across <attach>, so
-       every scene repeats these two settings. -->
-  <option cone="elliptic" impratio="10"/>
+       every scene repeats these settings and the integrator. -->
+  <option timestep="0.001" integrator="implicitfast" cone="elliptic" impratio="10"/>
 
   <asset>
     <material name="collision_material" rgba="0.8 0.2 0.2 0.5" />
@@ -358,7 +358,7 @@ limitations under the License.
     <position name="left_joint5_ctrl" joint="openarm_left_joint5" class="motor_DM4310" kp="30" kv="1.5" ctrlrange="-1.5708 1.5708" />
     <position name="left_joint6_ctrl" joint="openarm_left_joint6" class="motor_DM4310" kp="30" kv="1.5" ctrlrange="-0.785398 0.785398" />
     <position name="left_joint7_ctrl" joint="openarm_left_joint7" class="motor_DM4310" kp="30" kv="1.5" ctrlrange="-1.5708 1.5708" />
-    <position name="left_finger1_ctrl" joint="openarm_left_finger_joint1" class="motor_finger" kp="10" kv="0.2" ctrlrange="0 0.7854" />
+    <position name="left_finger1_ctrl" joint="openarm_left_finger_joint1" class="motor_finger" kp="10" kv="0.2" ctrlrange="-0.4 0.7854" />
     <position name="right_joint1_ctrl" joint="openarm_right_joint1" class="motor_DM8009" kp="230" kv="2.7" ctrlrange="-1.39626 3.49066" />
     <position name="right_joint2_ctrl" joint="openarm_right_joint2" class="motor_DM8009" kp="230" kv="2.7" ctrlrange="-0.174533 3.31613" />
     <position name="right_joint3_ctrl" joint="openarm_right_joint3" class="motor_DM4340" kp="190" kv="2.2" ctrlrange="-1.5708 1.5708" />
@@ -366,7 +366,7 @@ limitations under the License.
     <position name="right_joint5_ctrl" joint="openarm_right_joint5" class="motor_DM4310" kp="30" kv="1.5" ctrlrange="-1.5708 1.5708" />
     <position name="right_joint6_ctrl" joint="openarm_right_joint6" class="motor_DM4310" kp="30" kv="1.5" ctrlrange="-0.785398 0.785398" />
     <position name="right_joint7_ctrl" joint="openarm_right_joint7" class="motor_DM4310" kp="30" kv="1.5" ctrlrange="-1.5708 1.5708" />
-    <position name="right_finger1_ctrl" joint="openarm_right_finger_joint1" class="motor_finger" kp="10" kv="0.2" ctrlrange="-0.7854 0" />
+    <position name="right_finger1_ctrl" joint="openarm_right_finger_joint1" class="motor_finger" kp="10" kv="0.2" ctrlrange="-0.7854 0.4" />
   </actuator>
   <contact>
 
