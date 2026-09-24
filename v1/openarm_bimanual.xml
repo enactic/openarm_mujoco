@@ -23,15 +23,15 @@ limitations under the License.
     <joint stiffness="0" ref="0.0" />
     <default class="robot">
       <default class="motor_DM8009">
-        <joint frictionloss="0.1" damping="0.4" limited="true" type="hinge" />
+        <joint frictionloss="0.1" damping="0.4" armature="0.0081" limited="true" type="hinge" />
         <position kp="230" kv="2.7" forcelimited="true" forcerange="-40 40" ctrllimited="true" />
       </default>
       <default class="motor_DM4340">
-        <joint frictionloss="0.1" damping="0.4" limited="true" type="hinge" />
+        <joint frictionloss="0.1" damping="0.4" armature="0.1600" limited="true" type="hinge" />
         <position kp="190" kv="2.2" forcelimited="true" forcerange="-27 27" ctrllimited="true" />
       </default>
       <default class="motor_DM4310">
-        <joint frictionloss="0.1" damping="0.4" limited="true" type="hinge" />
+        <joint frictionloss="0.1" damping="0.4" armature="0.0100" limited="true" type="hinge" />
         <position kp="30" kv="1.5" forcelimited="true" forcerange="-7 7" ctrllimited="true" />
       </default>
       <default class="motor_finger">
