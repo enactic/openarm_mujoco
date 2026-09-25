@@ -5,6 +5,14 @@ This repository contains assets for OpenArm v2 (above), Cell, v1 and v0.3 (below
 
 ## Usage
 
+To install a release with pip in a virtual environment:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install openarm-mujoco
+```
+
 For the example using `uv`, install [uv](https://docs.astral.sh/uv/getting-started/installation/),
 then choose one installation method:
 
