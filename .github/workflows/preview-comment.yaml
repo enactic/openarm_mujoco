@@ -40,7 +40,7 @@ jobs:
           FORK_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
           PR_NUMBER: ${{ github.event.number }}
         run: |
-          configure_url="https://github.com/enactic/openarm_mujoco/blob/main/README.md#pull-request-and-preview"
+          configure_url="https://github.com/enactic/openarm_mujoco/blob/-/README.md#pull-request-and-preview"
           fork_owner=${FORK_REPOSITORY%/*}
           fork_repository=${FORK_REPOSITORY#*/}
           cat <<COMMENT > body.md
