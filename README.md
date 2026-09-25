@@ -5,13 +5,42 @@ This repository contains assets for OpenArm v2 (above), Cell, v1 and v0.3 (below
 
 ## Usage
 
-Install openarm-mujoco:
+To install a release with pip in a virtual environment:
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install openarm-mujoco
 ```
 
-Launch the simulation:
+For the example using `uv`, install [uv](https://docs.astral.sh/uv/getting-started/installation/),
+then choose one installation method:
+
+For editable development, run from this repository's source checkout:
+
+```bash
+uv sync
+source .venv/bin/activate
+```
+
+As a dependency in another uv project:
+
+```bash
+uv add openarm-mujoco
+source .venv/bin/activate
+```
+
+To try a release in a separate directory:
+
+```bash
+uv venv
+source .venv/bin/activate
+uv pip install openarm-mujoco
+```
+
+To test a specific wheel, replace the package name with its `.whl` file path.
+
+Launch the OpenArm v2 Cell simulation:
 
 ```bash
 openarm-mujoco-launch

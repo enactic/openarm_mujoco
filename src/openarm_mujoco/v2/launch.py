@@ -111,32 +111,25 @@ def main() -> int:
         if sheet_id != -1:
             model.geom_rgba[sheet_id][3] = 0.0
 
+    if not args.static:
+        # MuJoCo owns the physics thread and real-time pacing in managed mode.
+        mujoco.viewer.launch(model, data)
+        return 0
+
     with mujoco.viewer.launch_passive(model, data) as viewer:
-        viewer.cam.lookat[:] = model.stat.center
-        viewer.cam.distance = model.stat.extent
-        viewer.cam.azimuth = model.vis.global_.azimuth
-        viewer.cam.elevation = model.vis.global_.elevation
-
+        with viewer.lock():
+            viewer.cam.lookat[:] = model.stat.center
+            viewer.cam.distance = model.stat.extent
+            viewer.cam.azimuth = model.vis.global_.azimuth
+            viewer.cam.elevation = model.vis.global_.elevation
         while viewer.is_running():
-            step_start = time.time()
-
-            if args.static:
-                # # In static mode mj_forward never integrates, so ctrl changes
-                # # from the viewer sliders would have no effect. Copy each
-                # # position actuator's ctrl value directly into qpos so the
-                # # viewer stays responsive.
-                # for i in range(model.nu):
-                #     jid = model.actuator_trnid[i, 0]
-                #     if jid >= 0:
-                #         data.qpos[model.jnt_qposadr[jid]] = data.ctrl[i]
-                mujoco.mj_forward(model, data)
-            else:
-                mujoco.mj_step(model, data)
-
-                elapsed = time.time() - step_start
-                time.sleep(max(0, model.opt.timestep - elapsed))
-
+            frame_start = time.perf_counter()
+            mujoco.mj_forward(model, data)
             viewer.sync()
+            remaining = 1.0 / 60.0 - (time.perf_counter() - frame_start)
+            if remaining > 0:
+                time.sleep(remaining)
+    return 0
 
 
 if __name__ == "__main__":
