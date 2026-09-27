@@ -15,6 +15,6 @@
     "@mujoco/mujoco": "^3.14.0",
     "@playwright/test": "^1.63.0",
     "@xmldom/xmldom": "^0.9.12",
-    "three": "^0.186.0"
+    "three": "^0.186.1"
   }
 }
