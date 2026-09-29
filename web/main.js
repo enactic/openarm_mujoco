@@ -484,8 +484,6 @@ class App {
     const place = (viewOffset, pitch) =>
       worldPlacement(
         origin,
-        reference,
-        this.xrTeleop,
         headAnchor(origin, reference, head, viewOffset),
         pitch,
       );

@@ -228,40 +228,25 @@ export function robotPoseToXR(pos, quat, reference, config) {
 
 // Where to draw the MuJoCo world in the WebXR reference space: the rigid
 // transform that takes MuJoCo world coordinates to WebXR coordinates, given
-// the world pose of the arm_origin site and the headset pose the placement
-// is anchored to.
+// the world pose of the arm_origin site.
 //
 // The rotation turns the arm_origin frame the way adjustPose turns the
 // controllers (R^T q_o^-1): z-up becomes y-up and the robot's +x is ahead
-// of the operator. The translation is fixed by one anchor point:
-//
-// * By default the arm targets coincide with the controllers. Solving
-//   adjustPose for the world, a point r in the arm_origin frame is at
-//   R^T (r - f) + pivot in WebXR, so the arm_origin site itself goes to
-//   R^T (-f) + pivot.
-// * With `anchor` ({ world, xr }), the MuJoCo world point `world` is drawn
-//   at the WebXR point `xr` instead: e.g. headAnchor, which puts the
-//   headset where the robot's head would be.
+// of the operator. The translation draws `anchor.world`, a MuJoCo world
+// point, at `anchor.xr`, a WebXR point: e.g. headAnchor, which puts the
+// headset where the robot's head would be.
 //
 // `pitch` tilts the world up about the anchor (about WebXR's x axis, the
 // operator's left-right), so that looking straight ahead looks that far
 // down into the robot's workspace.
-export function worldPlacement(
-  origin,
-  reference,
-  config,
-  anchor = null,
-  pitch = 0,
-) {
+export function worldPlacement(origin, anchor, pitch = 0) {
   const tilt = [Math.cos(pitch / 2), Math.sin(pitch / 2), 0, 0];
   const quat = quatMul(
     tilt,
     quatMul(quatConj(ROBOT_ROTATION), quatConj(origin.quat)),
   );
-  const world = anchor ? anchor.world : origin.pos;
-  const xr = anchor ? anchor.xr : robotToXR([0, 0, 0], reference, config);
-  const shifted = quatRotVec(quat, world);
-  return { pos: xr.map((v, i) => v - shifted[i]), quat };
+  const shifted = quatRotVec(quat, anchor.world);
+  return { pos: anchor.xr.map((v, i) => v - shifted[i]), quat };
 }
 
 // The anchor that draws the robot's head position, moved by `viewOffset`

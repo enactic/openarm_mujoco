@@ -156,34 +156,12 @@ describe("controller pose mapping (main.py: _adjust_pose)", () => {
 });
 
 describe("worldPlacement", () => {
-  it("draws a MuJoCo world point where robotToXR puts its target", () => {
-    const origin = {
-      pos: [0.3, 0.1, 1.15],
-      quat: eulerZYXToQuat(0, 0, 0.4),
-    };
-    const reference = xr([0.05, 1.6, 0.1], eulerZYXToQuat(0, 0.1, -0.2));
-    const { pos, quat } = worldPlacement(origin, reference, CONFIG);
-    for (const m of [
-      [0, 0, 0],
-      [0.5, -0.2, 0.9],
-      [-1, 1, 2],
-    ]) {
-      const placed = quatRotVec(quat, m).map((v, i) => v + pos[i]);
-      const local = poseWorldToLocal(origin, m, [1, 0, 0, 0]);
-      nearVec(placed, robotToXR(local.pos, reference, CONFIG), 1e-9, `${m}`);
-    }
-  });
-
   it("draws the anchor's world point at its WebXR point", () => {
     const origin = { pos: [0.185, 0, 1.34], quat: [1, 0, 0, 0] };
-    const reference = xr([0.1, 1.5, -0.3], eulerZYXToQuat(0, 0.2, 0));
     const anchor = { world: [0.245, 0, 1.8], xr: [0.1, 1.5, -0.3] };
-    const { pos, quat } = worldPlacement(origin, reference, CONFIG, anchor);
+    const { pos, quat } = worldPlacement(origin, anchor);
     const placed = quatRotVec(quat, anchor.world).map((v, i) => v + pos[i]);
     nearVec(placed, anchor.xr, 1e-12, "camera at the headset");
-    // same rotation as without the anchor
-    const plain = worldPlacement(origin, reference, CONFIG);
-    nearVec(quat, plain.quat, 1e-12, "rotation");
   });
 
   it("headAnchor puts the head position at the headset", () => {
@@ -195,7 +173,7 @@ describe("worldPlacement", () => {
     );
     nearVec(anchor.world, expected, 1e-12, "head in the world");
     nearVec(anchor.xr, [0.1, 1.5, -0.3], 1e-12, "at the headset");
-    const { pos, quat } = worldPlacement(origin, reference, CONFIG, anchor);
+    const { pos, quat } = worldPlacement(origin, anchor);
     const placed = quatRotVec(quat, anchor.world).map((v, i) => v + pos[i]);
     nearVec(placed, anchor.xr, 1e-12, "placed");
     // the arm base is HEAD_OFFSET below the eyes and a little behind them
@@ -207,13 +185,7 @@ describe("worldPlacement", () => {
     const origin = { pos: [0.185, 0, 1.34], quat: [1, 0, 0, 0] };
     const anchor = { world: [0.143, 0, 1.75], xr: [0, 1.6, 0] };
     const pitch = 0.3;
-    const { pos, quat } = worldPlacement(
-      origin,
-      IDENTITY,
-      CONFIG,
-      anchor,
-      pitch,
-    );
+    const { pos, quat } = worldPlacement(origin, anchor, pitch);
     const placed = quatRotVec(quat, anchor.world).map((v, i) => v + pos[i]);
     nearVec(placed, anchor.xr, 1e-12, "the anchor stays put");
     // looking straight ahead looks `pitch` down the robot's forward
@@ -224,7 +196,10 @@ describe("worldPlacement", () => {
 
   it("turns MuJoCo z-up into WebXR y-up", () => {
     const origin = { pos: [0, 0, 0], quat: [1, 0, 0, 0] };
-    const { quat } = worldPlacement(origin, IDENTITY, CONFIG);
+    const { quat } = worldPlacement(origin, {
+      world: [0, 0, 0],
+      xr: [0, 0, 0],
+    });
     nearVec(quatRotVec(quat, [0, 0, 1]), [0, 1, 0], 1e-12, "up");
     nearVec(quatRotVec(quat, [1, 0, 0]), [0, 0, -1], 1e-12, "forward");
   });
@@ -265,8 +240,6 @@ describe("direct hand mapping", () => {
   const reference = xr([0.1, 1.6, -0.2], eulerZYXToQuat(0, 0.4, 0));
   const placement = worldPlacement(
     CELL_ORIGIN,
-    reference,
-    CONFIG,
     headAnchor(CELL_ORIGIN, reference, CELL_HEAD),
   );
   const drawn = (world) =>
@@ -306,8 +279,6 @@ describe("direct hand mapping", () => {
         hand,
         worldPlacement(
           CELL_ORIGIN,
-          IDENTITY,
-          CONFIG,
           headAnchor(CELL_ORIGIN, IDENTITY, CELL_HEAD),
         ),
         CELL_ORIGIN,
@@ -562,8 +533,6 @@ describe("XRTeleop.processFrame (main.py: _process_frame)", () => {
     assert.equal(t.calibration.enabled, false, "no neck pivot to measure");
     const placement = worldPlacement(
       CELL_ORIGIN,
-      IDENTITY,
-      CONFIG,
       headAnchor(CELL_ORIGIN, IDENTITY, CELL_HEAD),
     );
     const target = [0.3, -0.1, -0.2];
