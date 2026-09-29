@@ -81,15 +81,17 @@ nor the targets, the **X** button resets the environment (like the
 Reset button and Backspace) and the **B** button leaves the session. A text panel
 below the view shows the status lines.
 
-The headset starts above the robot's head, overlooking the table: 0.3 m
-(`DEFAULT_VIEW_HEIGHT` in `xr-pose.js`) above the point between the
-`camera_head_left` and `camera_head_right` cameras in the cell scenes,
-or above `HEAD_OFFSET` (the same point relative to the `arm_origin` site,
-11 cm above it) in the scenes without them. The **left thumbstick** moves
-the view up and down in the session. The hands do not follow the view:
-they map from the head cameras themselves, so the arms move as they
-would with the view there, and are drawn the view height below the
-controllers.
+The headset starts above and a little behind the robot's head,
+overlooking the table: `DEFAULT_VIEW_OFFSET` in `xr-pose.js` (0.08 m
+back, 0.3 m up, in the `arm_origin` frame: x forward, y left, z up) from
+the point between the `camera_head_left` and `camera_head_right` cameras
+in the cell scenes, or from `HEAD_OFFSET` (the same point relative to
+the `arm_origin` site, 11 cm above it) in the scenes without them. In
+the session the **left thumbstick** moves the view up and down and the
+**right thumbstick** forward, back and sideways; the headset panel shows
+the offset. The hands do not follow the view: they map from the head
+cameras themselves, so the arms move as they would with the view there,
+and are drawn the view offset away from the controllers.
 
 **Hand mapping.** Chosen under **WebXR** in the panel, from the next
 session on:

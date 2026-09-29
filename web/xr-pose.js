@@ -71,10 +71,12 @@ export const HEAD_CAMERAS = ["camera_head_left", "camera_head_right"];
 // arm_origin with the lifter down.
 export const HEAD_OFFSET = [0.038, 0, 0.11];
 
-// How far above the head cameras (or HEAD_OFFSET) the headset is placed, in
-// meters: high enough to overlook the whole table. The left thumbstick
-// raises and lowers it in the session.
-export const DEFAULT_VIEW_HEIGHT = 0.3;
+// Where the headset is placed relative to the head cameras (or
+// HEAD_OFFSET), in the arm_origin frame (x forward, y left, z up), in
+// meters: above and a little behind them, overlooking the whole table. In
+// the cell, the lifter's post stands 0.10 m behind the head cameras. The
+// thumbsticks move it in the session.
+export const DEFAULT_VIEW_OFFSET = [-0.08, 0, 0.3];
 
 // How the controller poses become arm targets:
 //
@@ -242,17 +244,17 @@ export function worldPlacement(origin, reference, config, anchor = null) {
   return { pos: xr.map((v, i) => v - shifted[i]), quat };
 }
 
-// The anchor that draws the robot's head position, `viewHeight` above it,
-// at the headset: the operator looks out from where the robot's head is,
-// with the arms below them like their own. `head` is that position in the
-// MuJoCo world (between the head cameras); without it, HEAD_OFFSET from the
-// arm_origin site.
-export function headAnchor(origin, reference, head = null, viewHeight = 0) {
+// The anchor that draws the robot's head position, moved by `viewOffset`
+// (arm_origin frame), at the headset: the operator looks out from where the
+// robot's head is, with the arms below them like their own. `head` is that
+// position in the MuJoCo world (between the head cameras); without it,
+// HEAD_OFFSET from the arm_origin site.
+export function headAnchor(origin, reference, head = null, viewOffset = null) {
   const offset = quatRotVec(origin.quat, HEAD_OFFSET);
-  const up = quatRotVec(origin.quat, [0, 0, viewHeight]);
+  const view = quatRotVec(origin.quat, viewOffset ?? [0, 0, 0]);
   const world = head ?? origin.pos.map((v, i) => v + offset[i]);
   return {
-    world: world.map((v, i) => v + up[i]),
+    world: world.map((v, i) => v + view[i]),
     xr: [reference.x, reference.y, reference.z],
   };
 }

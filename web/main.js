@@ -57,7 +57,7 @@ import { readFrame } from "./xr-frame.js";
 import { XRHud } from "./xr-hud.js";
 import {
   DEFAULT_NECK_PIVOT_OFFSET,
-  DEFAULT_VIEW_HEIGHT,
+  DEFAULT_VIEW_OFFSET,
   HEAD_CAMERAS,
   headAnchor,
   worldPlacement,
@@ -73,10 +73,15 @@ const SIDES = ["left", "right"];
 // the repository root), so serve the repository root.
 const MODEL_BASE = "v2/";
 
-// The left thumbstick moves the VR view up and down at this speed (m/s),
-// within this range above the head cameras, past this much deflection.
-const VIEW_HEIGHT_SPEED = 0.3;
-const VIEW_HEIGHT_RANGE = [-0.3, 1.0];
+// The thumbsticks move the VR view at this speed (m/s), within this range
+// of the head cameras per axis (arm_origin frame: x forward, y left, z up),
+// past this much deflection.
+const VIEW_SPEED = 0.3;
+const VIEW_OFFSET_RANGE = [
+  [-0.5, 0.5],
+  [-0.5, 0.5],
+  [-0.3, 1.0],
+];
 const VIEW_STICK_DEADZONE = 0.2;
 
 // A measured neck pivot offset outlives the page (dora-openarm-webxr keeps
@@ -264,7 +269,7 @@ class App {
     this.xrTeleop = null; // one per session
     this.xrPlaced = false;
     this.xrButtonX = false; // last frame's X, for the press edge
-    this.viewHeight = DEFAULT_VIEW_HEIGHT; // kept across sessions
+    this.viewOffset = [...DEFAULT_VIEW_OFFSET]; // kept across sessions
     this.xrReference = null; // the headset pose the world is placed from
     this.xrTime = null; // last frame's time, for the thumbstick
 
@@ -448,44 +453,52 @@ class App {
   }
 
   // Place the MuJoCo world in the headset's reference space, anchored to
-  // the headset pose of the first frame: the headset starts viewHeight
-  // above the robot's head (between its head cameras), overlooking the
-  // arms below. A head turn then moves neither the world nor the targets.
+  // the headset pose of the first frame: the headset starts viewOffset
+  // from the robot's head (between its head cameras), overlooking the arms
+  // below. A head turn then moves neither the world nor the targets.
   //
   // The hands go through the placement from the robot's head itself: a
-  // hand held where it was reaches the same place whatever the view
-  // height, and the grippers are drawn viewHeight below the controllers.
+  // hand held where it was reaches the same place whatever the view offset,
+  // and the grippers are drawn that offset away from the controllers.
   placeWorld(reference) {
     this.xrReference = reference;
     const origin = this.controller.originPose(this.mjData);
     const head = this.headPosition();
-    const place = (viewHeight) =>
+    const place = (viewOffset) =>
       worldPlacement(
         origin,
         reference,
         this.xrTeleop,
-        headAnchor(origin, reference, head, viewHeight),
+        headAnchor(origin, reference, head, viewOffset),
       );
-    const { pos, quat } = place(this.viewHeight);
+    const { pos, quat } = place(this.viewOffset);
     this.world.position.set(pos[0], pos[1], pos[2]);
     this.world.quaternion.set(quat[1], quat[2], quat[3], quat[0]);
-    this.xrTeleop.placement = place(0);
+    this.xrTeleop.placement = place(null);
     this.xrPlaced = true;
   }
 
-  // The left thumbstick pushed forward raises the view, pulled back lowers
-  // it; the world is placed again from the same headset pose, so only the
-  // height changes, and the hands keep their reach.
-  adjustViewHeight(axes, dt) {
-    if (!this.xrPlaced || !axes || dt <= 0) return;
+  // Move the view with the thumbsticks: the left one up and down (pushed
+  // forward raises it), the right one forward, back and sideways. The world
+  // is placed again from the same headset pose, so only the view moves, and
+  // the hands keep their reach.
+  adjustView(left, right, dt) {
+    if (!this.xrPlaced || dt <= 0) return;
     // xr-standard: the thumbstick is axes[2..3] (touchpad first), -y forward
-    const y = axes.length >= 4 ? axes[3] : axes[1];
-    if (!(Math.abs(y) > VIEW_STICK_DEADZONE)) return;
-    this.viewHeight = Math.min(
-      VIEW_HEIGHT_RANGE[1],
-      Math.max(
-        VIEW_HEIGHT_RANGE[0],
-        this.viewHeight - y * VIEW_HEIGHT_SPEED * dt,
+    const stick = (axes) => {
+      if (!axes) return [0, 0];
+      const xy = axes.length >= 4 ? [axes[2], axes[3]] : [axes[0], axes[1]];
+      return xy.map((v) => (Math.abs(v) > VIEW_STICK_DEADZONE ? v : 0));
+    };
+    const [, leftY] = stick(left);
+    const [rightX, rightY] = stick(right);
+    // arm_origin frame: forward is +x, right is -y, up is +z
+    const rate = [-rightY, -rightX, -leftY];
+    if (rate.every((v) => v === 0)) return;
+    this.viewOffset = this.viewOffset.map((v, i) =>
+      Math.min(
+        VIEW_OFFSET_RANGE[i][1],
+        Math.max(VIEW_OFFSET_RANGE[i][0], v + rate[i] * VIEW_SPEED * dt),
       ),
     );
     this.placeWorld(this.xrReference);
@@ -518,7 +531,7 @@ class App {
     // capped, so a stalled frame (or a paused tab) cannot jump the view
     const dt = this.xrTime === null ? 0 : Math.min(0.1, time - this.xrTime);
     this.xrTime = time;
-    this.adjustViewHeight(response.joystick_left, dt);
+    this.adjustView(response.joystick_left, response.joystick_right, dt);
     this.xrTeleop.processFrame(
       response,
       time,
@@ -547,9 +560,10 @@ class App {
     }
     if (this.calibrationMessage) lines.push(this.calibrationMessage);
     lines.push(this.lastStatus ?? "");
+    const [x, y, z] = this.viewOffset.map((v) => v.toFixed(2));
     lines.push(
-      `view ${this.viewHeight.toFixed(2)} m above the head cameras ` +
-        "(left stick up/down)",
+      `view from the head cameras: forward ${x} left ${y} up ${z} m ` +
+        "(left stick: up/down, right stick: forward/back/sideways)",
     );
     lines.push("X: reset    B: leave VR");
     return lines.join("\n");
