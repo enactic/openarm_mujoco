@@ -82,7 +82,9 @@ Reset button and Backspace) and the **B** button leaves the session.
 Below the view a hint says "press Y for help": the **Y** button opens a
 panel with the status lines (tracking errors), the view and the buttons,
 and closes it again. With the neck pivot calibration on, Y measures
-instead and the panel stays open.
+instead and the panel stays open. Other controllers with the standard
+(`xr-standard`) layout move the arms and the grippers too, but have no
+X/B/Y: their buttons past the trigger and squeeze vary by vendor.
 
 The headset starts above and a little behind the robot's head,
 overlooking the table: `DEFAULT_VIEW_OFFSET` in `xr-pose.js` (0.08 m

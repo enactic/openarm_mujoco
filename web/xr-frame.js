@@ -22,6 +22,19 @@
 // the left.
 const KNOWN_PROFILES = ["pico-4u", "meta-quest-touch-plus", "oculus-touch-v3"];
 
+// Unlike ar.js, any other controller with the xr-standard mapping still
+// gives its trigger and squeeze, which that mapping fixes at buttons[0] and
+// [1], so that its hand moves. Its A/B/X/Y are left out: from buttons[4] on
+// the layout is the vendor's, and a guess could reset the environment or
+// end the session on the wrong press.
+function readTriggers(response, suffix, gamepad) {
+  response[`trigger${suffix}`] = gamepad.buttons[0].value;
+  // Sent as its 0..1 value rather than a pressed flag, so that a consumer
+  // can pick its own threshold.
+  const grip = gamepad.buttons[1];
+  if (grip) response[`grip${suffix}`] = grip.value;
+}
+
 function xrTransform(transform) {
   return {
     x: transform.position.x,
@@ -53,11 +66,7 @@ export function readFrame(session, space, frame) {
     const gamepad = source.gamepad;
     if (!gamepad) continue;
     if (source.profiles.some((p) => KNOWN_PROFILES.includes(p))) {
-      response[`trigger${suffix}`] = gamepad.buttons[0].value;
-      // Sent as its 0..1 value rather than a pressed flag, so that a
-      // consumer can pick its own threshold.
-      const grip = gamepad.buttons[1];
-      if (grip) response[`grip${suffix}`] = grip.value;
+      readTriggers(response, suffix, gamepad);
       if (source.handedness === "right") {
         response.button_a = gamepad.buttons[4].pressed;
         response.button_b = gamepad.buttons[5].pressed;
@@ -65,6 +74,8 @@ export function readFrame(session, space, frame) {
         response.button_x = gamepad.buttons[4].pressed;
         response.button_y = gamepad.buttons[5].pressed;
       }
+    } else if (gamepad.mapping === "xr-standard" && gamepad.buttons[0]) {
+      readTriggers(response, suffix, gamepad);
     }
     // The whole array: the xr-standard mapping reserves the first axis
     // pair for the touchpad and the second for the thumbstick, and a

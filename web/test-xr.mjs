@@ -592,12 +592,14 @@ describe("XRTeleop.processFrame (main.py: _process_frame)", () => {
 });
 
 // Fakes for the WebXR objects readFrame touches.
-function fakeSource(handedness, { profiles, buttons, axes, pose }) {
+function fakeSource(handedness, { profiles, buttons, axes, pose, mapping }) {
   return {
     handedness,
     profiles,
     targetRaySpace: { pose },
-    gamepad: buttons ? { buttons, axes: axes ?? [] } : null,
+    gamepad: buttons
+      ? { buttons, axes: axes ?? [], mapping: mapping ?? "" }
+      : null,
   };
 }
 const fakeFrame = (viewer) => ({
@@ -688,5 +690,38 @@ describe("readFrame (ar.js: sendFrame)", () => {
     };
     const r = readFrame(session, {}, fakeFrame(null));
     assert.deepEqual(Object.keys(r), ["pose_left"]);
+  });
+
+  it("an unknown xr-standard profile gives its trigger and squeeze, no buttons", () => {
+    const other = [
+      "meta-quest-touch-pro",
+      "generic-trigger-squeeze-thumbstick",
+    ];
+    const buttons = [
+      button(0.75),
+      button(0.5),
+      button(0),
+      button(0),
+      button(1),
+      button(1),
+    ];
+    const session = {
+      inputSources: ["left", "right"].map((side) =>
+        fakeSource(side, {
+          profiles: other,
+          pose: transform([0, 0, 0]),
+          buttons,
+          axes: [0, 0, 0.5, 0],
+          mapping: "xr-standard",
+        }),
+      ),
+    };
+    const r = readFrame(session, {}, fakeFrame(transform([0, 1.6, 0])));
+    assert.equal(r.trigger_left, 0.75);
+    assert.equal(r.grip_right, 0.5);
+    assert.deepEqual(r.joystick_right, [0, 0, 0.5, 0]);
+    for (const b of ["button_a", "button_b", "button_x", "button_y"]) {
+      assert.equal(r[b], undefined, b);
+    }
   });
 });
