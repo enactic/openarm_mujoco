@@ -71,6 +71,11 @@ export const HEAD_CAMERAS = ["camera_head_left", "camera_head_right"];
 // arm_origin with the lifter down.
 export const HEAD_OFFSET = [0.038, 0, 0.11];
 
+// How far above the head cameras (or HEAD_OFFSET) the headset is placed, in
+// meters: high enough to overlook the whole table. The left thumbstick
+// raises and lowers it in the session.
+export const DEFAULT_VIEW_HEIGHT = 0.3;
+
 // How the controller poses become arm targets:
 //
 // * "direct": through the world placement, so each virtual gripper is drawn
@@ -237,14 +242,17 @@ export function worldPlacement(origin, reference, config, anchor = null) {
   return { pos: xr.map((v, i) => v - shifted[i]), quat };
 }
 
-// The anchor that draws the robot's head position at the headset: the
-// operator looks out from where the robot's head is, with the arms below
-// them like their own. `head` is that position in the MuJoCo world (between
-// the head cameras); without it, HEAD_OFFSET from the arm_origin site.
-export function headAnchor(origin, reference, head = null) {
+// The anchor that draws the robot's head position, `viewHeight` above it,
+// at the headset: the operator looks out from where the robot's head is,
+// with the arms below them like their own. `head` is that position in the
+// MuJoCo world (between the head cameras); without it, HEAD_OFFSET from the
+// arm_origin site.
+export function headAnchor(origin, reference, head = null, viewHeight = 0) {
   const offset = quatRotVec(origin.quat, HEAD_OFFSET);
+  const up = quatRotVec(origin.quat, [0, 0, viewHeight]);
+  const world = head ?? origin.pos.map((v, i) => v + offset[i]);
   return {
-    world: head ?? origin.pos.map((v, i) => v + offset[i]),
+    world: world.map((v, i) => v + up[i]),
     xr: [reference.x, reference.y, reference.z],
   };
 }

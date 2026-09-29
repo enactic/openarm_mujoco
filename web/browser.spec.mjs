@@ -163,10 +163,14 @@ test("controller frames drive the arms through the same pipeline", async () => {
     };
     // a second of frames: the One Euro filter has settled by then
     for (let i = 1; i <= 72; i++) app.applyXRFrame(frame, i / 72);
-    // where the point between the head cameras ended up in the headset's
-    // space
+    // where the point viewHeight above the head cameras ended up in the
+    // headset's space
     const head = app.headPosition();
-    const camera = new THREE.Vector3(...head);
+    const camera = new THREE.Vector3(
+      head[0],
+      head[1],
+      head[2] + app.viewHeight,
+    );
     app.world.updateMatrixWorld(true);
     app.world.localToWorld(camera);
     return {
@@ -181,8 +185,8 @@ test("controller frames drive the arms through the same pipeline", async () => {
   expect(moved.placed).toBe(true);
   expect(moved.grip).toBeCloseTo(0.4);
   expect(moved.worldUp).not.toEqual([0, 0, 0, 1]); // turned y-up for the headset
-  // between cell.xml's camera_head_left/right, drawn at the headset
-  // (identity pose here)
+  // between cell.xml's camera_head_left/right, and viewHeight above that
+  // drawn at the headset (identity pose here)
   expect(moved.head[0]).toBeCloseTo(0.223, 6);
   expect(moved.head[1]).toBeCloseTo(0, 6);
   expect(moved.head[2]).toBeCloseTo(1.45, 6);
@@ -220,6 +224,27 @@ test("controller frames drive the arms through the same pipeline", async () => {
     return calls;
   });
   expect(presses).toEqual({ reset: 2, end: 1 });
+  // the left thumbstick pushed forward for a second raises the view
+  const raised = await page.evaluate(() => {
+    const app = window.__app;
+    const identity = { x: 0, y: 0, z: 0, qx: 0, qy: 0, qz: 0, qw: 1 };
+    const before = app.viewHeight;
+    const worldY = app.world.position.y;
+    // released first: a frame after a pause moves nothing by itself
+    app.applyXRFrame({ pose_reference: identity }, 100);
+    for (let i = 1; i <= 72; i++) {
+      app.applyXRFrame(
+        { pose_reference: identity, joystick_left: [0, 0, 0, -1] },
+        100 + i / 72,
+      );
+    }
+    return {
+      by: app.viewHeight - before,
+      worldBy: app.world.position.y - worldY,
+    };
+  });
+  expect(raised.by).toBeCloseTo(0.3, 5);
+  expect(raised.worldBy).toBeCloseTo(-0.3, 3); // the world sinks instead
   // ending the session puts the world back and keeps the last pose
   await page.evaluate(() => window.__app.onSessionEnd());
   expect(

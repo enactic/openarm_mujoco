@@ -42,12 +42,22 @@ import {
   SPEED_DOWN_KEYS,
   SPEED_UP_KEYS,
 } from "./keymap.js";
+import {
+  addMujocoLights,
+  materialTexture,
+  mujocoLights,
+  phongSpecular,
+  SHININESS_SCALE,
+  skybox,
+  texture2D,
+} from "./mj-render.js";
 import { buildVFS } from "./model-vfs.js";
 import { TeleopState } from "./teleop.js";
 import { readFrame } from "./xr-frame.js";
 import { XRHud } from "./xr-hud.js";
 import {
   DEFAULT_NECK_PIVOT_OFFSET,
+  DEFAULT_VIEW_HEIGHT,
   HEAD_CAMERAS,
   headAnchor,
   worldPlacement,
@@ -62,6 +72,12 @@ const SIDES = ["left", "right"];
 // directory. The path is resolved against the page URL (index.html at
 // the repository root), so serve the repository root.
 const MODEL_BASE = "v2/";
+
+// The left thumbstick moves the VR view up and down at this speed (m/s),
+// within this range above the head cameras, past this much deflection.
+const VIEW_HEIGHT_SPEED = 0.3;
+const VIEW_HEIGHT_RANGE = [-0.3, 1.0];
+const VIEW_STICK_DEADZONE = 0.2;
 
 // A measured neck pivot offset outlives the page (dora-openarm-webxr keeps
 // it in neck_pivot.yaml): the whole point of measuring an operator is
@@ -111,46 +127,13 @@ function asArray(value) {
   return value;
 }
 
-function createCheckerTexture(repeatX = 5, repeatY = 5) {
-  const size = 256;
-  const canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext("2d");
-  const cells = 8;
-  const cell = size / cells;
-  for (let y = 0; y < cells; y += 1) {
-    for (let x = 0; x < cells; x += 1) {
-      const dark = (x + y) % 2 === 0;
-      ctx.fillStyle = dark ? "#334455" : "#1a2833";
-      ctx.fillRect(x * cell, y * cell, cell, cell);
-    }
-  }
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(repeatX, repeatY);
-  texture.colorSpace = THREE.NoColorSpace;
-  texture.anisotropy = 4;
-  return texture;
-}
+// A plane of size 0 is drawn this large (half-size, in meters) on each side.
+const INFINITE_PLANE_HALF_SIZE = 10;
 
-function materialHasTexture(model, matId) {
-  // mat_texid is nmat × mjNTEXROLE; any non-negative role means textured.
-  const texIds = asArray(model.mat_texid);
-  if (!texIds || matId < 0) return false;
-  const nrole = Math.max(
-    1,
-    Math.floor(texIds.length / Math.max(model.nmat, 1)),
-  );
-  const base = matId * nrole;
-  for (let r = 0; r < nrole; r += 1) {
-    if (texIds[base + r] >= 0) return true;
-  }
-  return false;
-}
-
-function resolveGeomAppearance(model, geomIndex, textureCache) {
+// The Three material parameters for a geom, from its MuJoCo material (or
+// MuJoCo's defaults without one). `textures` caches the model's textures by
+// id and repeat; `specularRatio` is mujocoLights().specularRatio.
+function resolveGeomAppearance(model, geomIndex, textures, specularRatio) {
   const geomRgba = asArray(model.geom_rgba);
   const geomMatid = asArray(model.geom_matid);
   let rgba = [
@@ -160,9 +143,9 @@ function resolveGeomAppearance(model, geomIndex, textureCache) {
     geomRgba[geomIndex * 4 + 3],
   ];
 
-  // Defaults match MuJoCo's Phong-like material model (not PBR metalness).
-  let shininess = 50;
-  let specular = 0.5;
+  // MuJoCo's material defaults.
+  let matShininess = 0.5;
+  let matSpecular = 0.5;
   let emission = 0;
   let map = null;
   const matId = geomMatid?.[geomIndex] ?? -1;
@@ -176,30 +159,45 @@ function resolveGeomAppearance(model, geomIndex, textureCache) {
       matRgba[matId * 4 + 2],
       matRgba[matId * 4 + 3],
     ];
+    matShininess = asArray(model.mat_shininess)?.[matId] ?? matShininess;
+    matSpecular = asArray(model.mat_specular)?.[matId] ?? matSpecular;
+    emission = asArray(model.mat_emission)?.[matId] ?? emission;
 
-    const matShininess = asArray(model.mat_shininess)?.[matId] ?? 0.5;
-    const matSpecular = asArray(model.mat_specular)?.[matId] ?? 0.5;
-    const matEmission = asArray(model.mat_emission)?.[matId] ?? 0;
-    shininess = Math.max(1, matShininess * 100);
-    specular = matSpecular;
-    emission = matEmission;
-
-    if (materialHasTexture(model, matId)) {
+    const texId = materialTexture(model, matId);
+    if (texId >= 0) {
       const texRepeat = asArray(model.mat_texrepeat);
-      const repeatX = texRepeat?.[matId * 2] ?? 1;
-      const repeatY = texRepeat?.[matId * 2 + 1] ?? 1;
-      const key = `${Math.max(repeatX, 1)},${Math.max(repeatY, 1)}`;
-      if (!textureCache.has(key)) {
-        textureCache.set(
-          key,
-          createCheckerTexture(Math.max(repeatX, 1), Math.max(repeatY, 1)),
+      let repeat = [texRepeat[matId * 2], texRepeat[matId * 2 + 1]];
+      // Planes are textured uniformly (texuniform, which every plane here
+      // sets; the bool array itself cannot be read through the bindings):
+      // MuJoCo repeats the texture texrepeat times per half-size.
+      if (
+        asArray(model.geom_type)[geomIndex] ===
+        mujoco.mjtGeom.mjGEOM_PLANE.value
+      ) {
+        const size = asArray(model.geom_size);
+        repeat = repeat.map(
+          (r, k) => r * (size[geomIndex * 3 + k] || INFINITE_PLANE_HALF_SIZE),
         );
       }
-      map = textureCache.get(key);
+      const key = `${texId}:${repeat}`;
+      if (!textures.has(key)) {
+        const base = textures.get(texId) ?? texture2D(model, texId);
+        textures.set(texId, base);
+        const texture = base.clone(); // shares the pixels
+        texture.repeat.set(repeat[0], repeat[1]);
+        textures.set(key, texture);
+      }
+      map = textures.get(key);
     }
   }
 
-  return { rgba, shininess, specular, emission, map };
+  return {
+    rgba,
+    shininess: Math.max(1, matShininess * SHININESS_SCALE),
+    specular: phongSpecular(matSpecular, matShininess, specularRatio),
+    emission,
+    map,
+  };
 }
 
 class App {
@@ -210,14 +208,17 @@ class App {
     this.maxGeoms = 2 ** 14;
     this.meshes = [];
     this.bufferGeometryCache = new Map();
-    this.checkerTextureCache = new Map();
+    this.textureCache = new Map();
+    this.sceneLights = []; // the loaded model's, see addMujocoLights
+    this.sky = null;
     this.teleop = new TeleopState();
     this.held = new Set();
     this.lifterHeight = 0;
     this.statusElement = document.getElementById("status");
 
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x263238);
+    // MuJoCo's own background where a scene has no skybox.
+    this.scene.background = new THREE.Color(0x000000);
     // Everything MuJoCo draws lives in this group, in MuJoCo's z-up world
     // coordinates. On the desktop it is the identity; in a WebXR session it
     // is moved so that the arm_origin frame lands where the operator is
@@ -251,7 +252,6 @@ class App {
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.target.set(0.4, 0, 1.15);
-    this.initLights();
 
     // The headset panel rides on the camera, which WebXR moves with the
     // head; on the desktop it is hidden.
@@ -264,6 +264,9 @@ class App {
     this.xrTeleop = null; // one per session
     this.xrPlaced = false;
     this.xrButtonX = false; // last frame's X, for the press edge
+    this.viewHeight = DEFAULT_VIEW_HEIGHT; // kept across sessions
+    this.xrReference = null; // the headset pose the world is placed from
+    this.xrTime = null; // last frame's time, for the thumbstick
 
     window.addEventListener("resize", () => {
       this.camera.aspect = window.innerWidth / window.innerHeight;
@@ -280,8 +283,17 @@ class App {
     this.meshes = [];
     for (const geom of this.bufferGeometryCache.values()) geom.dispose();
     this.bufferGeometryCache.clear();
-    for (const texture of this.checkerTextureCache.values()) texture.dispose();
-    this.checkerTextureCache.clear();
+    for (const texture of this.textureCache.values()) texture.dispose();
+    this.textureCache.clear();
+    for (const light of this.sceneLights) light.removeFromParent();
+    this.sceneLights = [];
+    if (this.sky) {
+      this.world.remove(this.sky);
+      this.sky.geometry.dispose();
+      this.sky.material.uniforms.sky.value.dispose();
+      this.sky.material.dispose();
+      this.sky = null;
+    }
     if (this.markers) {
       for (const side of SIDES) this.world.remove(this.markers[side]);
       this.markers = null;
@@ -330,6 +342,7 @@ class App {
       if (cellVis >= 0) this.transparentGeomIds.add(cellVis);
 
       this.mjvScene = new mujoco.MjvScene(this.mjModel, this.maxGeoms);
+      this.initLighting();
       this.initTargetMarkers();
       this.frameCamera();
     } catch (e) {
@@ -372,17 +385,15 @@ class App {
     this.applyTargets();
   }
 
-  initLights() {
-    // In the world group, so they keep lighting the scene from above when
-    // the group is turned y-up for a headset.
-    const ambient = new THREE.AmbientLight(0xffffff, 0.6);
-    this.world.add(ambient);
-    const dir = new THREE.DirectionalLight(0xffffff, 1.2);
-    dir.position.set(2, 1, 2);
-    this.world.add(dir);
-    const dir2 = new THREE.DirectionalLight(0xffffff, 0.5);
-    dir2.position.set(-2, -1, 1);
-    this.world.add(dir2);
+  // The scene's own lights, headlight and skybox, as MuJoCo's viewer draws
+  // them (mj-render.js). The world-fixed ones go into the world group, so
+  // they keep lighting the scene from above when it is turned y-up for a
+  // headset.
+  initLighting() {
+    this.lighting = mujocoLights(this.mjModel);
+    this.sceneLights = addMujocoLights(this.lighting, this.world, this.camera);
+    this.sky = skybox(this.mjModel, mujoco.mjtTexture.mjTEXTURE_SKYBOX.value);
+    if (this.sky) this.world.add(this.sky);
   }
 
   initTargetMarkers() {
@@ -406,6 +417,7 @@ class App {
     });
     this.xrPlaced = false;
     this.xrButtonX = false;
+    this.xrTime = null;
     this.calibrationMessage = null;
     this.hud.mesh.visible = true;
   }
@@ -436,23 +448,41 @@ class App {
   }
 
   // Place the MuJoCo world in the headset's reference space, anchored to
-  // the headset pose of the first frame: the headset starts where the
-  // robot's head is (between its head cameras), so the arms hang below the
-  // operator like their own. A head turn then moves neither the world nor
-  // the targets.
+  // the headset pose of the first frame: the headset starts viewHeight
+  // above the robot's head (between its head cameras), overlooking the
+  // arms below. A head turn then moves neither the world nor the targets.
   placeWorld(reference) {
+    this.xrReference = reference;
     const origin = this.controller.originPose(this.mjData);
     const placement = worldPlacement(
       origin,
       reference,
       this.xrTeleop,
-      headAnchor(origin, reference, this.headPosition()),
+      headAnchor(origin, reference, this.headPosition(), this.viewHeight),
     );
     const { pos, quat } = placement;
     this.world.position.set(pos[0], pos[1], pos[2]);
     this.world.quaternion.set(quat[1], quat[2], quat[3], quat[0]);
     this.xrTeleop.placement = placement;
     this.xrPlaced = true;
+  }
+
+  // The left thumbstick pushed forward raises the view, pulled back lowers
+  // it; the world is placed again from the same headset pose, so only the
+  // height changes.
+  adjustViewHeight(axes, dt) {
+    if (!this.xrPlaced || !axes || dt <= 0) return;
+    // xr-standard: the thumbstick is axes[2..3] (touchpad first), -y forward
+    const y = axes.length >= 4 ? axes[3] : axes[1];
+    if (!(Math.abs(y) > VIEW_STICK_DEADZONE)) return;
+    this.viewHeight = Math.min(
+      VIEW_HEIGHT_RANGE[1],
+      Math.max(
+        VIEW_HEIGHT_RANGE[0],
+        this.viewHeight - y * VIEW_HEIGHT_SPEED * dt,
+      ),
+    );
+    this.placeWorld(this.xrReference);
   }
 
   // World position between the scene's head cameras, or null without them.
@@ -479,6 +509,10 @@ class App {
     if (!this.xrPlaced && response.pose_reference) {
       this.placeWorld(response.pose_reference);
     }
+    // capped, so a stalled frame (or a paused tab) cannot jump the view
+    const dt = this.xrTime === null ? 0 : Math.min(0.1, time - this.xrTime);
+    this.xrTime = time;
+    this.adjustViewHeight(response.joystick_left, dt);
     this.xrTeleop.processFrame(
       response,
       time,
@@ -507,6 +541,10 @@ class App {
     }
     if (this.calibrationMessage) lines.push(this.calibrationMessage);
     lines.push(this.lastStatus ?? "");
+    lines.push(
+      `view ${this.viewHeight.toFixed(2)} m above the head cameras ` +
+        "(left stick up/down)",
+    );
     lines.push("X: reset    B: leave VR");
     return lines.join("\n");
   }
@@ -577,8 +615,8 @@ class App {
       geom = this.meshGeometry(mjvGeom.dataid >> 1);
     } else if (mjvGeom.type === t.mjGEOM_PLANE.value) {
       geom = new THREE.PlaneGeometry(
-        2 * (mjvGeom.size[0] || 10),
-        2 * (mjvGeom.size[1] || 10),
+        2 * (mjvGeom.size[0] || INFINITE_PLANE_HALF_SIZE),
+        2 * (mjvGeom.size[1] || INFINITE_PLANE_HALF_SIZE),
       );
     } else if (mjvGeom.type === t.mjGEOM_SPHERE.value) {
       geom = new THREE.SphereGeometry(mjvGeom.size[0]);
@@ -614,8 +652,9 @@ class App {
   applyGeomAppearance(mesh, g) {
     const mat = mesh.material;
     let rgba = g.rgba;
-    let shininess = 50;
-    let specular = 0.5;
+    // MuJoCo's material defaults, for decor without a geom behind it
+    let shininess = 0.5 * SHININESS_SCALE;
+    let specular = phongSpecular(0.5, 0.5, this.lighting.specularRatio);
     let emission = 0;
     let map = null;
     if (
@@ -626,7 +665,8 @@ class App {
       const appearance = resolveGeomAppearance(
         this.mjModel,
         g.objid,
-        this.checkerTextureCache,
+        this.textureCache,
+        this.lighting.specularRatio,
       );
       rgba = appearance.rgba;
       shininess = appearance.shininess;
@@ -652,7 +692,12 @@ class App {
     mat.depthWrite = depthWrite;
     mat.shininess = shininess;
     mat.specular.setRGB(specular, specular, specular);
-    mat.emissive.setRGB(emission, emission, emission);
+    // MuJoCo's emission is a fraction of the color
+    mat.emissive.setRGB(
+      emission * rgba[0],
+      emission * rgba[1],
+      emission * rgba[2],
+    );
     if (mat.map !== map) {
       mat.map = map;
       mat.needsUpdate = true;

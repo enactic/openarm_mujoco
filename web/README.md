@@ -25,6 +25,12 @@ and Backspace returns to that scene's own home pose. Cell scenes have a
 lifter (no UI control yet — a keyboard binding is planned), and the cell
 enclosure is drawn see-through.
 
+`mj-render.js` draws a scene the way MuJoCo's viewer does, from the
+compiled model: its lights and headlight (at MuJoCo's brightness: Three's
+physically based lights divide diffuse by π, so they are π times
+MuJoCo's), its textures (`tex_data`, e.g. the floor's checker) and its
+skybox. Shadows and reflections are left out.
+
 ## Usage
 
 There is no build step or bundler: the page is plain HTML + ES modules.
@@ -75,11 +81,13 @@ nor the targets, the **X** button resets the environment (like the
 Reset button and Backspace) and the **B** button leaves the session. A text panel
 below the view shows the status lines.
 
-The headset starts where the robot's head is: between the
+The headset starts above the robot's head, overlooking the table: 0.3 m
+(`DEFAULT_VIEW_HEIGHT` in `xr-pose.js`) above the point between the
 `camera_head_left` and `camera_head_right` cameras in the cell scenes,
-and `HEAD_OFFSET` in `xr-pose.js` (the same point relative to the
-`arm_origin` site, 11 cm above it) in the scenes without them. The arms
-hang below the operator like their own.
+or above `HEAD_OFFSET` (the same point relative to the `arm_origin` site,
+11 cm above it) in the scenes without them. The **left thumbstick** moves
+the view up and down in the session. With the *direct* hands below, the
+hands reach that much lower for the same gripper height.
 
 **Hand mapping.** Chosen under **WebXR** in the panel, from the next
 session on:

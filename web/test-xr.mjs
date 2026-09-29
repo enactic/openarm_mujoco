@@ -209,6 +209,13 @@ describe("worldPlacement", () => {
     nearVec(quatRotVec(quat, [1, 0, 0]), [0, 0, -1], 1e-12, "forward");
   });
 
+  it("headAnchor lifts the head position by the view height", () => {
+    const origin = { pos: [0.185, 0, 1.34], quat: eulerZYXToQuat(0, 0, 0.3) };
+    const head = [0.223, 0, 1.45];
+    const anchor = headAnchor(origin, IDENTITY, head, 0.3);
+    nearVec(anchor.world, [0.223, 0, 1.75], 1e-12, "straight up");
+  });
+
   it("headAnchor takes the head position when the scene has one", () => {
     const origin = { pos: [0.185, 0, 1.34], quat: [1, 0, 0, 0] };
     const head = [0.223, 0, 1.45];
