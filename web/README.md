@@ -25,7 +25,7 @@ and Backspace returns to that scene's own home pose. Cell scenes have a
 lifter (no UI control yet — a keyboard binding is planned), and the cell
 enclosure is drawn see-through.
 
-`mj-render.js` draws a scene the way MuJoCo's viewer does, from the
+`appearance.js` draws a scene the way MuJoCo's viewer does, from the
 compiled model: its lights and headlight (at MuJoCo's brightness: Three's
 physically based lights divide diffuse by π, so they are π times
 MuJoCo's), its textures (`tex_data`, e.g. the floor's checker) and its

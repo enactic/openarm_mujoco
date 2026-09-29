@@ -13,8 +13,8 @@
 // limitations under the License.
 
 // MuJoCo's own look in Three.js: the model's lights and headlight, its
-// textures and its skybox, taken from the compiled model rather than
-// guessed, so a scene renders like it does in MuJoCo's viewer.
+// materials and textures and its skybox, taken from the compiled model
+// rather than guessed, so a scene renders like it does in MuJoCo's viewer.
 //
 // MuJoCo lights the way fixed-function OpenGL did, in linear color with no
 // tone mapping: a surface of color c gets
@@ -180,6 +180,83 @@ export function materialTexture(model, matId) {
   const rgbRole = nrole > 1 ? 1 : 0;
   if (roles[rgbRole] >= 0) return roles[rgbRole];
   return roles.find((id) => id >= 0) ?? -1;
+}
+
+// A plane of size 0 is drawn this large (half-size, in meters) on each side.
+export const INFINITE_PLANE_HALF_SIZE = 10;
+
+// The Three material parameters for a geom, from its MuJoCo material (or
+// MuJoCo's defaults without one). `planeType` is mjGEOM_PLANE's value,
+// `textures` caches the model's textures by id and repeat, and
+// `specularRatio` is mujocoLights().specularRatio.
+export function resolveGeomAppearance(
+  model,
+  geomIndex,
+  planeType,
+  textures,
+  specularRatio,
+) {
+  const geomRgba = view(model.geom_rgba);
+  const geomMatid = view(model.geom_matid);
+  let rgba = [
+    geomRgba[geomIndex * 4],
+    geomRgba[geomIndex * 4 + 1],
+    geomRgba[geomIndex * 4 + 2],
+    geomRgba[geomIndex * 4 + 3],
+  ];
+
+  // MuJoCo's material defaults.
+  let matShininess = 0.5;
+  let matSpecular = 0.5;
+  let emission = 0;
+  let map = null;
+  const matId = geomMatid?.[geomIndex] ?? -1;
+
+  if (matId >= 0) {
+    // MuJoCo applies material rgba over the geom default (often 0.5 gray).
+    const matRgba = view(model.mat_rgba);
+    rgba = [
+      matRgba[matId * 4],
+      matRgba[matId * 4 + 1],
+      matRgba[matId * 4 + 2],
+      matRgba[matId * 4 + 3],
+    ];
+    matShininess = view(model.mat_shininess)?.[matId] ?? matShininess;
+    matSpecular = view(model.mat_specular)?.[matId] ?? matSpecular;
+    emission = view(model.mat_emission)?.[matId] ?? emission;
+
+    const texId = materialTexture(model, matId);
+    if (texId >= 0) {
+      const texRepeat = view(model.mat_texrepeat);
+      let repeat = [texRepeat[matId * 2], texRepeat[matId * 2 + 1]];
+      // Planes are textured uniformly (texuniform, which every plane here
+      // sets; the bool array itself cannot be read through the bindings):
+      // MuJoCo repeats the texture texrepeat times per half-size.
+      if (view(model.geom_type)[geomIndex] === planeType) {
+        const size = view(model.geom_size);
+        repeat = repeat.map(
+          (r, k) => r * (size[geomIndex * 3 + k] || INFINITE_PLANE_HALF_SIZE),
+        );
+      }
+      const key = `${texId}:${repeat}`;
+      if (!textures.has(key)) {
+        const base = textures.get(texId) ?? texture2D(model, texId);
+        textures.set(texId, base);
+        const texture = base.clone(); // shares the pixels
+        texture.repeat.set(repeat[0], repeat[1]);
+        textures.set(key, texture);
+      }
+      map = textures.get(key);
+    }
+  }
+
+  return {
+    rgba,
+    shininess: Math.max(1, matShininess * SHININESS_SCALE),
+    specular: phongSpecular(matSpecular, matShininess, specularRatio),
+    emission,
+    map,
+  };
 }
 
 // The model's skybox (a texture of type mjTEXTURE_SKYBOX) as a sphere to add
