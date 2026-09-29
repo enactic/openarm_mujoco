@@ -94,9 +94,10 @@ the session the **left thumbstick** moves the view up and down and the
 **right thumbstick** forward, back and sideways. Looking straight ahead
 looks `DEFAULT_VIEW_PITCH` (15°) down: the world is tilted up about the
 eyes by that much, and the left thumbstick's sideways axis changes it.
-The headset panel shows the offset and the tilt. The hands do not follow the view: they map from the head
-cameras themselves, so the arms move as they would with the view there,
-and are drawn the view offset away from the controllers.
+The headset panel shows the offset and the tilt. The hands do not follow
+the view: they map from the head cameras themselves, so the arms move as
+they would with the view there, and are drawn the view offset away from
+the controllers.
 
 **Hand mapping.** Chosen under **WebXR** in the panel, from the next
 session on:
@@ -129,14 +130,14 @@ node, no WebRTC and no camera panel, since the simulation itself is what
 the operator sees.
 
 **Neck pivot calibration** (*neck* hands only). Tick *neck pivot
-calibration* under **WebXR** in the panel before entering VR, then hold the **Y** button (left controller), keep the body
-still, turn the head side to side twice and up and down twice, and
-release. The hands stop following while Y is held. The result (or the
-reason a run was rejected, and what to do differently) appears on the
-panel in the headset and in the browser console. An accepted offset is
-kept in the browser's `localStorage`, so it survives reloads; the box
-only says whether the Y button measures, and only from the next session
-on.
+calibration* under **WebXR** in the panel before entering VR, then hold
+the **Y** button (left controller), keep the body still, turn the head
+side to side twice and up and down twice, and release. The hands stop
+following while Y is held. The result (or the reason a run was rejected,
+and what to do differently) appears on the panel in the headset and in
+the browser console. An accepted offset is kept in the browser's
+`localStorage`, so it survives reloads; the box only says whether the Y
+button measures, and only from the next session on.
 
 **HTTPS.** WebXR only runs on a secure page. The GitHub Pages deployment
 is one; a page served from `localhost` is too (that is how the
