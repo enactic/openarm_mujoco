@@ -341,6 +341,41 @@ test("Y opens and closes the headset panel", async () => {
   expect(shown.closedAgain).toBe("press Y for help");
 });
 
+test("the headset panel wraps long lines to fit", async () => {
+  const drawn = await page.evaluate(() => {
+    const app = window.__app;
+    app.handMapping = "neck";
+    app.calibrationEnabled = true;
+    app.onSessionStart();
+    // the longest the panel gets: a run under way and a rejection shown
+    app.onCalibrationResult({
+      accepted: false,
+      reason:
+        "the fitted offset [0.012, -0.090, 0.075] is not where a neck is: " +
+        "it belongs on the midline, below the eyes and behind them",
+    });
+    const identity = { x: 0, y: 0, z: 0, qx: 0, qy: 0, qz: 0, qw: 1 };
+    app.applyXRFrame({ pose_reference: identity, button_y: true }, 0);
+    app.hud.setText(app.hudText());
+    const ctx = app.hud.canvas.getContext("2d");
+    const out = {
+      text: app.hudText(),
+      lines: app.hud.lines,
+      widths: app.hud.lines.map((line) => ctx.measureText(line).width),
+      canvas: [app.hud.canvas.width, app.hud.canvas.height],
+    };
+    app.onSessionEnd();
+    app.handMapping = "direct";
+    app.calibrationEnabled = false;
+    return out;
+  });
+  expect(drawn.text).toContain("CALIBRATING");
+  expect(drawn.lines.length).toBeGreaterThan(drawn.text.split("\n").length);
+  const [width, height] = drawn.canvas;
+  for (const w of drawn.widths) expect(w).toBeLessThanOrEqual(width - 40);
+  expect(16 + drawn.lines.length * 34).toBeLessThanOrEqual(height);
+});
+
 test("teleop still works after switching scenes", async () => {
   await page.selectOption("#scene-select", "pedestal/bottle_scene.xml");
   await page.waitForFunction(

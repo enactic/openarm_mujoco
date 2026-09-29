@@ -604,8 +604,8 @@ class App {
     lines.push(
       `view from the head cameras: forward ${x} left ${y} up ${z} m, ` +
         `${pitch} deg down\n` +
-        "  left stick: up/down, tilt (sideways)  " +
-        "right stick: forward/back/sideways",
+        "  left stick: up/down, tilt (sideways)\n" +
+        "  right stick: forward/back/sideways",
     );
     lines.push(`X: reset    B: leave VR${calibration ? "" : "    Y: hide"}`);
     return lines.join("\n");

@@ -19,8 +19,32 @@
 import * as THREE from "three";
 
 const WIDTH = 1024;
-const HEIGHT = 320;
+const HEIGHT = 640;
 const LINE_HEIGHT = 34;
+const MARGIN = 20;
+
+// Break `line` at spaces so that each piece fits `maxWidth` as `measure`
+// measures it. The pieces after the first are indented two spaces past the
+// line's own indentation, so a wrapped line reads as one. A single word
+// wider than `maxWidth` is kept whole (and clipped).
+export function wrapLine(line, maxWidth, measure) {
+  if (measure(line) <= maxWidth) return [line];
+  const indent = line.match(/^ */)[0];
+  const words = line.slice(indent.length).split(" ");
+  const pieces = [];
+  let current = indent + words[0];
+  for (const word of words.slice(1)) {
+    const candidate = `${current} ${word}`;
+    if (measure(candidate) <= maxWidth || word === "") {
+      current = candidate;
+    } else {
+      pieces.push(current.trimEnd());
+      current = `${indent}  ${word}`;
+    }
+  }
+  pieces.push(current);
+  return pieces;
+}
 
 export class XRHud {
   constructor() {
@@ -36,15 +60,18 @@ export class XRHud {
       depthWrite: false,
     });
     // 0.8 m wide, a meter ahead and a bit below eye level: readable
-    // without being in the way of the arms.
-    this.mesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.8, (0.8 * HEIGHT) / WIDTH),
-      material,
-    );
-    this.mesh.position.set(0, -0.35, -1);
+    // without being in the way of the arms. The text starts at the top of
+    // the canvas, so the plane hangs from its top edge: more lines grow it
+    // downwards, away from the view.
+    const height = (0.8 * HEIGHT) / WIDTH;
+    const geometry = new THREE.PlaneGeometry(0.8, height);
+    geometry.translate(0, -height / 2, 0);
+    this.mesh = new THREE.Mesh(geometry, material);
+    this.mesh.position.set(0, -0.225, -1);
     this.mesh.renderOrder = 1000;
     this.mesh.visible = false;
     this.text = null;
+    this.lines = []; // as drawn, after wrapping
   }
 
   setText(text) {
@@ -54,19 +81,22 @@ export class XRHud {
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
     ctx.font = "26px monospace";
     ctx.textBaseline = "top";
-    const lines = text.split("\n");
+    const measure = (line) => ctx.measureText(line).width;
+    this.lines = text
+      .split("\n")
+      .flatMap((line) => wrapLine(line, WIDTH - 2 * MARGIN, measure));
     // the backdrop only behind the text, so a one-line hint stays small
-    const width = Math.max(...lines.map((line) => ctx.measureText(line).width));
+    const width = Math.max(...this.lines.map(measure));
     ctx.fillStyle = "rgba(0, 0, 0, 0.55)";
     ctx.fillRect(
       0,
       0,
-      Math.min(WIDTH, width + 40),
-      Math.min(HEIGHT, lines.length * LINE_HEIGHT + 24),
+      Math.min(WIDTH, width + 2 * MARGIN),
+      Math.min(HEIGHT, this.lines.length * LINE_HEIGHT + 24),
     );
     ctx.fillStyle = "#ffffff";
-    lines.forEach((line, i) => {
-      ctx.fillText(line, 20, 16 + i * LINE_HEIGHT);
+    this.lines.forEach((line, i) => {
+      ctx.fillText(line, MARGIN, 16 + i * LINE_HEIGHT);
     });
     this.texture.needsUpdate = true;
   }

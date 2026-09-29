@@ -35,6 +35,7 @@ import {
 } from "./ik.js";
 import { DEFAULT_HOME, TeleopState } from "./teleop.js";
 import { readFrame } from "./xr-frame.js";
+import { wrapLine } from "./xr-hud.js";
 import {
   adjustPose,
   CONTROLLER_TO_EE,
@@ -723,5 +724,39 @@ describe("readFrame (ar.js: sendFrame)", () => {
     for (const b of ["button_a", "button_b", "button_x", "button_y"]) {
       assert.equal(r[b], undefined, b);
     }
+  });
+});
+
+describe("wrapLine (the headset panel)", () => {
+  const measure = (line) => line.length; // one unit per character
+
+  it("keeps a line that fits", () => {
+    assert.deepEqual(wrapLine("  fits here", 11, measure), ["  fits here"]);
+  });
+
+  it("breaks at spaces, indenting what follows past the line's own indent", () => {
+    const pieces = wrapLine(
+      "  left stick: up/down, tilt (sideways)",
+      16,
+      measure,
+    );
+    assert.deepEqual(pieces, [
+      "  left stick:",
+      "    up/down,",
+      "    tilt",
+      "    (sideways)",
+    ]);
+    for (const piece of pieces) assert.ok(measure(piece) <= 16, piece);
+  });
+
+  it("drops the spaces it breaks at, and keeps a long word whole", () => {
+    assert.deepEqual(wrapLine("X: reset    B: leave", 10, measure), [
+      "X: reset",
+      "  B: leave",
+    ]);
+    assert.deepEqual(wrapLine("a verylongword", 5, measure), [
+      "a",
+      "  verylongword",
+    ]);
   });
 });
