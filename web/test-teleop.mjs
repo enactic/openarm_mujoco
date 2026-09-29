@@ -40,21 +40,22 @@ describe("TeleopState", () => {
     assert.ok(near(t.arms.right.pos[0], DEFAULT_HOME.right[0], 1e-12));
   });
 
-  it("speed scale steps by x1.25 and clamps to [0.1, 10]", () => {
-    t.scaleSpeed(1.25);
-    assert.ok(near(t.speedScale, 1.25, 1e-12));
-    for (let i = 0; i < 100; i++) t.scaleSpeed(1.25);
-    assert.ok(near(t.speedScale, 10, 1e-12), "clamped at 10");
-    for (let i = 0; i < 100; i++) t.scaleSpeed(1 / 1.25);
-    assert.ok(near(t.speedScale, 0.1, 1e-12), "clamped at 0.1");
-    t.speedScale = 1;
+  it("I moves the right arm +x, W and I together move both", () => {
+    const left = t.arms.left.pos[0];
+    const right = t.arms.right.pos[0];
+    for (let i = 0; i < 60; i++) t.step(1 / 60, new Set(["w", "i"]));
+    assert.ok(near(t.arms.left.pos[0], left + 0.05, 1e-9));
+    assert.ok(near(t.arms.right.pos[0], right + 0.05, 1e-9));
+    t.reset();
   });
 
-  it("hold Q for 1 s yaws the left tool 0.5 rad about the tool z axis", () => {
+  it("Shift+R for 1 s yaws the left tool 0.5 rad about the tool z axis", () => {
     // Home orientation is pitch -90 deg, so tool z is not world z: the
     // rotation axis expressed in the parent frame must be along x.
     const before = [...t.arms.left.quat];
-    for (let i = 0; i < 60; i++) t.step(1 / 60, new Set(["q"]));
+    const pos = [...t.arms.left.pos];
+    for (let i = 0; i < 60; i++) t.step(1 / 60, new Set(["shift", "r"]));
+    assert.deepEqual(t.arms.left.pos, pos, "Shift turns R into rotation");
     const error = quatError(before, t.arms.left.quat);
     assert.ok(
       near(Math.hypot(...error), 0.5, 1e-6),
@@ -67,15 +68,47 @@ describe("TeleopState", () => {
     );
   });
 
-  it("grip integrates, clamps at 1, and V reopens", () => {
-    for (let i = 0; i < 60; i++) t.step(1 / 60, new Set(["g"]));
-    assert.ok(near(t.arms.left.grip, 1, 1e-9), "G closes to 1 (clamped)");
-    for (let i = 0; i < 6; i++) t.step(1 / 60, new Set(["v"]));
-    assert.ok(near(t.arms.left.grip, 0.8, 1e-9), "V reopens");
+  it("grip integrates, clamps at 1, and C reopens", () => {
+    for (let i = 0; i < 60; i++) t.step(1 / 60, new Set(["x"]));
+    assert.ok(near(t.arms.left.grip, 1, 1e-9), "X closes to 1 (clamped)");
+    for (let i = 0; i < 6; i++) t.step(1 / 60, new Set(["c"]));
+    assert.ok(near(t.arms.left.grip, 0.8, 1e-9), "C reopens");
   });
 
-  it("reset returns home", () => {
+  it("the home return walks back at the manual speeds, grip kept", () => {
+    // Out 0.1 m along +x and turned 0.25 rad: 2 s of travel, 0.5 s of turn.
     t.reset();
+    for (let i = 0; i < 120; i++) t.step(1 / 60, new Set(["w", "x"]));
+    for (let i = 0; i < 30; i++) t.step(1 / 60, new Set(["shift", "a"]));
+    const grip = t.arms.left.grip;
+    assert.equal(grip, 1);
+    t.startHome();
+    for (let i = 0; i < 60; i++) t.step(1 / 60, new Set());
+    assert.ok(t.homing, "still on the way after 1 s");
+    assert.ok(near(t.arms.left.pos[0], DEFAULT_HOME.left[0] + 0.05, 1e-9));
+    for (let i = 0; i < 61; i++) t.step(1 / 60, new Set());
+    assert.ok(!t.homing, "home after 2 s");
+    assert.deepEqual(t.arms.left.pos, DEFAULT_HOME.left);
+    assert.deepEqual(t.arms.left.quat, t.arms.left.homeQuat);
+    assert.equal(t.arms.left.grip, grip, "the gripper is left alone");
+  });
+
+  it("the home return ignores held keys and stops where cancelled", () => {
+    for (let i = 0; i < 60; i++) t.step(1 / 60, new Set(["r"]));
+    t.startHome();
+    for (let i = 0; i < 30; i++) t.step(1 / 60, new Set(["r"]));
+    const z = t.arms.left.pos[2];
+    assert.ok(near(z, DEFAULT_HOME.left[2] + 0.025, 1e-9), "halfway home");
+    t.cancelHome();
+    t.step(1 / 60, new Set());
+    assert.equal(t.arms.left.pos[2], z, "stays where it was");
+  });
+
+  it("reset returns home at once and ends a home return", () => {
+    for (let i = 0; i < 60; i++) t.step(1 / 60, new Set(["w"]));
+    t.startHome();
+    t.reset();
+    assert.ok(!t.homing);
     assert.ok(near(t.arms.left.pos[0], DEFAULT_HOME.left[0], 1e-12));
     assert.equal(t.arms.left.grip, 0);
   });

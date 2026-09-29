@@ -22,8 +22,9 @@ import loadMuJoCo from "@mujoco/mujoco";
 // position actuators.
 //
 // The pose targets come from TeleopState (teleop.js), which integrates held
-// keys exactly like dora-openarm-keyboard: hold to move, tool-frame rotation,
-// +/- speed scaling, Backspace to return home.
+// keys exactly like dora-openarm-keyboard: hold to move, Shift to rotate
+// (in the tool frame), 0 to walk back home. Backspace resets the whole
+// environment, like the Reset button.
 //
 // In a WebXR session the targets come from the VR controllers instead:
 // xr-frame.js reads each frame the way dora-openarm-webxr's client does, and
@@ -45,11 +46,11 @@ import {
 } from "./appearance.js";
 import { PoseController } from "./ik.js";
 import {
+  drivesMotion,
   HELP_TEXT,
-  KEYMAP,
+  HOME_KEY,
   RESET_KEY,
-  SPEED_DOWN_KEYS,
-  SPEED_UP_KEYS,
+  ROTATION_KEY,
 } from "./keymap.js";
 import { buildVFS } from "./model-vfs.js";
 import { TeleopState } from "./teleop.js";
@@ -370,7 +371,8 @@ class App {
     this.camera.zoom = 1;
     this.camera.updateProjectionMatrix();
     if (this.mjModel) this.frameCamera();
-    // The arms hold the last controller pose; Backspace / Reset return home.
+    // The arms hold the last controller pose: 0 walks them home, Backspace /
+    // Reset reset the whole scene.
   }
 
   onCalibrationResult(result) {
@@ -765,7 +767,8 @@ class App {
   }
 
   updateStatus() {
-    const lines = [`speed scale: ${this.teleop.speedScale.toFixed(2)}x`];
+    const lines = [];
+    if (this.teleop.homing) lines.push("returning to the home pose");
     for (const side of SIDES) {
       const { pos, quat } = this.targets[side];
       const { errorP, errorR } = this.controller.arms[side].poseError(
@@ -815,28 +818,33 @@ class App {
 
 // --- Keyboard -------------------------------------------------------------
 function setupKeyboard(app) {
+  // Printable keys are lowercased because Shift, the rotation modifier,
+  // changes what the browser reports ("w" becomes "W"): a key pressed before
+  // Shift and released after it would otherwise never leave `held`.
+  const keyName = (event) => event.key.toLowerCase();
   window.addEventListener("keydown", (event) => {
     if (event.ctrlKey || event.altKey || event.metaKey) return;
-    const key = event.key.toLowerCase();
+    // Held keys are tracked by keydown and keyup; auto-repeat adds nothing,
+    // and must not cancel a home return started while a key was down.
+    if (event.repeat) return;
+    const key = keyName(event);
     if (key === RESET_KEY) {
       app.reset();
       event.preventDefault();
-    } else if (SPEED_UP_KEYS.includes(key)) {
-      app.teleop.scaleSpeed(1.25);
-    } else if (SPEED_DOWN_KEYS.includes(key)) {
-      app.teleop.scaleSpeed(1 / 1.25);
-    } else if (KEYMAP[key]) {
+    } else if (key === HOME_KEY) {
+      app.teleop.startHome();
+      // The home return drives the targets on its own; a held key would
+      // fight it, and pressing one again cancels it anyway.
+      app.held.clear();
+    } else if (drivesMotion(key) || key === ROTATION_KEY) {
+      // Taking manual control aborts the home return.
+      if (drivesMotion(key)) app.teleop.cancelHome();
       app.held.add(key);
       event.preventDefault();
     }
   });
-  // TODO: event.key changes with Shift ('.' releases as '>'), so a KEYMAP
-  // punctuation key (';' ',' '.' '/') released while Shift is down — easy to
-  // hit, since raising the speed with '+' is Shift+'=' — stays in the held
-  // set and keeps driving the arm until the window blurs. Switch keydown and
-  // keyup to a shared event.code -> KEYMAP-character translation.
   window.addEventListener("keyup", (event) => {
-    app.held.delete(event.key.toLowerCase());
+    app.held.delete(keyName(event));
   });
   // Losing focus releases every held key: an unwatched tab never keeps moving.
   window.addEventListener("blur", () => app.held.clear());
