@@ -30,6 +30,7 @@
       #status { margin-top: 8px; white-space: pre; font-family: monospace; font-size: 11px; }
       #help { font-size: 10px; margin: 4px 0; }
       button { margin-right: 6px; }
+      .xr-label { display: block; font-size: 11px; margin: 4px 0; }
     </style>
   </head>
   <body>
@@ -44,6 +45,20 @@
       <details open>
         <summary>key bindings</summary>
         <pre id="help"></pre>
+      </details>
+      <details>
+        <summary>WebXR</summary>
+        <label class="xr-label">
+          hands
+          <select id="hand-mapping">
+            <option value="direct">direct (grippers at the controllers)</option>
+            <option value="neck">neck (dora-openarm-webxr)</option>
+          </select>
+        </label>
+        <label class="xr-label">
+          <input type="checkbox" id="calibration" />
+          neck pivot calibration (neck hands; hold Y in the session)
+        </label>
       </details>
       <div id="status">loading…</div>
     </div>
@@ -64,6 +79,8 @@
               "three": `https://cdn.jsdelivr.net/npm/three@${v("three")}/build/three.module.js`,
               "three/examples/jsm/controls/OrbitControls.js":
                 `https://cdn.jsdelivr.net/npm/three@${v("three")}/examples/jsm/controls/OrbitControls.js`,
+              "three/examples/jsm/webxr/VRButton.js":
+                `https://cdn.jsdelivr.net/npm/three@${v("three")}/examples/jsm/webxr/VRButton.js`,
               "@mujoco/mujoco":
                 `https://cdn.jsdelivr.net/npm/@mujoco/mujoco@${v("@mujoco/mujoco")}/mujoco.js`,
             },

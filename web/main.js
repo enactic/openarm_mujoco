@@ -24,8 +24,25 @@ import loadMuJoCo from "@mujoco/mujoco";
 // The pose targets come from TeleopState (teleop.js), which integrates held
 // keys exactly like dora-openarm-keyboard: hold to move, tool-frame rotation,
 // +/- speed scaling, Backspace to return home.
+//
+// In a WebXR session the targets come from the VR controllers instead:
+// xr-frame.js reads each frame the way dora-openarm-webxr's client does, and
+// XRTeleop (xr-pose.js, a port of that project's Python node) converts the
+// controller poses into arm_origin-frame targets and writes them into the
+// same TeleopState. The MuJoCo world is placed in the headset's reference
+// space with the headset where the robot's head is.
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { VRButton } from "three/examples/jsm/webxr/VRButton.js";
+import {
+  addMuJoCoLights,
+  INFINITE_PLANE_HALF_SIZE,
+  mujocoLights,
+  phongSpecular,
+  resolveGeomAppearance,
+  SHININESS_SCALE,
+  skybox,
+} from "./appearance.js";
 import { PoseController } from "./ik.js";
 import {
   HELP_TEXT,
@@ -36,6 +53,17 @@ import {
 } from "./keymap.js";
 import { buildVFS } from "./model-vfs.js";
 import { TeleopState } from "./teleop.js";
+import { readFrame } from "./xr-frame.js";
+import { XRHUD } from "./xr-hud.js";
+import {
+  DEFAULT_NECK_PIVOT_OFFSET,
+  DEFAULT_VIEW_OFFSET,
+  DEFAULT_VIEW_PITCH,
+  HEAD_CAMERAS,
+  headAnchor,
+  worldPlacement,
+  XRTeleop,
+} from "./xr-pose.js";
 
 let mujoco;
 
@@ -45,6 +73,53 @@ const SIDES = ["left", "right"];
 // directory. The path is resolved against the page URL (index.html at
 // the repository root), so serve the repository root.
 const MODEL_BASE = "v2/";
+
+// The thumbsticks move the VR view at this speed (m/s), within this range
+// of the head cameras per axis (arm_origin frame: x forward, y left, z up),
+// past this much deflection.
+const VIEW_SPEED = 0.3;
+const VIEW_OFFSET_RANGE = [
+  [-0.5, 0.5],
+  [-0.5, 0.5],
+  [-0.3, 1.0],
+];
+const VIEW_STICK_DEADZONE = 0.2;
+// ... and tilt it down at this speed (rad/s), within this range.
+const VIEW_PITCH_SPEED = (30 * Math.PI) / 180;
+const VIEW_PITCH_RANGE = [(-10 * Math.PI) / 180, (60 * Math.PI) / 180];
+
+// The desktop camera's vertical field of view, in degrees.
+const DESKTOP_FOV = 45;
+
+// A measured neck pivot offset outlives the page (dora-openarm-webxr keeps
+// it in neck_pivot.yaml): the whole point of measuring an operator is
+// keeping the number they measured.
+const NECK_PIVOT_STORAGE_KEY = "openarm-mujoco-web.neck_pivot_offset";
+
+function loadNeckPivotOffset() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(NECK_PIVOT_STORAGE_KEY));
+    if (
+      Array.isArray(stored) &&
+      stored.length === 3 &&
+      stored.every((v) => Number.isFinite(v))
+    ) {
+      return stored;
+    }
+  } catch {
+    // no storage, or a value that is not ours: use the estimate
+  }
+  return DEFAULT_NECK_PIVOT_OFFSET;
+}
+
+function saveNeckPivotOffset(offset) {
+  try {
+    localStorage.setItem(NECK_PIVOT_STORAGE_KEY, JSON.stringify(offset));
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 // fetch() resolves on HTTP errors, so check ok here: a missing model file
 // must fail with its name, not as a later, unrelated MuJoCo parse error on
@@ -58,103 +133,6 @@ async function fetchModelFile(path) {
 const fetchModelBytes = async (path) =>
   new Uint8Array(await (await fetchModelFile(path)).arrayBuffer());
 
-function asArray(value) {
-  if (!value) return value;
-  if (typeof value.getView === "function") return value.getView();
-  return value;
-}
-
-function createCheckerTexture(repeatX = 5, repeatY = 5) {
-  const size = 256;
-  const canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext("2d");
-  const cells = 8;
-  const cell = size / cells;
-  for (let y = 0; y < cells; y += 1) {
-    for (let x = 0; x < cells; x += 1) {
-      const dark = (x + y) % 2 === 0;
-      ctx.fillStyle = dark ? "#334455" : "#1a2833";
-      ctx.fillRect(x * cell, y * cell, cell, cell);
-    }
-  }
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(repeatX, repeatY);
-  texture.colorSpace = THREE.NoColorSpace;
-  texture.anisotropy = 4;
-  return texture;
-}
-
-function materialHasTexture(model, matId) {
-  // mat_texid is nmat × mjNTEXROLE; any non-negative role means textured.
-  const texIds = asArray(model.mat_texid);
-  if (!texIds || matId < 0) return false;
-  const nrole = Math.max(
-    1,
-    Math.floor(texIds.length / Math.max(model.nmat, 1)),
-  );
-  const base = matId * nrole;
-  for (let r = 0; r < nrole; r += 1) {
-    if (texIds[base + r] >= 0) return true;
-  }
-  return false;
-}
-
-function resolveGeomAppearance(model, geomIndex, textureCache) {
-  const geomRgba = asArray(model.geom_rgba);
-  const geomMatid = asArray(model.geom_matid);
-  let rgba = [
-    geomRgba[geomIndex * 4],
-    geomRgba[geomIndex * 4 + 1],
-    geomRgba[geomIndex * 4 + 2],
-    geomRgba[geomIndex * 4 + 3],
-  ];
-
-  // Defaults match MuJoCo's Phong-like material model (not PBR metalness).
-  let shininess = 50;
-  let specular = 0.5;
-  let emission = 0;
-  let map = null;
-  const matId = geomMatid?.[geomIndex] ?? -1;
-
-  if (matId >= 0) {
-    // MuJoCo applies material rgba over the geom default (often 0.5 gray).
-    const matRgba = asArray(model.mat_rgba);
-    rgba = [
-      matRgba[matId * 4],
-      matRgba[matId * 4 + 1],
-      matRgba[matId * 4 + 2],
-      matRgba[matId * 4 + 3],
-    ];
-
-    const matShininess = asArray(model.mat_shininess)?.[matId] ?? 0.5;
-    const matSpecular = asArray(model.mat_specular)?.[matId] ?? 0.5;
-    const matEmission = asArray(model.mat_emission)?.[matId] ?? 0;
-    shininess = Math.max(1, matShininess * 100);
-    specular = matSpecular;
-    emission = matEmission;
-
-    if (materialHasTexture(model, matId)) {
-      const texRepeat = asArray(model.mat_texrepeat);
-      const repeatX = texRepeat?.[matId * 2] ?? 1;
-      const repeatY = texRepeat?.[matId * 2 + 1] ?? 1;
-      const key = `${Math.max(repeatX, 1)},${Math.max(repeatY, 1)}`;
-      if (!textureCache.has(key)) {
-        textureCache.set(
-          key,
-          createCheckerTexture(Math.max(repeatX, 1), Math.max(repeatY, 1)),
-        );
-      }
-      map = textureCache.get(key);
-    }
-  }
-
-  return { rgba, shininess, specular, emission, map };
-}
-
 class App {
   constructor() {
     this.mjvPerturb = new mujoco.MjvPerturb();
@@ -163,23 +141,39 @@ class App {
     this.maxGeoms = 2 ** 14;
     this.meshes = [];
     this.bufferGeometryCache = new Map();
-    this.checkerTextureCache = new Map();
+    this.textureCache = new Map();
+    this.sceneLights = []; // the loaded model's, see addMuJoCoLights
+    this.sky = null;
     this.teleop = new TeleopState();
     this.held = new Set();
     this.lifterHeight = 0;
     this.statusElement = document.getElementById("status");
 
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x263238);
+    // MuJoCo's own background where a scene has no skybox.
+    this.scene.background = new THREE.Color(0x000000);
+    // Everything MuJoCo draws lives in this group, in MuJoCo's z-up world
+    // coordinates. On the desktop it is the identity; in a WebXR session,
+    // whose reference space is y-up, placeWorld moves it.
+    this.world = new THREE.Group();
+    this.scene.add(this.world);
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     // MuJoCo material rgba is authored for direct display (not Three's sRGB workflow).
     this.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     document.body.appendChild(this.renderer.domElement);
+    this.renderer.xr.enabled = true;
+    // "local" like dora-openarm-webxr: the origin is where the headset was
+    // when the session started, which is also what the world is placed from.
+    this.renderer.xr.setReferenceSpaceType("local");
+    this.renderer.xr.addEventListener("sessionstart", () =>
+      this.onSessionStart(),
+    );
+    this.renderer.xr.addEventListener("sessionend", () => this.onSessionEnd());
 
     this.camera = new THREE.PerspectiveCamera(
-      45,
+      DESKTOP_FOV,
       window.innerWidth / window.innerHeight,
       0.01,
       100,
@@ -189,7 +183,24 @@ class App {
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.target.set(0.4, 0, 1.15);
-    this.initLights();
+
+    // The HUD rides on the camera, which WebXR moves with the
+    // head; on the desktop it is hidden.
+    this.scene.add(this.camera);
+    this.hud = new XRHUD();
+    this.camera.add(this.hud.mesh);
+    this.handMapping = "direct"; // xr-pose.js's HAND_MAPPINGS
+    this.calibrationEnabled = false;
+    this.calibrationMessage = null;
+    this.xrTeleop = null;
+    this.xrPlaced = false;
+    this.xrButtonX = false;
+    this.xrButtonY = false;
+    this.hudExpanded = false;
+    this.viewOffset = [...DEFAULT_VIEW_OFFSET]; // kept across sessions
+    this.viewPitch = DEFAULT_VIEW_PITCH;
+    this.xrReference = null; // the headset pose the world is placed from
+    this.xrTime = null; // last frame's time, for the thumbstick
 
     window.addEventListener("resize", () => {
       this.camera.aspect = window.innerWidth / window.innerHeight;
@@ -200,16 +211,25 @@ class App {
 
   disposeScene() {
     for (const mesh of this.meshes) {
-      this.scene.remove(mesh);
+      this.world.remove(mesh);
       mesh.material.dispose();
     }
     this.meshes = [];
     for (const geom of this.bufferGeometryCache.values()) geom.dispose();
     this.bufferGeometryCache.clear();
-    for (const texture of this.checkerTextureCache.values()) texture.dispose();
-    this.checkerTextureCache.clear();
+    for (const texture of this.textureCache.values()) texture.dispose();
+    this.textureCache.clear();
+    for (const light of this.sceneLights) light.removeFromParent();
+    this.sceneLights = [];
+    if (this.sky) {
+      this.world.remove(this.sky);
+      this.sky.geometry.dispose();
+      this.sky.material.uniforms.sky.value.dispose();
+      this.sky.material.dispose();
+      this.sky = null;
+    }
     if (this.markers) {
-      for (const side of SIDES) this.scene.remove(this.markers[side]);
+      for (const side of SIDES) this.world.remove(this.markers[side]);
       this.markers = null;
     }
     this.mjvScene?.delete();
@@ -232,6 +252,7 @@ class App {
     this.teleop.reset();
     this.lifterHeight = 0;
     this.held.clear();
+    this.xrPlaced = false; // a new scene is placed afresh mid-session
 
     try {
       const vfs = await buildVFS(mujoco, scenePath, fetchModelBytes, DOMParser);
@@ -255,6 +276,7 @@ class App {
       if (cellVis >= 0) this.transparentGeomIds.add(cellVis);
 
       this.mjvScene = new mujoco.MjvScene(this.mjModel, this.maxGeoms);
+      this.initLighting();
       this.initTargetMarkers();
       this.frameCamera();
     } catch (e) {
@@ -297,24 +319,211 @@ class App {
     this.applyTargets();
   }
 
-  initLights() {
-    const ambient = new THREE.AmbientLight(0xffffff, 0.6);
-    this.scene.add(ambient);
-    const dir = new THREE.DirectionalLight(0xffffff, 1.2);
-    dir.position.set(2, 1, 2);
-    this.scene.add(dir);
-    const dir2 = new THREE.DirectionalLight(0xffffff, 0.5);
-    dir2.position.set(-2, -1, 1);
-    this.scene.add(dir2);
+  // The scene's own lights, headlight and skybox, as MuJoCo's viewer draws
+  // them (appearance.js). The world-fixed ones go into the world group, so
+  // they keep lighting the scene from above when it is turned y-up for a
+  // headset.
+  initLighting() {
+    this.lighting = mujocoLights(this.mjModel);
+    this.sceneLights = addMuJoCoLights(this.lighting, this.world, this.camera);
+    this.sky = skybox(this.mjModel, mujoco.mjtTexture.mjTEXTURE_SKYBOX.value);
+    if (this.sky) this.world.add(this.sky);
   }
 
   initTargetMarkers() {
     this.markers = {};
     for (const side of SIDES) {
       const marker = new THREE.AxesHelper(0.08);
-      this.scene.add(marker);
+      this.world.add(marker);
       this.markers[side] = marker;
     }
+  }
+
+  // --- WebXR ---------------------------------------------------------------
+  onSessionStart() {
+    // Fresh smoothers and calibration per session, like dora-openarm-webxr's
+    // session-start; the measured neck pivot offset is the one thing kept.
+    this.xrTeleop = new XRTeleop({
+      mapping: this.handMapping,
+      neckPivotOffset: loadNeckPivotOffset(),
+      calibration: this.calibrationEnabled,
+      onCalibrationResult: (result) => this.onCalibrationResult(result),
+    });
+    this.xrPlaced = false;
+    this.xrButtonX = false;
+    this.xrButtonY = false;
+    this.hudExpanded = false;
+    this.xrTime = null;
+    this.calibrationMessage = null;
+    this.hud.mesh.visible = true;
+  }
+
+  onSessionEnd() {
+    this.xrTeleop = null;
+    this.xrPlaced = false;
+    this.hud.mesh.visible = false;
+    this.world.position.set(0, 0, 0);
+    this.world.quaternion.identity();
+    // WebXR left the camera at the headset's pose, field of view and
+    // projection: put the desktop view back.
+    this.camera.fov = DESKTOP_FOV;
+    this.camera.zoom = 1;
+    this.camera.updateProjectionMatrix();
+    if (this.mjModel) this.frameCamera();
+    // The arms hold the last controller pose; Backspace / Reset return home.
+  }
+
+  onCalibrationResult(result) {
+    if (result.accepted) {
+      const saved = saveNeckPivotOffset(result.offset);
+      const formatted = result.offset.map((v) => v.toFixed(3)).join(", ");
+      this.calibrationMessage =
+        `neck pivot calibration applied from ${result.samples} poses: ` +
+        `the pivot held to ${result.residualMm.toFixed(1)} mm while the ` +
+        `headset moved ${result.headsetMm.toFixed(1)} mm.\n` +
+        `  neck_pivot_offset: [${formatted}]` +
+        (saved ? " (saved in this browser)" : "");
+    } else {
+      this.calibrationMessage = `neck pivot calibration rejected: ${result.reason}`;
+    }
+    console.log(this.calibrationMessage);
+  }
+
+  // Place the MuJoCo world in the headset's reference space, anchored to
+  // the headset pose of the first frame: the headset starts viewOffset
+  // from the robot's head (between its head cameras), overlooking the arms
+  // below, and looking straight ahead looks viewPitch down. A head turn
+  // then moves neither the world nor the targets.
+  //
+  // The hands go through the level placement from the robot's head itself:
+  // a hand held where it was reaches the same place whatever the view, and
+  // the grippers are drawn moved (and turned about the eyes) by it.
+  placeWorld(reference) {
+    this.xrReference = reference;
+    const origin = this.controller.originPose(this.mjData);
+    const head = this.headPosition();
+    const place = (viewOffset, pitch) =>
+      worldPlacement(
+        origin,
+        headAnchor(origin, reference, head, viewOffset),
+        pitch,
+      );
+    const { pos, quat } = place(this.viewOffset, this.viewPitch);
+    this.world.position.set(pos[0], pos[1], pos[2]);
+    this.world.quaternion.set(quat[1], quat[2], quat[3], quat[0]);
+    this.xrTeleop.placement = place(null, 0);
+    this.xrPlaced = true;
+  }
+
+  // Move the view with the thumbsticks: the left one up and down (pushed
+  // forward raises it) and its tilt (right looks further down), the right
+  // one forward, back and sideways. The world is placed again from the same
+  // headset pose, so only the view moves, and the hands keep their reach.
+  adjustView(left, right, dt) {
+    if (!this.xrPlaced || dt <= 0) return;
+    // xr-standard: the thumbstick is axes[2..3] (touchpad first), -y forward
+    const stick = (axes) => {
+      if (!axes) return [0, 0];
+      const xy = axes.length >= 4 ? [axes[2], axes[3]] : [axes[0], axes[1]];
+      return xy.map((v) => (Math.abs(v) > VIEW_STICK_DEADZONE ? v : 0));
+    };
+    const [leftX, leftY] = stick(left);
+    const [rightX, rightY] = stick(right);
+    // arm_origin frame: forward is +x, right is -y, up is +z
+    const rate = [-rightY, -rightX, -leftY];
+    if (rate.every((v) => v === 0) && leftX === 0) return;
+    this.viewPitch = Math.min(
+      VIEW_PITCH_RANGE[1],
+      Math.max(
+        VIEW_PITCH_RANGE[0],
+        this.viewPitch + leftX * VIEW_PITCH_SPEED * dt,
+      ),
+    );
+    this.viewOffset = this.viewOffset.map((v, i) =>
+      Math.min(
+        VIEW_OFFSET_RANGE[i][1],
+        Math.max(VIEW_OFFSET_RANGE[i][0], v + rate[i] * VIEW_SPEED * dt),
+      ),
+    );
+    this.placeWorld(this.xrReference);
+  }
+
+  // World position between the scene's head cameras, or null without them.
+  headPosition() {
+    const ids = HEAD_CAMERAS.map((name) =>
+      mujoco.mj_name2id(this.mjModel, mujoco.mjtObj.mjOBJ_CAMERA.value, name),
+    );
+    if (ids.some((id) => id < 0)) return null;
+    const xpos = this.mjData.cam_xpos;
+    return [0, 1, 2].map(
+      (k) => ids.reduce((sum, id) => sum + xpos[id * 3 + k], 0) / ids.length,
+    );
+  }
+
+  endSession() {
+    this.renderer.xr.getSession()?.end();
+  }
+
+  // Feed one frame object (xr-frame.js's readFrame, or a test's) at `time`
+  // seconds to the controller pipeline. No-op outside a session.
+  applyXRFrame(response, time) {
+    if (!this.xrTeleop || !this.controller) return;
+    if (!this.xrPlaced && response.pose_reference) {
+      this.placeWorld(response.pose_reference);
+    }
+    // capped, so a stalled frame (or a paused tab) cannot jump the view
+    const dt = this.xrTime === null ? 0 : Math.min(0.1, time - this.xrTime);
+    this.xrTime = time;
+    this.adjustView(response.joystick_left, response.joystick_right, dt);
+    this.xrTeleop.processFrame(
+      response,
+      time,
+      this.teleop,
+      this.controller.originPose(this.mjData),
+    );
+    // X resets the environment (the Reset button / Backspace), once per
+    // press: the button state comes every frame, so the edge is found here.
+    const x = response.button_x === true;
+    if (x && !this.xrButtonX) this.reset();
+    this.xrButtonX = x;
+    // Y shows and hides the full HUD, once per press, unless the
+    // neck pivot calibration has it (hold Y to measure).
+    const y = response.button_y === true;
+    if (y && !this.xrButtonY && !this.xrTeleop.calibration.enabled) {
+      this.hudExpanded = !this.hudExpanded;
+    }
+    this.xrButtonY = y;
+    // Like dora-openarm-webxr's --quit-button: a press ends the session.
+    if (response.button_b === true) this.endSession();
+  }
+
+  // The HUD: a one-line hint until Y opens the full HUD (always open while
+  // the neck pivot calibration holds the Y button).
+  hudText() {
+    const calibration = this.xrTeleop?.calibration.enabled;
+    if (!this.hudExpanded && !calibration) return "press Y for help";
+    const lines = [];
+    if (this.xrTeleop?.calibration.enabled) {
+      const running = this.xrTeleop?.calibration.collecting;
+      lines.push(
+        running
+          ? "CALIBRATING: keep the body still, turn the head side to side " +
+              "and up and down, then release Y"
+          : "neck pivot calibration: hold Y, turn the head, release",
+      );
+    }
+    if (this.calibrationMessage) lines.push(this.calibrationMessage);
+    lines.push(this.lastStatus ?? "");
+    const [x, y, z] = this.viewOffset.map((v) => v.toFixed(2));
+    const pitch = ((this.viewPitch * 180) / Math.PI).toFixed(0);
+    lines.push(
+      "view from the head cameras:\n" +
+        `  forward ${x} left ${y} up ${z} m, ${pitch} deg down\n` +
+        "  left stick: up/down, tilt (sideways)\n" +
+        "  right stick: forward/back/sideways",
+    );
+    lines.push(`X: reset    B: leave VR${calibration ? "" : "    Y: hide"}`);
+    return lines.join("\n");
   }
 
   applyTargets() {
@@ -383,8 +592,8 @@ class App {
       geom = this.meshGeometry(mjvGeom.dataid >> 1);
     } else if (mjvGeom.type === t.mjGEOM_PLANE.value) {
       geom = new THREE.PlaneGeometry(
-        2 * (mjvGeom.size[0] || 10),
-        2 * (mjvGeom.size[1] || 10),
+        2 * (mjvGeom.size[0] || INFINITE_PLANE_HALF_SIZE),
+        2 * (mjvGeom.size[1] || INFINITE_PLANE_HALF_SIZE),
       );
     } else if (mjvGeom.type === t.mjGEOM_SPHERE.value) {
       geom = new THREE.SphereGeometry(mjvGeom.size[0]);
@@ -420,8 +629,9 @@ class App {
   applyGeomAppearance(mesh, g) {
     const mat = mesh.material;
     let rgba = g.rgba;
-    let shininess = 50;
-    let specular = 0.5;
+    // MuJoCo's material defaults, for decor without a geom behind it
+    let shininess = 0.5 * SHININESS_SCALE;
+    let specular = phongSpecular(0.5, 0.5, this.lighting.specularRatio);
     let emission = 0;
     let map = null;
     if (
@@ -432,7 +642,9 @@ class App {
       const appearance = resolveGeomAppearance(
         this.mjModel,
         g.objid,
-        this.checkerTextureCache,
+        mujoco.mjtGeom.mjGEOM_PLANE.value,
+        this.textureCache,
+        this.lighting.specularRatio,
       );
       rgba = appearance.rgba;
       shininess = appearance.shininess;
@@ -458,17 +670,32 @@ class App {
     mat.depthWrite = depthWrite;
     mat.shininess = shininess;
     mat.specular.setRGB(specular, specular, specular);
-    mat.emissive.setRGB(emission, emission, emission);
+    // MuJoCo's emission is a fraction of the color
+    mat.emissive.setRGB(
+      emission * rgba[0],
+      emission * rgba[1],
+      emission * rgba[2],
+    );
     if (mat.map !== map) {
       mat.map = map;
       mat.needsUpdate = true;
     }
   }
 
-  update(dt) {
-    this.controls.update();
+  update(dt, now, xrFrame) {
+    // OrbitControls would fight the headset for the camera.
+    if (!this.renderer.xr.isPresenting) this.controls.update();
     if (!this.mjModel) return; // scene is loading
 
+    // Controller poses overwrite the targets; held keys still integrate on
+    // top (the desktop keyboard keeps working alongside a headset).
+    if (xrFrame && this.renderer.xr.isPresenting) {
+      const session = this.renderer.xr.getSession();
+      const space = this.renderer.xr.getReferenceSpace();
+      if (session && space) {
+        this.applyXRFrame(readFrame(session, space, xrFrame), now / 1000);
+      }
+    }
     this.teleop.step(dt, this.held);
 
     this.applyTargets();
@@ -505,7 +732,7 @@ class App {
         });
         mesh = new THREE.Mesh(this.getBufferGeometry(g), material);
         this.meshes.push(mesh);
-        this.scene.add(mesh);
+        this.world.add(mesh);
       }
       mesh.visible = true;
       this.applyGeomAppearance(mesh, g);
@@ -554,31 +781,35 @@ class App {
     // The values are quantized by toFixed, so while settled the text is
     // stable: skip the DOM write (and its style invalidation) entirely.
     const text = lines.join("\n");
-    if (text === this.lastStatus) return;
-    this.lastStatus = text;
-    this.statusElement.textContent = text;
+    if (text !== this.lastStatus) {
+      this.lastStatus = text;
+      this.statusElement.textContent = text;
+    }
+    if (this.hud.mesh.visible) this.hud.setText(this.hudText());
   }
 
   run() {
     let last = null;
-    const animate = (now) => {
-      // requestAnimationFrame pauses in background tabs: clamp dt so that
-      // returning to the tab does not fast-forward all the missed time in
-      // one frame.
+    // The renderer's animation loop, not requestAnimationFrame: inside a
+    // WebXR session frames come from the session, and the renderer hands
+    // the XRFrame along.
+    const animate = (now, xrFrame) => {
+      // The loop pauses in background tabs: clamp dt so that returning to
+      // the tab does not fast-forward all the missed time in one frame.
       const dt = last === null ? 0 : Math.min((now - last) / 1000, 0.1);
       last = now;
       try {
-        this.update(dt);
+        this.update(dt, now, xrFrame);
         this.renderer.render(this.scene, this.camera);
       } catch (e) {
         // Stop the loop and rethrow: a swallowed error would repeat at 60 fps
         // with a frozen scene and would never reach pageerror listeners.
+        this.renderer.setAnimationLoop(null);
         this.statusElement.textContent = `error: ${e.message ?? e}`;
         throw e;
       }
-      requestAnimationFrame(animate);
     };
-    requestAnimationFrame(animate);
+    this.renderer.setAnimationLoop(animate);
   }
 }
 
@@ -656,6 +887,20 @@ async function main() {
   setupKeyboard(app);
   document.getElementById("help").textContent = HELP_TEXT;
   document.getElementById("reset-button").onclick = () => app.reset();
+
+  // WebXR: three's button (bottom center of the page) says "VR NOT
+  // SUPPORTED" / "WEBXR NEEDS HTTPS" itself where a session cannot start.
+  document.body.appendChild(VRButton.createButton(app.renderer));
+  // Both take effect with the next session, like dora-openarm-webxr's
+  // command line options: the running one keeps the state it started with.
+  const mapping = document.getElementById("hand-mapping");
+  mapping.onchange = () => {
+    app.handMapping = mapping.value;
+  };
+  const calibration = document.getElementById("calibration");
+  calibration.onchange = () => {
+    app.calibrationEnabled = calibration.checked;
+  };
   app.run();
 }
 main();

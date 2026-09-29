@@ -25,6 +25,12 @@ and Backspace returns to that scene's own home pose. Cell scenes have a
 lifter (no UI control yet — a keyboard binding is planned), and the cell
 enclosure is drawn see-through.
 
+`appearance.js` draws a scene the way MuJoCo's viewer does, from the
+compiled model: its lights and headlight (at MuJoCo's brightness: Three's
+physically based lights divide diffuse by π, so they are π times
+MuJoCo's), its textures (`tex_data`, e.g. the floor's checker) and its
+skybox. Shadows and reflections are left out.
+
 ## Usage
 
 There is no build step or bundler: the page is plain HTML + ES modules.
@@ -64,11 +70,106 @@ solution of that pose.
 | +Roll / -Roll | T / B | P / / |
 | Gripper close / open | G / V | ; / . |
 
+## WebXR (VR controllers)
+
+The page also runs as a WebXR session: open it in the browser of a
+headset such as Meta Quest 3 or PICO 4 and press **ENTER VR** at the
+bottom of the page. The MuJoCo world is drawn around the operator,
+turned y-up for the headset, and the arms follow the controllers: the
+trigger closes the gripper, turning the head moves neither the world
+nor the targets, the **X** button resets the environment (like the
+Reset button and Backspace) and the **B** button leaves the session.
+Below the view a head-up display (HUD) says "press Y for help": the **Y**
+button opens the full HUD with the status lines (tracking errors), the
+view and the buttons, and closes it again. With the neck pivot
+calibration on, Y measures instead and the HUD stays open. Other controllers with the standard
+(`xr-standard`) layout move the arms and the grippers too, but have no
+X/B/Y: their buttons past the trigger and squeeze vary by vendor.
+
+The headset starts above and a little behind the robot's head,
+overlooking the table: `DEFAULT_VIEW_OFFSET` in `xr-pose.js` (0.08 m
+back, 0.3 m up, in the `arm_origin` frame: x forward, y left, z up) from
+the point between the `camera_head_left` and `camera_head_right` cameras
+in the cell scenes, or from `HEAD_OFFSET` (the same point relative to
+the `arm_origin` site, 11 cm above it) in the scenes without them. In
+the session the **left thumbstick** moves the view up and down and the
+**right thumbstick** forward, back and sideways. Looking straight ahead
+looks `DEFAULT_VIEW_PITCH` (15°) down: the world is tilted up about the
+eyes by that much, and the left thumbstick's sideways axis changes it.
+The HUD shows the offset and the tilt. The hands do not follow
+the view: they map from the head cameras themselves, so the arms move as
+they would with the view there, and are drawn the view offset away from
+the controllers.
+
+**Hand mapping.** Chosen under **WebXR** in the panel, from the next
+session on:
+
+- *direct* (default): each gripper target is where its controller would
+  be drawn with the view at the head cameras, so the virtual grippers
+  follow the controllers one to one (the view height below them). The
+  world stays put in the headset's space, so a head movement moves
+  neither the world nor the targets.
+- *neck*: dora-openarm-webxr's mapping (below), for comparison. It was
+  built for an operator watching a camera feed, so the grippers are not
+  drawn at the controllers (hands held at the waist reach into the
+  cell's table).
+
+The processing that
+[dora-openarm-webxr](https://github.com/enactic/dora-openarm-webxr) does
+in its Python node runs in the browser here, as direct ports of that
+project's sources:
+
+| Module           | Ported from                    | What it does |
+|------------------|--------------------------------|--------------|
+| `xr-frame.js`    | `static/ar.js`                 | reads the headset pose, the controllers' target-ray poses, triggers, squeezes, thumbsticks and A/B/X/Y buttons out of an `XRFrame` into the frame object the dora client sends. |
+| `xr-pose.js`     | `main.py`, `smoothing.py`      | converts a controller pose into an `arm_origin`-frame target (the *neck* mapping: WebXR to robot axes, neck pivot subtraction, aim pose to gripper turn, frame offset; the *direct* one is this page's own), smooths it with the same One Euro filter, and writes it into `TeleopState` for the IK. |
+| `calibration.js` | `calibration.py`, `main.py`    | the neck pivot calibration: the least-squares fit of the point the head turns about, and the checks that accept or reject a run. |
+
+The constants (`ROBOT_ROTATION`, the frame offset `[-0.085, 0, -0.14]`,
+the neck pivot estimate `[0, -0.075, 0.08]`, the filter parameters) are
+the node's defaults. Nothing goes over the network: there is no dora
+node, no WebRTC and no camera panel, since the simulation itself is what
+the operator sees.
+
+**Neck pivot calibration** (*neck* hands only). Tick *neck pivot
+calibration* under **WebXR** in the panel before entering VR, then hold
+the **Y** button (left controller), keep the body still, turn the head
+side to side twice and up and down twice, and release. The hands stop
+following while Y is held. The result (or the reason a run was rejected,
+and what to do differently) appears on the HUD and in the browser
+console. An accepted offset is kept in the browser's
+`localStorage`, so it survives reloads; the box only says whether the Y
+button measures, and only from the next session on.
+
+**HTTPS.** WebXR only runs on a secure page. The GitHub Pages deployment
+is one; a page served from `localhost` is too (that is how the
+[Immersive Web
+Emulator](https://chromewebstore.google.com/detail/immersive-web-emulator/cgffilbpcibhmcfbgggfhfolhkfbhmik)
+can drive it on a desktop Chrome without a headset). A headset on the
+LAN needs TLS, so `serve.mjs` serves HTTPS when it is given a
+certificate, with the same variables dora-openarm-webxr uses. A
+self-signed one is enough (the headset browser shows a warning to step
+through under "Advanced"):
+
+```sh
+name=$(hostname).local  # a name the headset can resolve
+openssl req -x509 -newkey rsa:2048 -nodes -days 365 \
+  -subj "/CN=${name}" -addext "subjectAltName=DNS:${name}" \
+  -keyout server.key -out server.crt
+TLS_CERTIFICATE_FILE=server.crt TLS_KEY_FILE=server.key npm run serve
+# then open https://${name}:8080/ in the headset
+```
+
+`serve.mjs` gzips the model files (about a quarter of their 9 MB) and
+lets the browser keep them, revalidating each on a reload, so a headset
+on Wi-Fi downloads a scene once.
+
 ## Tests
 
 ```sh
 npm test              # node:test-based headless tests: IK convergence,
-                      # teleop semantics, and every scene loading
+                      # teleop semantics, every scene loading, and the
+                      # WebXR pipeline (pose mapping, smoothing, calibration)
 npm run test:browser  # Playwright end-to-end test (starts serve.mjs itself);
                       # first run: npx playwright install chromium
 ```

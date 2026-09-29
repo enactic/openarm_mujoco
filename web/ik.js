@@ -18,7 +18,7 @@
 // solve() runs damped-least-squares IK there and returns exact joint targets
 // for a requested end-effector pose, without touching the simulation state.
 
-function mat2quat(m) {
+export function mat2quat(m) {
   const q = [0, 0, 0, 0];
   const tr = m[0] + m[4] + m[8];
   if (tr > 0) {
@@ -58,11 +58,11 @@ export function quatMul(a, b) {
   ];
 }
 
-function quatConj(q) {
+export function quatConj(q) {
   return [q[0], -q[1], -q[2], -q[3]];
 }
 
-function quatRotVec(q, v) {
+export function quatRotVec(q, v) {
   const [w, x, y, z] = q;
   const [vx, vy, vz] = v;
   // t = 2 q_vec x v; v' = v + w t + q_vec x t
@@ -73,6 +73,22 @@ function quatRotVec(q, v) {
     vx + w * tx + y * tz - z * ty,
     vy + w * ty + z * tx - x * tz,
     vz + w * tz + x * ty - y * tx,
+  ];
+}
+
+// Rotation matrix (row-major 3x3) of a unit quaternion; inverse of mat2quat.
+export function quatToMat(q) {
+  const [w, x, y, z] = q;
+  return [
+    1 - 2 * (y * y + z * z),
+    2 * (x * y - w * z),
+    2 * (x * z + w * y),
+    2 * (x * y + w * z),
+    1 - 2 * (x * x + z * z),
+    2 * (y * z - w * x),
+    2 * (x * z - w * y),
+    2 * (y * z + w * x),
+    1 - 2 * (x * x + y * y),
   ];
 }
 
@@ -87,7 +103,7 @@ export function poseLocalToWorld(origin, pos, quat) {
 }
 
 // Inverse of poseLocalToWorld.
-function poseWorldToLocal(origin, pos, quat) {
+export function poseWorldToLocal(origin, pos, quat) {
   const inv = quatConj(origin.quat);
   return {
     pos: quatRotVec(inv, [

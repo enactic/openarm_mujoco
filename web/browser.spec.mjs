@@ -121,6 +121,261 @@ test("the lifter carries the arms up, Backspace resets it", async () => {
   await settle();
 });
 
+test("the WebXR button is offered, and says why it cannot start here", async () => {
+  // Headless Chromium has no headset: three's VRButton reports that instead
+  // of an "ENTER VR" button.
+  const button = page.locator("body > button", {
+    hasText: /VR NOT SUPPORTED|VR NOT ALLOWED|WEBXR NEEDS HTTPS|ENTER VR/,
+  });
+  await expect(button).toHaveCount(1);
+});
+
+test("controller frames drive the arms through the same pipeline", async () => {
+  // No headset in the test browser, so the session is stood up by hand
+  // (onSessionStart is what the renderer calls) and frames are fed straight
+  // to applyXRFrame, which is where readFrame's output would go.
+  await page.keyboard.press("Backspace"); // the previous test left R's target
+  await settle();
+  const before = await rightEE();
+  const beforeLeft = await leftEE();
+  const moved = await page.evaluate(async () => {
+    const { directPoseToXR } = await import("/web/xr-pose.js");
+    const THREE = await import("three");
+    const app = window.__app;
+    app.onSessionStart();
+    const identity = { x: 0, y: 0, z: 0, qx: 0, qy: 0, qz: 0, qw: 1 };
+    // the first frame places the world; the hands go through that placement
+    app.applyXRFrame({ pose_reference: identity }, 0);
+    const origin = app.controller.originPose(app.mjData);
+    // right hand 5 cm ahead of its home target, left hand at home, both in
+    // the home orientation
+    const hand = (side, dx) => {
+      const { homePos, homeQuat } = app.teleop.arms[side];
+      const pos = [homePos[0] + dx, homePos[1], homePos[2]];
+      return directPoseToXR(pos, homeQuat, app.xrTeleop.placement, origin);
+    };
+    const frame = {
+      pose_reference: identity,
+      pose_right: hand("right", 0.05),
+      pose_left: hand("left", 0),
+      trigger_right: 0.4,
+      trigger_left: 0,
+    };
+    // a second of frames: the One Euro filter has settled by then
+    for (let i = 1; i <= 72; i++) app.applyXRFrame(frame, i / 72);
+    // where the point viewOffset from the head cameras ended up in the
+    // headset's space (the cell's arm_origin frame is the world's)
+    const head = app.headPosition();
+    const camera = new THREE.Vector3(...head).add(
+      new THREE.Vector3(...app.viewOffset),
+    );
+    app.world.updateMatrixWorld(true);
+    app.world.localToWorld(camera);
+    // the hands go through the placement from the head cameras themselves
+    const { pos, quat } = app.xrTeleop.placement;
+    const handsHead = new THREE.Vector3(...head)
+      .applyQuaternion(new THREE.Quaternion(quat[1], quat[2], quat[3], quat[0]))
+      .add(new THREE.Vector3(...pos));
+    return {
+      target: [...app.teleop.arms.right.pos],
+      grip: app.teleop.arms.right.grip,
+      placed: app.xrPlaced,
+      worldUp: app.world.quaternion.toArray(),
+      head,
+      camera: camera.toArray(),
+      handsHead: handsHead.toArray(),
+    };
+  });
+  expect(moved.placed).toBe(true);
+  expect(moved.grip).toBeCloseTo(0.4);
+  expect(moved.worldUp).not.toEqual([0, 0, 0, 1]); // turned y-up for the headset
+  // between cell.xml's camera_head_left/right, and viewOffset from that
+  // drawn at the headset (identity pose here)
+  expect(moved.head[0]).toBeCloseTo(0.223, 6);
+  expect(moved.head[1]).toBeCloseTo(0, 6);
+  expect(moved.head[2]).toBeCloseTo(1.45, 6);
+  expect(Math.hypot(...moved.camera)).toBeLessThan(1e-6);
+  expect(Math.hypot(...moved.handsHead)).toBeLessThan(1e-6);
+  await expect
+    .poll(async () => (await rightEE())[0], { timeout: 20_000 })
+    .toBeGreaterThan(before[0] + 0.03);
+  await settle();
+  const after = await rightEE();
+  expect(after[0] - before[0]).toBeCloseTo(0.05, 2);
+  expect(Math.abs(after[1] - before[1])).toBeLessThan(0.01);
+  expect(Math.abs(after[2] - before[2])).toBeLessThan(0.01);
+  const afterLeft = await leftEE();
+  expect(
+    Math.hypot(...afterLeft.map((v, i) => v - beforeLeft[i])),
+  ).toBeLessThan(0.01);
+  // X resets the environment once per press, B ends the session
+  const presses = await page.evaluate(() => {
+    const app = window.__app;
+    const calls = { reset: 0, end: 0 };
+    app.reset = () => {
+      calls.reset++;
+    };
+    app.endSession = () => {
+      calls.end++;
+    };
+    const identity = { x: 0, y: 0, z: 0, qx: 0, qy: 0, qz: 0, qw: 1 };
+    let t = 2;
+    for (const button_x of [true, true, false, true, false]) {
+      app.applyXRFrame({ pose_reference: identity, button_x }, t++);
+    }
+    app.applyXRFrame({ pose_reference: identity, button_b: true }, t++);
+    delete app.reset;
+    delete app.endSession;
+    return calls;
+  });
+  expect(presses).toEqual({ reset: 2, end: 1 });
+  // a second of the left thumbstick forward and right raises the view and
+  // tilts it down, of the right one forward and right moves it forward and
+  // right
+  const moved2 = await page.evaluate(async () => {
+    const THREE = await import("three");
+    const app = window.__app;
+    const identity = { x: 0, y: 0, z: 0, qx: 0, qy: 0, qz: 0, qw: 1 };
+    const before = [...app.viewOffset];
+    const pitch = app.viewPitch;
+    const hands = JSON.stringify(app.xrTeleop.placement);
+    // released first: a frame after a pause moves nothing by itself
+    app.applyXRFrame({ pose_reference: identity }, 100);
+    for (let i = 1; i <= 72; i++) {
+      app.applyXRFrame(
+        {
+          pose_reference: identity,
+          joystick_left: [0, 0, 1, -1],
+          joystick_right: [0, 0, 1, -1],
+        },
+        100 + i / 72,
+      );
+    }
+    // the moved eye point (head cameras + viewOffset) is still drawn at the
+    // headset, at the origin here
+    const eye = new THREE.Vector3(...app.headPosition()).add(
+      new THREE.Vector3(...app.viewOffset),
+    );
+    app.world.updateMatrixWorld(true);
+    app.world.localToWorld(eye);
+    // and the robot's forward, tilted down by viewPitch, is straight ahead
+    const p = app.viewPitch;
+    const ahead = new THREE.Vector3(Math.cos(p), 0, -Math.sin(p))
+      .applyQuaternion(app.world.quaternion)
+      .toArray();
+    return {
+      by: app.viewOffset.map((v, i) => v - before[i]),
+      pitchBy: app.viewPitch - pitch,
+      eye: eye.toArray(),
+      ahead,
+      handsKept: JSON.stringify(app.xrTeleop.placement) === hands,
+    };
+  });
+  // forward, right (-y) and up in the arm_origin frame, 30 degrees down
+  const expected = [0.3, -0.3, 0.3];
+  for (let i = 0; i < 3; i++) {
+    expect(moved2.by[i]).toBeCloseTo(expected[i], 5);
+  }
+  expect(moved2.pitchBy).toBeCloseTo(Math.PI / 6, 5);
+  expect(Math.hypot(...moved2.eye)).toBeLessThan(1e-6);
+  expect(moved2.ahead[0]).toBeCloseTo(0, 6);
+  expect(moved2.ahead[1]).toBeCloseTo(0, 6);
+  expect(moved2.ahead[2]).toBeCloseTo(-1, 6);
+  expect(moved2.handsKept).toBe(true); // and the hands reach where they did
+  // ending the session puts the world back and keeps the last pose
+  const desktopView = await page.evaluate(() => {
+    const camera = window.__app.camera;
+    return { fov: camera.fov, position: camera.position.toArray() };
+  });
+  const cameraRestored = await page.evaluate(() => {
+    const app = window.__app;
+    // what WebXR leaves behind: the headset's pose and field of view
+    app.camera.position.set(0, 0, 0);
+    app.camera.fov = 100;
+    app.camera.updateProjectionMatrix();
+    app.onSessionEnd();
+    return {
+      fov: app.camera.fov,
+      position: app.camera.position.toArray(),
+      projection: app.camera.projectionMatrix.elements[5],
+    };
+  });
+  expect(cameraRestored.fov).toBe(desktopView.fov);
+  for (let i = 0; i < 3; i++) {
+    expect(cameraRestored.position[i]).toBeCloseTo(desktopView.position[i], 6);
+  }
+  expect(cameraRestored.projection).toBeCloseTo(
+    1 / Math.tan((desktopView.fov * Math.PI) / 360),
+    6,
+  );
+  expect(
+    await page.evaluate(() => window.__app.world.quaternion.toArray()),
+  ).toEqual([0, 0, 0, 1]);
+  expect(await page.evaluate(() => window.__app.xrTeleop)).toBeNull();
+  await page.keyboard.press("Backspace");
+  await settle();
+});
+
+test("Y opens and closes the HUD", async () => {
+  const shown = await page.evaluate(() => {
+    const app = window.__app;
+    const identity = { x: 0, y: 0, z: 0, qx: 0, qy: 0, qz: 0, qw: 1 };
+    app.onSessionStart();
+    let t = 0;
+    const press = (button_y) => {
+      app.applyXRFrame({ pose_reference: identity, button_y }, t++);
+      return app.hudText();
+    };
+    const out = { closed: press(false) };
+    out.open = press(true);
+    out.held = press(true); // once per press
+    press(false);
+    out.closedAgain = press(true);
+    app.onSessionEnd();
+    return out;
+  });
+  expect(shown.closed).toBe("press Y for help");
+  expect(shown.open).toContain("X: reset");
+  expect(shown.open).toContain("error:");
+  expect(shown.held).toBe(shown.open);
+  expect(shown.closedAgain).toBe("press Y for help");
+});
+
+test("the HUD wraps long lines to fit", async () => {
+  const drawn = await page.evaluate(() => {
+    const app = window.__app;
+    app.handMapping = "neck";
+    app.calibrationEnabled = true;
+    app.onSessionStart();
+    // the longest the HUD gets: a run under way and a rejection shown
+    app.onCalibrationResult({
+      accepted: false,
+      reason:
+        "the fitted offset [0.012, -0.090, 0.075] is not where a neck is: " +
+        "it belongs on the midline, below the eyes and behind them",
+    });
+    const identity = { x: 0, y: 0, z: 0, qx: 0, qy: 0, qz: 0, qw: 1 };
+    app.applyXRFrame({ pose_reference: identity, button_y: true }, 0);
+    app.hud.setText(app.hudText());
+    const ctx = app.hud.canvas.getContext("2d");
+    const out = {
+      text: app.hudText(),
+      lines: app.hud.lines,
+      widths: app.hud.lines.map((line) => ctx.measureText(line).width),
+      canvas: [app.hud.canvas.width, app.hud.canvas.height],
+    };
+    app.onSessionEnd();
+    app.handMapping = "direct";
+    app.calibrationEnabled = false;
+    return out;
+  });
+  expect(drawn.text).toContain("CALIBRATING");
+  expect(drawn.lines.length).toBeGreaterThan(drawn.text.split("\n").length);
+  const [width, height] = drawn.canvas;
+  for (const w of drawn.widths) expect(w).toBeLessThanOrEqual(width - 40);
+  expect(16 + drawn.lines.length * 34).toBeLessThanOrEqual(height);
+});
+
 test("teleop still works after switching scenes", async () => {
   await page.selectOption("#scene-select", "pedestal/bottle_scene.xml");
   await page.waitForFunction(
