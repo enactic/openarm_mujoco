@@ -99,3 +99,42 @@ test("pose control converges on offset targets in the cell scene", async (t) => 
     );
   }
 });
+
+test("both grippers open and close in the cell scene", async (t) => {
+  // The left arm's collision meshes were the right arm's mirrored with
+  // scale="1 -1 1", which MuJoCo 3.12+ collides with inverted normals: the
+  // left fingers locked against each other and never opened.
+  const mujoco = await loadMuJoCo();
+  const model = await loadCellModel(mujoco);
+  const data = new mujoco.MjData(model);
+  const controller = new PoseController(mujoco, model);
+  t.after(() => {
+    controller.dispose();
+    data.delete();
+    model.delete();
+  });
+  controller.startFromKeyframe(data);
+  const finger = (side) => {
+    const j = model.jnt(`openarm_${side}_finger_joint1`);
+    const adr = Number(j.qposadr[0] ?? j.qposadr);
+    j.delete();
+    return Math.abs(data.qpos[adr]);
+  };
+  const settle = (openRatio) => {
+    for (const side of ["left", "right"]) {
+      controller.commandGripper(data, side, openRatio);
+    }
+    for (let i = 0; i < 1000; i++) {
+      controller.applyGravityComp(data);
+      mujoco.mj_step(model, data);
+    }
+  };
+  settle(1);
+  for (const side of ["left", "right"]) {
+    assert.ok(finger(side) > 0.6, `${side} open: ${finger(side)}`);
+  }
+  settle(0);
+  for (const side of ["left", "right"]) {
+    assert.ok(finger(side) < 0.05, `${side} closed: ${finger(side)}`);
+  }
+});
