@@ -602,8 +602,8 @@ class App {
     const [x, y, z] = this.viewOffset.map((v) => v.toFixed(2));
     const pitch = ((this.viewPitch * 180) / Math.PI).toFixed(0);
     lines.push(
-      `view from the head cameras: forward ${x} left ${y} up ${z} m, ` +
-        `${pitch} deg down\n` +
+      "view from the head cameras:\n" +
+        `  forward ${x} left ${y} up ${z} m, ${pitch} deg down\n` +
         "  left stick: up/down, tilt (sideways)\n" +
         "  right stick: forward/back/sideways",
     );
