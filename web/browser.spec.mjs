@@ -255,12 +255,13 @@ test("controller frames drive the arms through the same pipeline", async () => {
       handsKept: JSON.stringify(app.xrTeleop.placement) === hands,
     };
   });
-  // forward, right (-y) and up in the arm_origin frame
-  moved2.by.forEach((v, i) => expect(v).toBeCloseTo([0.3, -0.3, 0.3][i], 5));
-  // so the world goes the other way in the headset's space (y-up, -z ahead)
-  moved2.worldBy.forEach((v, i) =>
-    expect(v).toBeCloseTo([-0.3, -0.3, 0.3][i], 3),
-  );
+  // forward, right (-y) and up in the arm_origin frame, so the world goes
+  // the other way in the headset's space (y-up, -z ahead)
+  const expected = { by: [0.3, -0.3, 0.3], worldBy: [-0.3, -0.3, 0.3] };
+  for (let i = 0; i < 3; i++) {
+    expect(moved2.by[i]).toBeCloseTo(expected.by[i], 5);
+    expect(moved2.worldBy[i]).toBeCloseTo(expected.worldBy[i], 3);
+  }
   expect(moved2.handsKept).toBe(true); // and the hands reach where they did
   // ending the session puts the world back and keeps the last pose
   await page.evaluate(() => window.__app.onSessionEnd());
