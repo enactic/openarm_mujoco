@@ -92,7 +92,7 @@ export function mujocoLights(model) {
 // lights go into `world` (the group holding MuJoCo's z-up world, so they
 // turn with it for a headset), the headlight onto `camera`, shining where
 // it looks. Returns the objects added, for the next scene to remove.
-export function addMujocoLights(lighting, world, camera) {
+export function addMuJoCoLights(lighting, world, camera) {
   const { ambient, lights } = lighting;
   const added = [];
   const add = (parent, object) => {

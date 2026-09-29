@@ -43,7 +43,7 @@ import {
   SPEED_UP_KEYS,
 } from "./keymap.js";
 import {
-  addMujocoLights,
+  addMuJoCoLights,
   INFINITE_PLANE_HALF_SIZE,
   mujocoLights,
   phongSpecular,
@@ -142,7 +142,7 @@ class App {
     this.meshes = [];
     this.bufferGeometryCache = new Map();
     this.textureCache = new Map();
-    this.sceneLights = []; // the loaded model's, see addMujocoLights
+    this.sceneLights = []; // the loaded model's, see addMuJoCoLights
     this.sky = null;
     this.teleop = new TeleopState();
     this.held = new Set();
@@ -325,7 +325,7 @@ class App {
   // headset.
   initLighting() {
     this.lighting = mujocoLights(this.mjModel);
-    this.sceneLights = addMujocoLights(this.lighting, this.world, this.camera);
+    this.sceneLights = addMuJoCoLights(this.lighting, this.world, this.camera);
     this.sky = skybox(this.mjModel, mujoco.mjtTexture.mjTEXTURE_SKYBOX.value);
     if (this.sky) this.world.add(this.sky);
   }
