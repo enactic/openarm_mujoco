@@ -48,6 +48,7 @@ import { readFrame } from "./xr-frame.js";
 import { XRHud } from "./xr-hud.js";
 import {
   DEFAULT_NECK_PIVOT_OFFSET,
+  HEAD_CAMERAS,
   headAnchor,
   worldPlacement,
   XRTeleop,
@@ -257,6 +258,7 @@ class App {
     this.scene.add(this.camera);
     this.hud = new XRHud();
     this.camera.add(this.hud.mesh);
+    this.handMapping = "direct"; // xr-pose.js's HAND_MAPPINGS
     this.calibrationEnabled = false;
     this.calibrationMessage = null;
     this.xrTeleop = null; // one per session
@@ -397,6 +399,7 @@ class App {
     // Fresh smoothers and calibration per session, like dora-openarm-webxr's
     // session-start; the measured neck pivot offset is the one thing kept.
     this.xrTeleop = new XRTeleop({
+      mapping: this.handMapping,
       neckPivotOffset: loadNeckPivotOffset(),
       calibration: this.calibrationEnabled,
       onCalibrationResult: (result) => this.onCalibrationResult(result),
@@ -434,20 +437,34 @@ class App {
 
   // Place the MuJoCo world in the headset's reference space, anchored to
   // the headset pose of the first frame: the headset starts where the
-  // robot's head would be (HEAD_OFFSET above the arm_origin site), so the
-  // arms hang below the operator like their own. A head turn then moves
-  // neither the world nor (thanks to the neck pivot) the targets.
+  // robot's head is (between its head cameras), so the arms hang below the
+  // operator like their own. A head turn then moves neither the world nor
+  // the targets.
   placeWorld(reference) {
     const origin = this.controller.originPose(this.mjData);
-    const { pos, quat } = worldPlacement(
+    const placement = worldPlacement(
       origin,
       reference,
       this.xrTeleop,
-      headAnchor(origin, reference),
+      headAnchor(origin, reference, this.headPosition()),
     );
+    const { pos, quat } = placement;
     this.world.position.set(pos[0], pos[1], pos[2]);
     this.world.quaternion.set(quat[1], quat[2], quat[3], quat[0]);
+    this.xrTeleop.placement = placement;
     this.xrPlaced = true;
+  }
+
+  // World position between the scene's head cameras, or null without them.
+  headPosition() {
+    const ids = HEAD_CAMERAS.map((name) =>
+      mujoco.mj_name2id(this.mjModel, mujoco.mjtObj.mjOBJ_CAMERA.value, name),
+    );
+    if (ids.some((id) => id < 0)) return null;
+    const xpos = this.mjData.cam_xpos;
+    return [0, 1, 2].map(
+      (k) => ids.reduce((sum, id) => sum + xpos[id * 3 + k], 0) / ids.length,
+    );
   }
 
   // Leave the immersive session (the B button); no-op outside one.
@@ -462,7 +479,12 @@ class App {
     if (!this.xrPlaced && response.pose_reference) {
       this.placeWorld(response.pose_reference);
     }
-    this.xrTeleop.processFrame(response, time, this.teleop);
+    this.xrTeleop.processFrame(
+      response,
+      time,
+      this.teleop,
+      this.controller.originPose(this.mjData),
+    );
     // X resets the environment (the Reset button / Backspace), once per
     // press: the button state comes every frame, so the edge is found here.
     const x = response.button_x === true;
@@ -474,7 +496,7 @@ class App {
 
   hudText() {
     const lines = [];
-    if (this.calibrationEnabled) {
+    if (this.xrTeleop?.calibration.enabled) {
       const running = this.xrTeleop?.calibration.collecting;
       lines.push(
         running
@@ -846,6 +868,10 @@ async function main() {
   // WebXR: three's button (bottom center of the page) says "VR NOT
   // SUPPORTED" / "WEBXR NEEDS HTTPS" itself where a session cannot start.
   document.body.appendChild(VRButton.createButton(app.renderer));
+  const mapping = document.getElementById("hand-mapping");
+  mapping.onchange = () => {
+    app.handMapping = mapping.value; // from the next session, like below
+  };
   const calibration = document.getElementById("calibration");
   calibration.onchange = () => {
     app.calibrationEnabled = calibration.checked;

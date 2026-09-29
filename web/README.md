@@ -75,10 +75,23 @@ nor the targets, the **X** button resets the environment (like the
 Reset button and Backspace) and the **B** button leaves the session. A text panel
 below the view shows the status lines.
 
-The headset starts where the robot's head would be: OpenArm has none,
-so `HEAD_OFFSET` in `xr-pose.js` puts the eyes a human 22 cm above (and
-3 cm ahead of) the `arm_origin` site between the shoulder joints, in
-every scene. The arms hang below the operator like their own.
+The headset starts where the robot's head is: between the
+`camera_head_left` and `camera_head_right` cameras in the cell scenes,
+and `HEAD_OFFSET` in `xr-pose.js` (the same point relative to the
+`arm_origin` site, 11 cm above it) in the scenes without them. The arms
+hang below the operator like their own.
+
+**Hand mapping.** Chosen under **WebXR** in the panel, from the next
+session on:
+
+- *direct* (default): each gripper target is where its controller is
+  drawn in the MuJoCo world, so the virtual grippers sit on the
+  controllers. The world stays put in the headset's space, so a head
+  movement moves neither the world nor the targets.
+- *neck*: dora-openarm-webxr's mapping (below), for comparison. It was
+  built for an operator watching a camera feed, so the grippers are not
+  drawn at the controllers (hands held at the waist reach into the
+  cell's table).
 
 The processing that
 [dora-openarm-webxr](https://github.com/enactic/dora-openarm-webxr) does
@@ -88,7 +101,7 @@ project's sources:
 | Module           | Ported from                    | What it does |
 |------------------|--------------------------------|--------------|
 | `xr-frame.js`    | `static/ar.js`                 | reads the headset pose, the controllers' target-ray poses, triggers, squeezes, thumbsticks and A/B/X/Y buttons out of an `XRFrame` into the frame object the dora client sends. |
-| `xr-pose.js`     | `main.py`, `smoothing.py`      | converts a controller pose into an `arm_origin`-frame target (WebXR to robot axes, neck pivot subtraction, aim pose to gripper turn, frame offset), smooths it with the same One Euro filter, and writes it into `TeleopState` for the IK. |
+| `xr-pose.js`     | `main.py`, `smoothing.py`      | converts a controller pose into an `arm_origin`-frame target (the *neck* mapping: WebXR to robot axes, neck pivot subtraction, aim pose to gripper turn, frame offset; the *direct* one is this page's own), smooths it with the same One Euro filter, and writes it into `TeleopState` for the IK. |
 | `calibration.js` | `calibration.py`, `main.py`    | the neck pivot calibration: the least-squares fit of the point the head turns about, and the checks that accept or reject a run. |
 
 The constants (`ROBOT_ROTATION`, the frame offset `[-0.085, 0, -0.14]`,
@@ -97,8 +110,8 @@ the node's defaults. Nothing goes over the network: there is no dora
 node, no WebRTC and no camera panel, since the simulation itself is what
 the operator sees.
 
-**Neck pivot calibration.** Tick *neck pivot calibration* under
-**WebXR** in the panel before entering VR, then hold the **Y** button (left controller), keep the body
+**Neck pivot calibration** (*neck* hands only). Tick *neck pivot
+calibration* under **WebXR** in the panel before entering VR, then hold the **Y** button (left controller), keep the body
 still, turn the head side to side twice and up and down twice, and
 release. The hands stop following while Y is held. The result (or the
 reason a run was rejected, and what to do differently) appears on the
@@ -125,6 +138,10 @@ openssl req -x509 -newkey rsa:2048 -nodes -days 365 \
 TLS_CERTIFICATE_FILE=server.crt TLS_KEY_FILE=server.key npm run serve
 # then open https://${name}:8080/ in the headset
 ```
+
+`serve.mjs` gzips the model files (about a quarter of their 9 MB) and
+lets the browser keep them, revalidating each on a reload, so a headset
+on Wi-Fi downloads a scene once.
 
 ## Tests
 

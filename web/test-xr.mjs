@@ -27,6 +27,7 @@ import {
 } from "./calibration.js";
 import {
   eulerZYXToQuat,
+  poseLocalToWorld,
   poseWorldToLocal,
   quatError,
   quatMul,
@@ -39,6 +40,8 @@ import {
   CONTROLLER_TO_EE,
   DEFAULT_FRAME_OFFSET,
   DEFAULT_NECK_PIVOT_OFFSET,
+  directPose,
+  directPoseToXR,
   HEAD_OFFSET,
   headAnchor,
   OneEuroPoseSmoother,
@@ -194,9 +197,9 @@ describe("worldPlacement", () => {
     const { pos, quat } = worldPlacement(origin, reference, CONFIG, anchor);
     const placed = quatRotVec(quat, anchor.world).map((v, i) => v + pos[i]);
     nearVec(placed, anchor.xr, 1e-12, "placed");
-    // the arm base is below the eyes and a little behind them
+    // the arm base is HEAD_OFFSET below the eyes and a little behind them
     const base = quatRotVec(quat, origin.pos).map((v, i) => v + pos[i]);
-    assert.ok(base[1] < anchor.xr[1] - 0.2, "below");
+    assert.ok(near(base[1], anchor.xr[1] - HEAD_OFFSET[2], 1e-12), "below");
   });
 
   it("turns MuJoCo z-up into WebXR y-up", () => {
@@ -204,6 +207,83 @@ describe("worldPlacement", () => {
     const { quat } = worldPlacement(origin, IDENTITY, CONFIG);
     nearVec(quatRotVec(quat, [0, 0, 1]), [0, 1, 0], 1e-12, "up");
     nearVec(quatRotVec(quat, [1, 0, 0]), [0, 0, -1], 1e-12, "forward");
+  });
+
+  it("headAnchor takes the head position when the scene has one", () => {
+    const origin = { pos: [0.185, 0, 1.34], quat: [1, 0, 0, 0] };
+    const head = [0.223, 0, 1.45];
+    const anchor = headAnchor(origin, IDENTITY, head);
+    nearVec(anchor.world, head, 1e-12);
+    // the fallback offset is where the cell's head cameras are
+    nearVec(
+      headAnchor(origin, IDENTITY).world,
+      head,
+      1e-12,
+      "HEAD_OFFSET matches the cell",
+    );
+  });
+});
+
+// The cell (cell.xml): arm_origin on the lifter, the head cameras' midpoint
+// and the table top, in the MuJoCo world.
+const CELL_ORIGIN = { pos: [0.185, 0, 1.34], quat: [1, 0, 0, 0] };
+const CELL_HEAD = [0.223, 0, 1.45];
+const CELL_TABLE_TOP = 1.005;
+
+describe("direct hand mapping", () => {
+  const reference = xr([0.1, 1.6, -0.2], eulerZYXToQuat(0, 0.4, 0));
+  const placement = worldPlacement(
+    CELL_ORIGIN,
+    reference,
+    CONFIG,
+    headAnchor(CELL_ORIGIN, reference, CELL_HEAD),
+  );
+  const drawn = (world) =>
+    quatRotVec(placement.quat, world).map((v, i) => v + placement.pos[i]);
+
+  it("puts the target where the controller is drawn", () => {
+    const hand = xr([0.3, 1.2, -0.6], eulerZYXToQuat(0.2, -0.3, 0.1));
+    const target = directPose(hand, placement, CELL_ORIGIN);
+    const world = poseLocalToWorld(CELL_ORIGIN, target.pos, target.quat);
+    nearVec(drawn(world.pos), [hand.x, hand.y, hand.z], 1e-12);
+    // the orientation is the neck mapping's
+    const neck = adjustPose(hand, reference, CONFIG);
+    assert.ok(rotError(target.quat, neck.quat) < 1e-9);
+  });
+
+  it("directPoseToXR inverts it", () => {
+    for (const side of ["left", "right"]) {
+      const quat = eulerZYXToQuat(0.2, -1.4, 0.1);
+      const hand = directPoseToXR(
+        DEFAULT_HOME[side],
+        quat,
+        placement,
+        CELL_ORIGIN,
+      );
+      const back = directPose(hand, placement, CELL_ORIGIN);
+      nearVec(back.pos, DEFAULT_HOME[side], 1e-12, side);
+      assert.ok(rotError(back.quat, quat) < 1e-9, `${side} orientation`);
+    }
+  });
+
+  it("keeps hands held at the waist above the cell's table", () => {
+    // Hands 35 cm below and 30 cm ahead of the eyes, 20 cm to each side:
+    // the neck mapping put them 9 cm into the table.
+    for (const x of [-0.2, 0.2]) {
+      const hand = xr([x, -0.35, -0.3]); // headset at the origin
+      const target = directPose(
+        hand,
+        worldPlacement(
+          CELL_ORIGIN,
+          IDENTITY,
+          CONFIG,
+          headAnchor(CELL_ORIGIN, IDENTITY, CELL_HEAD),
+        ),
+        CELL_ORIGIN,
+      );
+      const z = CELL_ORIGIN.pos[2] + target.pos[2];
+      assert.ok(z > CELL_TABLE_TOP + 0.05, `z ${z.toFixed(3)}`);
+    }
   });
 });
 
@@ -364,7 +444,7 @@ function frame({ reference = IDENTITY, right, left, triggers = {} } = {}) {
 describe("XRTeleop.processFrame (main.py: _process_frame)", () => {
   it("writes the controller poses and triggers into the teleop targets", () => {
     const teleop = new TeleopState();
-    const t = new XRTeleop();
+    const t = new XRTeleop({ mapping: "neck" });
     const rightXR = robotToXR([0.3, -0.1, -0.2], IDENTITY, CONFIG);
     const updated = t.processFrame(
       frame({ right: xr(rightXR), triggers: { right: 0.3 } }),
@@ -380,7 +460,7 @@ describe("XRTeleop.processFrame (main.py: _process_frame)", () => {
 
   it("needs the headset pose and the trigger to move a hand", () => {
     const teleop = new TeleopState();
-    const t = new XRTeleop();
+    const t = new XRTeleop({ mapping: "neck" });
     const f = frame({ right: xr([0, 0, -0.5]), triggers: { right: 0 } });
     f.pose_reference = undefined;
     assert.deepEqual(t.processFrame(f, 0, teleop), []);
@@ -393,7 +473,7 @@ describe("XRTeleop.processFrame (main.py: _process_frame)", () => {
 
   it("smooths across frames", () => {
     const teleop = new TeleopState();
-    const t = new XRTeleop();
+    const t = new XRTeleop({ mapping: "neck" });
     const a = robotToXR([0.2, -0.15, -0.2], IDENTITY, CONFIG);
     const b = robotToXR([0.3, -0.15, -0.2], IDENTITY, CONFIG);
     t.processFrame(frame({ right: xr(a), triggers: { right: 0 } }), 0, teleop);
@@ -410,6 +490,7 @@ describe("XRTeleop.processFrame (main.py: _process_frame)", () => {
     const teleop = new TeleopState();
     const results = [];
     const t = new XRTeleop({
+      mapping: "neck",
       calibration: true,
       onCalibrationResult: (r) => results.push(r),
     });
@@ -443,9 +524,35 @@ describe("XRTeleop.processFrame (main.py: _process_frame)", () => {
     assert.deepEqual(updated, ["right"]);
   });
 
+  it("direct: waits for the placement, then puts the hands through it", () => {
+    const teleop = new TeleopState();
+    const t = new XRTeleop({ calibration: true });
+    assert.equal(t.mapping, "direct");
+    assert.equal(t.calibration.enabled, false, "no neck pivot to measure");
+    const placement = worldPlacement(
+      CELL_ORIGIN,
+      IDENTITY,
+      CONFIG,
+      headAnchor(CELL_ORIGIN, IDENTITY, CELL_HEAD),
+    );
+    const target = [0.3, -0.1, -0.2];
+    const hand = directPoseToXR(target, HOME_QUAT, placement, CELL_ORIGIN);
+    const f = frame({ right: hand, triggers: { right: 0 } });
+    assert.deepEqual(t.processFrame(f, 0, teleop, CELL_ORIGIN), []);
+    t.placement = placement;
+    assert.deepEqual(t.processFrame(f, 0, teleop), [], "needs the origin");
+    assert.deepEqual(t.processFrame(f, 0, teleop, CELL_ORIGIN), ["right"]);
+    nearVec(teleop.arms.right.pos, target, 1e-12);
+    assert.ok(rotError(teleop.arms.right.quat, HOME_QUAT) < 1e-9);
+  });
+
+  it("rejects an unknown hand mapping", () => {
+    assert.throws(() => new XRTeleop({ mapping: "relative" }), /relative/);
+  });
+
   it("without calibration the Y button is an ordinary button", () => {
     const teleop = new TeleopState();
-    const t = new XRTeleop();
+    const t = new XRTeleop({ mapping: "neck" });
     const f = frame({ right: xr([0, 0, -0.5]), triggers: { right: 0 } });
     f.button_y = true;
     assert.deepEqual(t.processFrame(f, 0, teleop), ["right"]);

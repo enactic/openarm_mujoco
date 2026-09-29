@@ -139,17 +139,20 @@ test("controller frames drive the arms through the same pipeline", async () => {
   const before = await rightEE();
   const beforeLeft = await leftEE();
   const moved = await page.evaluate(async () => {
-    const { robotPoseToXR } = await import("/web/xr-pose.js");
+    const { directPoseToXR } = await import("/web/xr-pose.js");
     const THREE = await import("three");
     const app = window.__app;
     app.onSessionStart();
     const identity = { x: 0, y: 0, z: 0, qx: 0, qy: 0, qz: 0, qw: 1 };
+    // the first frame places the world; the hands go through that placement
+    app.applyXRFrame({ pose_reference: identity }, 0);
+    const origin = app.controller.originPose(app.mjData);
     // right hand 5 cm ahead of its home target, left hand at home, both in
     // the home orientation
     const hand = (side, dx) => {
       const { homePos, homeQuat } = app.teleop.arms[side];
       const pos = [homePos[0] + dx, homePos[1], homePos[2]];
-      return robotPoseToXR(pos, homeQuat, identity, app.xrTeleop);
+      return directPoseToXR(pos, homeQuat, app.xrTeleop.placement, origin);
     };
     const frame = {
       pose_reference: identity,
@@ -159,14 +162,11 @@ test("controller frames drive the arms through the same pipeline", async () => {
       trigger_left: 0,
     };
     // a second of frames: the One Euro filter has settled by then
-    for (let i = 0; i < 72; i++) app.applyXRFrame(frame, i / 72);
-    // where the robot's head position (HEAD_OFFSET above arm_origin) ended
-    // up in the headset's space
-    const { HEAD_OFFSET } = await import("/web/xr-pose.js");
-    const origin = app.controller.originPose(app.mjData);
-    const camera = new THREE.Vector3(...origin.pos).add(
-      new THREE.Vector3(...HEAD_OFFSET),
-    );
+    for (let i = 1; i <= 72; i++) app.applyXRFrame(frame, i / 72);
+    // where the point between the head cameras ended up in the headset's
+    // space
+    const head = app.headPosition();
+    const camera = new THREE.Vector3(...head);
     app.world.updateMatrixWorld(true);
     app.world.localToWorld(camera);
     return {
@@ -174,14 +174,19 @@ test("controller frames drive the arms through the same pipeline", async () => {
       grip: app.teleop.arms.right.grip,
       placed: app.xrPlaced,
       worldUp: app.world.quaternion.toArray(),
+      head,
       camera: camera.toArray(),
     };
   });
   expect(moved.placed).toBe(true);
   expect(moved.grip).toBeCloseTo(0.4);
   expect(moved.worldUp).not.toEqual([0, 0, 0, 1]); // turned y-up for the headset
-  // the head position is drawn at the headset (identity pose here)
-  expect(Math.hypot(...moved.camera)).toBeLessThan(1e-3); // lifter sag
+  // between cell.xml's camera_head_left/right, drawn at the headset
+  // (identity pose here)
+  expect(moved.head[0]).toBeCloseTo(0.223, 6);
+  expect(moved.head[1]).toBeCloseTo(0, 6);
+  expect(moved.head[2]).toBeCloseTo(1.45, 6);
+  expect(Math.hypot(...moved.camera)).toBeLessThan(1e-6);
   await expect
     .poll(async () => (await rightEE())[0], { timeout: 20_000 })
     .toBeGreaterThan(before[0] + 0.03);

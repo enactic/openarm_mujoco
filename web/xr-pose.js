@@ -21,12 +21,21 @@
 // pipeline, so that conversion runs in the browser and feeds TeleopState
 // (teleop.js) directly: XRTeleop.processFrame() takes the same frame object
 // the dora client sends (see xr-frame.js) and overwrites the teleop targets
-// with the controller poses.
+// with the controller poses. That conversion is the "neck" hand mapping; by
+// default ("direct") the hands go through the world placement instead, so
+// the grippers are drawn at the controllers (see HAND_MAPPINGS).
 //
 // Quaternions are [w, x, y, z] like the rest of this app (ik.js); WebXR's
 // {x, y, z, w} orientation is converted on the way in.
 import { calibratePivot, PivotCalibration } from "./calibration.js";
-import { mat2quat, quatConj, quatMul, quatRotVec } from "./ik.js";
+import {
+  mat2quat,
+  poseLocalToWorld,
+  poseWorldToLocal,
+  quatConj,
+  quatMul,
+  quatRotVec,
+} from "./ik.js";
 import { LEFT, RIGHT } from "./keymap.js";
 
 // Relative pose to robot workspace mapping (main.py: _ROBOT_ROTATION). WebXR
@@ -52,11 +61,26 @@ export const CONTROLLER_TO_EE = [Math.SQRT1_2, 0, 0, Math.SQRT1_2];
 // subtraction (main.py: _NECK_PIVOT_OFFSET).
 export const DEFAULT_NECK_PIVOT_OFFSET = [0.0, -0.075, 0.08];
 
+// The robot's head cameras: the headset is placed between them, so the
+// operator sees the scene from where the robot does.
+export const HEAD_CAMERAS = ["camera_head_left", "camera_head_right"];
+
 // Where the operator's eyes go relative to the arm_origin site, in its
-// frame (x forward, z up), when the world is placed for a headset. OpenArm
-// has no head, so this is a human one: the eyes sit some 22 cm above the
-// shoulder joints and a little ahead of them.
-export const HEAD_OFFSET = [0.03, 0, 0.22];
+// frame (x forward, z up), in scenes without the head cameras (the
+// pedestal ones): where the cell's head cameras are relative to its
+// arm_origin with the lifter down.
+export const HEAD_OFFSET = [0.038, 0, 0.11];
+
+// How the controller poses become arm targets:
+//
+// * "direct": through the world placement, so each virtual gripper is drawn
+//   at its controller. The world stays put in the headset's space, so a
+//   head movement moves neither the world nor the targets, with no neck
+//   pivot to estimate.
+// * "neck": dora-openarm-webxr's mapping (adjustPose). Built for an operator
+//   watching a camera feed, so the grippers are not drawn at the
+//   controllers.
+export const HAND_MAPPINGS = ["direct", "neck"];
 
 // One Euro filter parameters main.py builds its per-hand smoothers with.
 const SMOOTHER_OPTIONS = { minCutoff: 2.0, beta: 0.04, dCutoff: 1.5 };
@@ -213,15 +237,45 @@ export function worldPlacement(origin, reference, config, anchor = null) {
   return { pos: xr.map((v, i) => v - shifted[i]), quat };
 }
 
-// The anchor that draws the robot's head position (HEAD_OFFSET from the
-// arm_origin site) at the headset: the operator looks out from where the
-// robot's head would be, with the arms below them like their own.
-export function headAnchor(origin, reference, headOffset = HEAD_OFFSET) {
-  const offset = quatRotVec(origin.quat, headOffset);
+// The anchor that draws the robot's head position at the headset: the
+// operator looks out from where the robot's head is, with the arms below
+// them like their own. `head` is that position in the MuJoCo world (between
+// the head cameras); without it, HEAD_OFFSET from the arm_origin site.
+export function headAnchor(origin, reference, head = null) {
+  const offset = quatRotVec(origin.quat, HEAD_OFFSET);
   return {
-    world: origin.pos.map((v, i) => v + offset[i]),
+    world: head ?? origin.pos.map((v, i) => v + offset[i]),
     xr: [reference.x, reference.y, reference.z],
   };
+}
+
+// Convert a WebXR controller pose into an arm_origin-frame pose target
+// through `placement` (worldPlacement's MuJoCo world to WebXR transform):
+// the target is where the controller is drawn in the MuJoCo world, so the
+// gripper lands on the controller. The orientation is adjustPose's.
+export function directPose(pose, placement, origin) {
+  const hand = xrPose(pose);
+  const inv = quatConj(placement.quat);
+  const pos = quatRotVec(
+    inv,
+    hand.pos.map((v, i) => v - placement.pos[i]),
+  );
+  const quat = quatMul(inv, quatMul(hand.quat, CONTROLLER_TO_EE));
+  return poseWorldToLocal(origin, pos, quat);
+}
+
+// Inverse of directPose: the WebXR pose object of a hand whose target is
+// `pos`, `quat` in the arm_origin frame.
+export function directPoseToXR(pos, quat, placement, origin) {
+  const world = poseLocalToWorld(origin, pos, quat);
+  const [x, y, z] = quatRotVec(placement.quat, world.pos).map(
+    (v, i) => v + placement.pos[i],
+  );
+  const [qw, qx, qy, qz] = quatMul(
+    placement.quat,
+    quatMul(world.quat, quatConj(CONTROLLER_TO_EE)),
+  );
+  return { x, y, z, qx, qy, qz, qw };
 }
 
 // Per-session state (main.py: _ConnectionState + _process_frame): the
@@ -229,15 +283,26 @@ export function headAnchor(origin, reference, headOffset = HEAD_OFFSET) {
 // one rather than inheriting the last one's history.
 export class XRTeleop {
   constructor({
+    mapping = "direct",
     frameOffset = DEFAULT_FRAME_OFFSET,
     neckPivotOffset = DEFAULT_NECK_PIVOT_OFFSET,
     calibration = false,
     onCalibrationResult = null,
   } = {}) {
+    if (!HAND_MAPPINGS.includes(mapping)) {
+      throw new Error(`unknown hand mapping: ${mapping}`);
+    }
+    this.mapping = mapping;
+    // The world placement (worldPlacement's { pos, quat }) the direct
+    // mapping goes through; the hands wait for it.
+    this.placement = null;
     this.frameOffset = [...frameOffset];
     this.neckPivotOffset = [...neckPivotOffset];
     this.onCalibrationResult = onCalibrationResult;
-    this.calibration = new PivotCalibration({ enabled: calibration });
+    // The neck pivot only exists in the neck mapping.
+    this.calibration = new PivotCalibration({
+      enabled: calibration && mapping === "neck",
+    });
     this.smoothers = {};
     for (const side of SIDES) {
       this.smoothers[side] = new OneEuroPoseSmoother(SMOOTHER_OPTIONS);
@@ -246,8 +311,9 @@ export class XRTeleop {
 
   // Take one frame (the object xr-frame.js's readFrame builds) at `time`
   // seconds and write the controller poses into `teleop`'s arm targets.
-  // Returns which sides were updated.
-  processFrame(response, time, teleop) {
+  // `origin` is the arm_origin site's world pose, which the direct mapping
+  // needs. Returns which sides were updated.
+  processFrame(response, time, teleop, origin = null) {
     // An absent button is a released one, so a controller that falls asleep
     // mid-run cannot leave the hands stopped.
     const samples = this.calibration.update(response.button_y === true);
@@ -274,7 +340,13 @@ export class XRTeleop {
       ) {
         continue;
       }
-      const adjusted = adjustPose(pose, reference, this);
+      let adjusted;
+      if (this.mapping === "direct") {
+        if (!this.placement || !origin) continue;
+        adjusted = directPose(pose, this.placement, origin);
+      } else {
+        adjusted = adjustPose(pose, reference, this);
+      }
       const smoothed = this.smoothers[side].smooth(time, [
         ...adjusted.pos,
         ...adjusted.quat,

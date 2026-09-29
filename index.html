@@ -30,7 +30,7 @@
       #status { margin-top: 8px; white-space: pre; font-family: monospace; font-size: 11px; }
       #help { font-size: 10px; margin: 4px 0; }
       button { margin-right: 6px; }
-      #calibration-label { display: block; font-size: 11px; margin: 4px 0; }
+      .xr-label { display: block; font-size: 11px; margin: 4px 0; }
     </style>
   </head>
   <body>
@@ -48,9 +48,16 @@
       </details>
       <details>
         <summary>WebXR</summary>
-        <label id="calibration-label">
+        <label class="xr-label">
+          hands
+          <select id="hand-mapping">
+            <option value="direct">direct (grippers at the controllers)</option>
+            <option value="neck">neck (dora-openarm-webxr)</option>
+          </select>
+        </label>
+        <label class="xr-label">
           <input type="checkbox" id="calibration" />
-          neck pivot calibration (hold Y in the session)
+          neck pivot calibration (neck hands; hold Y in the session)
         </label>
       </details>
       <div id="status">loading…</div>

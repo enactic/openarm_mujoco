@@ -25,6 +25,10 @@ import http from "node:http";
 import https from "node:https";
 import os from "node:os";
 import path from "node:path";
+import { promisify } from "node:util";
+import zlib from "node:zlib";
+
+const gzipAsync = promisify(zlib.gzip);
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const PORT = Number(process.argv[2] ?? process.env.PORT ?? 8080);
@@ -49,6 +53,26 @@ const MIME = {
   ".md": "text/markdown; charset=utf-8",
 };
 
+// A scene is some 50 files and 9 MB of mostly text meshes (.obj), which a
+// headset fetches over Wi-Fi: gzip them (about a quarter of the size), and
+// let the browser keep them, revalidating each (ETag, 304) so an edited
+// file still shows on the next reload.
+const COMPRESSIBLE = new Set([
+  ".html",
+  ".js",
+  ".mjs",
+  ".css",
+  ".json",
+  ".xml",
+  ".svg",
+  ".md",
+  ".obj",
+  ".mtl",
+  ".stl",
+  ".wasm",
+]);
+const gzipped = new Map(); // path -> { etag, body }
+
 const handler = async (req, res) => {
   const url = new URL(req.url, "http://localhost");
   let filePath = path.normalize(
@@ -59,17 +83,42 @@ const handler = async (req, res) => {
     return;
   }
   try {
-    if ((await fs.stat(filePath)).isDirectory()) {
+    let stat = await fs.stat(filePath);
+    if (stat.isDirectory()) {
       filePath = path.join(filePath, "index.html");
+      stat = await fs.stat(filePath);
     }
-    const body = await fs.readFile(filePath);
-    res.writeHead(200, {
-      "content-type":
-        MIME[path.extname(filePath).toLowerCase()] ??
-        "application/octet-stream",
-      "content-length": body.length,
-    });
-    res.end(body);
+    const ext = path.extname(filePath).toLowerCase();
+    const gzip =
+      COMPRESSIBLE.has(ext) &&
+      /\bgzip\b/.test(req.headers["accept-encoding"] ?? "");
+    const etag = `W/"${stat.size.toString(16)}-${Math.floor(stat.mtimeMs).toString(16)}${gzip ? "-gz" : ""}"`;
+    const headers = {
+      "content-type": MIME[ext] ?? "application/octet-stream",
+      "cache-control": "no-cache",
+      etag,
+      vary: "accept-encoding",
+    };
+    if (req.headers["if-none-match"] === etag) {
+      res.writeHead(304, headers).end();
+      return;
+    }
+    let body;
+    if (gzip) {
+      const cached = gzipped.get(filePath);
+      if (cached?.etag === etag) {
+        body = cached.body;
+      } else {
+        body = await gzipAsync(await fs.readFile(filePath));
+        gzipped.set(filePath, { etag, body });
+      }
+      headers["content-encoding"] = "gzip";
+    } else {
+      body = await fs.readFile(filePath);
+    }
+    headers["content-length"] = body.length;
+    res.writeHead(200, headers);
+    res.end(req.method === "HEAD" ? undefined : body);
   } catch {
     res.writeHead(404).end("Not Found");
   }
