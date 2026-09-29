@@ -78,8 +78,11 @@ bottom of the page. The MuJoCo world is drawn around the operator,
 turned y-up for the headset, and the arms follow the controllers: the
 trigger closes the gripper, turning the head moves neither the world
 nor the targets, the **X** button resets the environment (like the
-Reset button and Backspace) and the **B** button leaves the session. A text panel
-below the view shows the status lines.
+Reset button and Backspace) and the **B** button leaves the session.
+Below the view a hint says "press Y for help": the **Y** button opens a
+panel with the status lines (tracking errors), the view and the buttons,
+and closes it again. With the neck pivot calibration on, Y measures
+instead and the panel stays open.
 
 The headset starts above and a little behind the robot's head,
 overlooking the table: `DEFAULT_VIEW_OFFSET` in `xr-pose.js` (0.08 m

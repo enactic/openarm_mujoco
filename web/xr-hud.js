@@ -52,12 +52,20 @@ export class XRHud {
     this.text = text;
     const ctx = this.canvas.getContext("2d");
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
-    ctx.fillStyle = "rgba(0, 0, 0, 0.55)";
-    ctx.fillRect(0, 0, WIDTH, HEIGHT);
-    ctx.fillStyle = "#ffffff";
     ctx.font = "26px monospace";
     ctx.textBaseline = "top";
-    text.split("\n").forEach((line, i) => {
+    const lines = text.split("\n");
+    // the backdrop only behind the text, so a one-line hint stays small
+    const width = Math.max(...lines.map((line) => ctx.measureText(line).width));
+    ctx.fillStyle = "rgba(0, 0, 0, 0.55)";
+    ctx.fillRect(
+      0,
+      0,
+      Math.min(WIDTH, width + 40),
+      Math.min(HEIGHT, lines.length * LINE_HEIGHT + 24),
+    );
+    ctx.fillStyle = "#ffffff";
+    lines.forEach((line, i) => {
       ctx.fillText(line, 20, 16 + i * LINE_HEIGHT);
     });
     this.texture.needsUpdate = true;

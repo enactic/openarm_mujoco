@@ -273,6 +273,8 @@ class App {
     this.xrTeleop = null; // one per session
     this.xrPlaced = false;
     this.xrButtonX = false; // last frame's X, for the press edge
+    this.xrButtonY = false; // and Y's
+    this.hudExpanded = false; // the full headset panel, toggled by Y
     this.viewOffset = [...DEFAULT_VIEW_OFFSET]; // kept across sessions
     this.viewPitch = DEFAULT_VIEW_PITCH;
     this.xrReference = null; // the headset pose the world is placed from
@@ -427,6 +429,8 @@ class App {
     });
     this.xrPlaced = false;
     this.xrButtonX = false;
+    this.xrButtonY = false;
+    this.hudExpanded = false;
     this.xrTime = null;
     this.calibrationMessage = null;
     this.hud.mesh.visible = true;
@@ -557,11 +561,22 @@ class App {
     const x = response.button_x === true;
     if (x && !this.xrButtonX) this.reset();
     this.xrButtonX = x;
+    // Y shows and hides the full headset panel, once per press, unless the
+    // neck pivot calibration has it (hold Y to measure).
+    const y = response.button_y === true;
+    if (y && !this.xrButtonY && !this.xrTeleop.calibration.enabled) {
+      this.hudExpanded = !this.hudExpanded;
+    }
+    this.xrButtonY = y;
     // Like dora-openarm-webxr's --quit-button: a press ends the session.
     if (response.button_b === true) this.endSession();
   }
 
+  // The headset panel: a one-line hint until Y opens the full panel (always
+  // open while the neck pivot calibration holds the Y button).
   hudText() {
+    const calibration = this.xrTeleop?.calibration.enabled;
+    if (!this.hudExpanded && !calibration) return "press Y for help";
     const lines = [];
     if (this.xrTeleop?.calibration.enabled) {
       const running = this.xrTeleop?.calibration.collecting;
@@ -582,7 +597,7 @@ class App {
         "  left stick: up/down, tilt (sideways)  " +
         "right stick: forward/back/sideways",
     );
-    lines.push("X: reset    B: leave VR");
+    lines.push(`X: reset    B: leave VR${calibration ? "" : "    Y: hide"}`);
     return lines.join("\n");
   }
 

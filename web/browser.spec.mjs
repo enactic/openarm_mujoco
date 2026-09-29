@@ -292,6 +292,31 @@ test("controller frames drive the arms through the same pipeline", async () => {
   await settle();
 });
 
+test("Y opens and closes the headset panel", async () => {
+  const shown = await page.evaluate(() => {
+    const app = window.__app;
+    const identity = { x: 0, y: 0, z: 0, qx: 0, qy: 0, qz: 0, qw: 1 };
+    app.onSessionStart();
+    let t = 0;
+    const press = (button_y) => {
+      app.applyXRFrame({ pose_reference: identity, button_y }, t++);
+      return app.hudText();
+    };
+    const out = { closed: press(false) };
+    out.open = press(true);
+    out.held = press(true); // once per press
+    press(false);
+    out.closedAgain = press(true);
+    app.onSessionEnd();
+    return out;
+  });
+  expect(shown.closed).toBe("press Y for help");
+  expect(shown.open).toContain("X: reset");
+  expect(shown.open).toContain("error:");
+  expect(shown.held).toBe(shown.open);
+  expect(shown.closedAgain).toBe("press Y for help");
+});
+
 test("teleop still works after switching scenes", async () => {
   await page.selectOption("#scene-select", "pedestal/bottle_scene.xml");
   await page.waitForFunction(
