@@ -34,14 +34,6 @@ import loadMuJoCo from "@mujoco/mujoco";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { VRButton } from "three/examples/jsm/webxr/VRButton.js";
-import { PoseController } from "./ik.js";
-import {
-  HELP_TEXT,
-  KEYMAP,
-  RESET_KEY,
-  SPEED_DOWN_KEYS,
-  SPEED_UP_KEYS,
-} from "./keymap.js";
 import {
   addMuJoCoLights,
   INFINITE_PLANE_HALF_SIZE,
@@ -51,6 +43,14 @@ import {
   SHININESS_SCALE,
   skybox,
 } from "./appearance.js";
+import { PoseController } from "./ik.js";
+import {
+  HELP_TEXT,
+  KEYMAP,
+  RESET_KEY,
+  SPEED_DOWN_KEYS,
+  SPEED_UP_KEYS,
+} from "./keymap.js";
 import { buildVFS } from "./model-vfs.js";
 import { TeleopState } from "./teleop.js";
 import { readFrame } from "./xr-frame.js";
