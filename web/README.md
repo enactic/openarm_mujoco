@@ -86,15 +86,17 @@ The headset starts above the robot's head, overlooking the table: 0.3 m
 `camera_head_left` and `camera_head_right` cameras in the cell scenes,
 or above `HEAD_OFFSET` (the same point relative to the `arm_origin` site,
 11 cm above it) in the scenes without them. The **left thumbstick** moves
-the view up and down in the session. With the *direct* hands below, the
-hands reach that much lower for the same gripper height.
+the view up and down in the session. The hands do not follow the view:
+they map from the head cameras themselves, so the arms move as they
+would with the view there, and are drawn the view height below the
+controllers.
 
 **Hand mapping.** Chosen under **WebXR** in the panel, from the next
 session on:
 
-- *direct* (default): each gripper target is where its controller is
-  drawn in the MuJoCo world, so the virtual grippers sit on the
-  controllers. The world stays put in the headset's space, so a head
+- *direct* (default): each gripper target is where its controller would
+  be drawn with the view at the head cameras, so the virtual grippers
+  follow the controllers one to one (the view height below them). The world stays put in the headset's space, so a head
   movement moves neither the world nor the targets.
 - *neck*: dora-openarm-webxr's mapping (below), for comparison. It was
   built for an operator watching a camera feed, so the grippers are not

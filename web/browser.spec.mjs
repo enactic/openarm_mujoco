@@ -173,6 +173,11 @@ test("controller frames drive the arms through the same pipeline", async () => {
     );
     app.world.updateMatrixWorld(true);
     app.world.localToWorld(camera);
+    // the hands go through the placement from the head cameras themselves
+    const { pos, quat } = app.xrTeleop.placement;
+    const handsHead = new THREE.Vector3(...head)
+      .applyQuaternion(new THREE.Quaternion(quat[1], quat[2], quat[3], quat[0]))
+      .add(new THREE.Vector3(...pos));
     return {
       target: [...app.teleop.arms.right.pos],
       grip: app.teleop.arms.right.grip,
@@ -180,6 +185,7 @@ test("controller frames drive the arms through the same pipeline", async () => {
       worldUp: app.world.quaternion.toArray(),
       head,
       camera: camera.toArray(),
+      handsHead: handsHead.toArray(),
     };
   });
   expect(moved.placed).toBe(true);
@@ -191,6 +197,7 @@ test("controller frames drive the arms through the same pipeline", async () => {
   expect(moved.head[1]).toBeCloseTo(0, 6);
   expect(moved.head[2]).toBeCloseTo(1.45, 6);
   expect(Math.hypot(...moved.camera)).toBeLessThan(1e-6);
+  expect(Math.hypot(...moved.handsHead)).toBeLessThan(1e-6);
   await expect
     .poll(async () => (await rightEE())[0], { timeout: 20_000 })
     .toBeGreaterThan(before[0] + 0.03);
@@ -230,6 +237,7 @@ test("controller frames drive the arms through the same pipeline", async () => {
     const identity = { x: 0, y: 0, z: 0, qx: 0, qy: 0, qz: 0, qw: 1 };
     const before = app.viewHeight;
     const worldY = app.world.position.y;
+    const hands = JSON.stringify(app.xrTeleop.placement);
     // released first: a frame after a pause moves nothing by itself
     app.applyXRFrame({ pose_reference: identity }, 100);
     for (let i = 1; i <= 72; i++) {
@@ -241,10 +249,12 @@ test("controller frames drive the arms through the same pipeline", async () => {
     return {
       by: app.viewHeight - before,
       worldBy: app.world.position.y - worldY,
+      handsKept: JSON.stringify(app.xrTeleop.placement) === hands,
     };
   });
   expect(raised.by).toBeCloseTo(0.3, 5);
   expect(raised.worldBy).toBeCloseTo(-0.3, 3); // the world sinks instead
+  expect(raised.handsKept).toBe(true); // and the hands reach where they did
   // ending the session puts the world back and keeps the last pose
   await page.evaluate(() => window.__app.onSessionEnd());
   expect(

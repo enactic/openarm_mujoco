@@ -451,25 +451,31 @@ class App {
   // the headset pose of the first frame: the headset starts viewHeight
   // above the robot's head (between its head cameras), overlooking the
   // arms below. A head turn then moves neither the world nor the targets.
+  //
+  // The hands go through the placement from the robot's head itself: a
+  // hand held where it was reaches the same place whatever the view
+  // height, and the grippers are drawn viewHeight below the controllers.
   placeWorld(reference) {
     this.xrReference = reference;
     const origin = this.controller.originPose(this.mjData);
-    const placement = worldPlacement(
-      origin,
-      reference,
-      this.xrTeleop,
-      headAnchor(origin, reference, this.headPosition(), this.viewHeight),
-    );
-    const { pos, quat } = placement;
+    const head = this.headPosition();
+    const place = (viewHeight) =>
+      worldPlacement(
+        origin,
+        reference,
+        this.xrTeleop,
+        headAnchor(origin, reference, head, viewHeight),
+      );
+    const { pos, quat } = place(this.viewHeight);
     this.world.position.set(pos[0], pos[1], pos[2]);
     this.world.quaternion.set(quat[1], quat[2], quat[3], quat[0]);
-    this.xrTeleop.placement = placement;
+    this.xrTeleop.placement = place(0);
     this.xrPlaced = true;
   }
 
   // The left thumbstick pushed forward raises the view, pulled back lowers
   // it; the world is placed again from the same headset pose, so only the
-  // height changes.
+  // height changes, and the hands keep their reach.
   adjustViewHeight(axes, dt) {
     if (!this.xrPlaced || !axes || dt <= 0) return;
     // xr-standard: the thumbstick is axes[2..3] (touchpad first), -y forward
