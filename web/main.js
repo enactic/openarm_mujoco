@@ -88,6 +88,10 @@ const VIEW_STICK_DEADZONE = 0.2;
 const VIEW_PITCH_SPEED = (30 * Math.PI) / 180;
 const VIEW_PITCH_RANGE = [(-10 * Math.PI) / 180, (60 * Math.PI) / 180];
 
+// The desktop camera's vertical field of view (degrees). A WebXR session
+// overwrites it with the headset's, so it is restored when the session ends.
+const DESKTOP_FOV = 45;
+
 // A measured neck pivot offset outlives the page (dora-openarm-webxr keeps
 // it in neck_pivot.yaml): the whole point of measuring an operator is
 // keeping the number they measured.
@@ -251,7 +255,7 @@ class App {
     this.renderer.xr.addEventListener("sessionend", () => this.onSessionEnd());
 
     this.camera = new THREE.PerspectiveCamera(
-      45,
+      DESKTOP_FOV,
       window.innerWidth / window.innerHeight,
       0.01,
       100,
@@ -442,6 +446,12 @@ class App {
     this.hud.mesh.visible = false;
     this.world.position.set(0, 0, 0);
     this.world.quaternion.identity();
+    // WebXR left the camera at the headset's pose, field of view and
+    // projection: put the desktop view back.
+    this.camera.fov = DESKTOP_FOV;
+    this.camera.zoom = 1;
+    this.camera.updateProjectionMatrix();
+    if (this.mjModel) this.frameCamera();
     // The arms hold the last controller pose; Backspace / Reset return home.
   }
 

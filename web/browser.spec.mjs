@@ -283,7 +283,31 @@ test("controller frames drive the arms through the same pipeline", async () => {
   expect(moved2.ahead[2]).toBeCloseTo(-1, 6);
   expect(moved2.handsKept).toBe(true); // and the hands reach where they did
   // ending the session puts the world back and keeps the last pose
-  await page.evaluate(() => window.__app.onSessionEnd());
+  const desktopView = await page.evaluate(() => {
+    const camera = window.__app.camera;
+    return { fov: camera.fov, position: camera.position.toArray() };
+  });
+  const cameraRestored = await page.evaluate(() => {
+    const app = window.__app;
+    // what WebXR leaves behind: the headset's pose and field of view
+    app.camera.position.set(0, 0, 0);
+    app.camera.fov = 100;
+    app.camera.updateProjectionMatrix();
+    app.onSessionEnd();
+    return {
+      fov: app.camera.fov,
+      position: app.camera.position.toArray(),
+      projection: app.camera.projectionMatrix.elements[5],
+    };
+  });
+  expect(cameraRestored.fov).toBe(desktopView.fov);
+  for (let i = 0; i < 3; i++) {
+    expect(cameraRestored.position[i]).toBeCloseTo(desktopView.position[i], 6);
+  }
+  expect(cameraRestored.projection).toBeCloseTo(
+    1 / Math.tan((desktopView.fov * Math.PI) / 360),
+    6,
+  );
   expect(
     await page.evaluate(() => window.__app.world.quaternion.toArray()),
   ).toEqual([0, 0, 0, 1]);
