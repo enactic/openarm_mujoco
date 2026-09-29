@@ -73,8 +73,8 @@ export const HEAD_OFFSET = [0.038, 0, 0.11];
 
 // Where the headset is placed relative to the head cameras (or
 // HEAD_OFFSET), in the arm_origin frame (x forward, y left, z up), in
-// meters: above and a little behind them, overlooking the whole table. In
-// the cell, the lifter's post stands 0.10 m behind the head cameras. The
+// meters: above them, overlooking the whole table, and a little behind
+// them, short of the cell's lifter post (0.10 m behind them). The
 // thumbsticks move it in the session.
 export const DEFAULT_VIEW_OFFSET = [-0.08, 0, 0.3];
 

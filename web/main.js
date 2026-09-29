@@ -30,7 +30,7 @@ import loadMuJoCo from "@mujoco/mujoco";
 // XRTeleop (xr-pose.js, a port of that project's Python node) converts the
 // controller poses into arm_origin-frame targets and writes them into the
 // same TeleopState. The MuJoCo world is placed in the headset's reference
-// space so that the virtual grippers coincide with the controllers.
+// space with the headset where the robot's head is.
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { VRButton } from "three/examples/jsm/webxr/VRButton.js";
@@ -88,8 +88,7 @@ const VIEW_STICK_DEADZONE = 0.2;
 const VIEW_PITCH_SPEED = (30 * Math.PI) / 180;
 const VIEW_PITCH_RANGE = [(-10 * Math.PI) / 180, (60 * Math.PI) / 180];
 
-// The desktop camera's vertical field of view (degrees). A WebXR session
-// overwrites it with the headset's, so it is restored when the session ends.
+// The desktop camera's vertical field of view, in degrees.
 const DESKTOP_FOV = 45;
 
 // A measured neck pivot offset outlives the page (dora-openarm-webxr keeps
@@ -233,10 +232,8 @@ class App {
     // MuJoCo's own background where a scene has no skybox.
     this.scene.background = new THREE.Color(0x000000);
     // Everything MuJoCo draws lives in this group, in MuJoCo's z-up world
-    // coordinates. On the desktop it is the identity; in a WebXR session it
-    // is moved so that the arm_origin frame lands where the operator is
-    // (see placeWorld), since WebXR's reference space is y-up and anchored
-    // to the headset.
+    // coordinates. On the desktop it is the identity; in a WebXR session,
+    // whose reference space is y-up, placeWorld moves it.
     this.world = new THREE.Group();
     this.scene.add(this.world);
 
@@ -274,11 +271,11 @@ class App {
     this.handMapping = "direct"; // xr-pose.js's HAND_MAPPINGS
     this.calibrationEnabled = false;
     this.calibrationMessage = null;
-    this.xrTeleop = null; // one per session
+    this.xrTeleop = null;
     this.xrPlaced = false;
-    this.xrButtonX = false; // last frame's X, for the press edge
-    this.xrButtonY = false; // and Y's
-    this.hudExpanded = false; // the full headset panel, toggled by Y
+    this.xrButtonX = false;
+    this.xrButtonY = false;
+    this.hudExpanded = false;
     this.viewOffset = [...DEFAULT_VIEW_OFFSET]; // kept across sessions
     this.viewPitch = DEFAULT_VIEW_PITCH;
     this.xrReference = null; // the headset pose the world is placed from
@@ -544,7 +541,6 @@ class App {
     );
   }
 
-  // Leave the immersive session (the B button); no-op outside one.
   endSession() {
     this.renderer.xr.getSession()?.end();
   }
@@ -975,15 +971,15 @@ async function main() {
   // WebXR: three's button (bottom center of the page) says "VR NOT
   // SUPPORTED" / "WEBXR NEEDS HTTPS" itself where a session cannot start.
   document.body.appendChild(VRButton.createButton(app.renderer));
+  // Both take effect with the next session, like dora-openarm-webxr's
+  // command line options: the running one keeps the state it started with.
   const mapping = document.getElementById("hand-mapping");
   mapping.onchange = () => {
-    app.handMapping = mapping.value; // from the next session, like below
+    app.handMapping = mapping.value;
   };
   const calibration = document.getElementById("calibration");
   calibration.onchange = () => {
     app.calibrationEnabled = calibration.checked;
-    // Takes effect with the next session, like --calibration at startup;
-    // the running one keeps the state it started with.
   };
   app.run();
 }

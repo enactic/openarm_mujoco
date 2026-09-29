@@ -60,9 +60,8 @@ export class XRHud {
       depthWrite: false,
     });
     // 0.8 m wide, a meter ahead and a bit below eye level: readable
-    // without being in the way of the arms. The text starts at the top of
-    // the canvas, so the plane hangs from its top edge: more lines grow it
-    // downwards, away from the view.
+    // without being in the way of the arms. It hangs from its top edge, so
+    // more lines grow it downwards.
     const height = (0.8 * HEIGHT) / WIDTH;
     const geometry = new THREE.PlaneGeometry(0.8, height);
     geometry.translate(0, -height / 2, 0);
