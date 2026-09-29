@@ -316,7 +316,7 @@ test("controller frames drive the arms through the same pipeline", async () => {
   await settle();
 });
 
-test("Y opens and closes the headset panel", async () => {
+test("Y opens and closes the HUD", async () => {
   const shown = await page.evaluate(() => {
     const app = window.__app;
     const identity = { x: 0, y: 0, z: 0, qx: 0, qy: 0, qz: 0, qw: 1 };
@@ -341,13 +341,13 @@ test("Y opens and closes the headset panel", async () => {
   expect(shown.closedAgain).toBe("press Y for help");
 });
 
-test("the headset panel wraps long lines to fit", async () => {
+test("the HUD wraps long lines to fit", async () => {
   const drawn = await page.evaluate(() => {
     const app = window.__app;
     app.handMapping = "neck";
     app.calibrationEnabled = true;
     app.onSessionStart();
-    // the longest the panel gets: a run under way and a rejection shown
+    // the longest the HUD gets: a run under way and a rejection shown
     app.onCalibrationResult({
       accepted: false,
       reason:

@@ -696,7 +696,7 @@ describe("readFrame (ar.js: sendFrame)", () => {
   });
 });
 
-describe("wrapLine (the headset panel)", () => {
+describe("wrapLine (the HUD)", () => {
   const measure = (line) => line.length; // one unit per character
 
   it("keeps a line that fits", () => {

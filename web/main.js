@@ -184,7 +184,7 @@ class App {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.target.set(0.4, 0, 1.15);
 
-    // The headset panel rides on the camera, which WebXR moves with the
+    // The HUD rides on the camera, which WebXR moves with the
     // head; on the desktop it is hidden.
     this.scene.add(this.camera);
     this.hud = new XRHud();
@@ -486,7 +486,7 @@ class App {
     const x = response.button_x === true;
     if (x && !this.xrButtonX) this.reset();
     this.xrButtonX = x;
-    // Y shows and hides the full headset panel, once per press, unless the
+    // Y shows and hides the full HUD, once per press, unless the
     // neck pivot calibration has it (hold Y to measure).
     const y = response.button_y === true;
     if (y && !this.xrButtonY && !this.xrTeleop.calibration.enabled) {
@@ -497,8 +497,8 @@ class App {
     if (response.button_b === true) this.endSession();
   }
 
-  // The headset panel: a one-line hint until Y opens the full panel (always
-  // open while the neck pivot calibration holds the Y button).
+  // The HUD: a one-line hint until Y opens the full HUD (always open while
+  // the neck pivot calibration holds the Y button).
   hudText() {
     const calibration = this.xrTeleop?.calibration.enabled;
     if (!this.hudExpanded && !calibration) return "press Y for help";

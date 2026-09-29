@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// A text panel for the headset: the page's status element is out of sight
-// in an immersive session, so the same lines (and the calibration
-// instructions and results, which dora-openarm-webxr draws on its own panel)
-// are drawn onto a canvas texture on a plane that hangs below the view.
+// A head-up display (HUD) for the headset: the page's status element is
+// out of sight in an immersive session, so the same lines (and the
+// calibration instructions and results, which dora-openarm-webxr draws on
+// its own panel) are drawn onto a canvas texture on a plane that hangs
+// below the view.
 import * as THREE from "three";
 
 const WIDTH = 1024;

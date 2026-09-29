@@ -79,10 +79,10 @@ turned y-up for the headset, and the arms follow the controllers: the
 trigger closes the gripper, turning the head moves neither the world
 nor the targets, the **X** button resets the environment (like the
 Reset button and Backspace) and the **B** button leaves the session.
-Below the view a hint says "press Y for help": the **Y** button opens a
-panel with the status lines (tracking errors), the view and the buttons,
-and closes it again. With the neck pivot calibration on, Y measures
-instead and the panel stays open. Other controllers with the standard
+Below the view a head-up display (HUD) says "press Y for help": the **Y**
+button opens the full HUD with the status lines (tracking errors), the
+view and the buttons, and closes it again. With the neck pivot
+calibration on, Y measures instead and the HUD stays open. Other controllers with the standard
 (`xr-standard`) layout move the arms and the grippers too, but have no
 X/B/Y: their buttons past the trigger and squeeze vary by vendor.
 
@@ -96,7 +96,7 @@ the session the **left thumbstick** moves the view up and down and the
 **right thumbstick** forward, back and sideways. Looking straight ahead
 looks `DEFAULT_VIEW_PITCH` (15°) down: the world is tilted up about the
 eyes by that much, and the left thumbstick's sideways axis changes it.
-The headset panel shows the offset and the tilt. The hands do not follow
+The HUD shows the offset and the tilt. The hands do not follow
 the view: they map from the head cameras themselves, so the arms move as
 they would with the view there, and are drawn the view offset away from
 the controllers.
@@ -136,8 +136,8 @@ calibration* under **WebXR** in the panel before entering VR, then hold
 the **Y** button (left controller), keep the body still, turn the head
 side to side twice and up and down twice, and release. The hands stop
 following while Y is held. The result (or the reason a run was rejected,
-and what to do differently) appears on the panel in the headset and in
-the browser console. An accepted offset is kept in the browser's
+and what to do differently) appears on the HUD and in the browser
+console. An accepted offset is kept in the browser's
 `localStorage`, so it survives reloads; the box only says whether the Y
 button measures, and only from the next session on.
 
