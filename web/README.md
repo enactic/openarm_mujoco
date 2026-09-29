@@ -96,8 +96,9 @@ session on:
 
 - *direct* (default): each gripper target is where its controller would
   be drawn with the view at the head cameras, so the virtual grippers
-  follow the controllers one to one (the view height below them). The world stays put in the headset's space, so a head
-  movement moves neither the world nor the targets.
+  follow the controllers one to one (the view height below them). The
+  world stays put in the headset's space, so a head movement moves
+  neither the world nor the targets.
 - *neck*: dora-openarm-webxr's mapping (below), for comparison. It was
   built for an operator watching a camera feed, so the grippers are not
   drawn at the controllers (hands held at the waist reach into the
