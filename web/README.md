@@ -88,8 +88,10 @@ the point between the `camera_head_left` and `camera_head_right` cameras
 in the cell scenes, or from `HEAD_OFFSET` (the same point relative to
 the `arm_origin` site, 11 cm above it) in the scenes without them. In
 the session the **left thumbstick** moves the view up and down and the
-**right thumbstick** forward, back and sideways; the headset panel shows
-the offset. The hands do not follow the view: they map from the head
+**right thumbstick** forward, back and sideways. Looking straight ahead
+looks `DEFAULT_VIEW_PITCH` (15°) down: the world is tilted up about the
+eyes by that much, and the left thumbstick's sideways axis changes it.
+The headset panel shows the offset and the tilt. The hands do not follow the view: they map from the head
 cameras themselves, so the arms move as they would with the view there,
 and are drawn the view offset away from the controllers.
 

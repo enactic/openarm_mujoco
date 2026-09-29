@@ -229,13 +229,15 @@ test("controller frames drive the arms through the same pipeline", async () => {
     return calls;
   });
   expect(presses).toEqual({ reset: 2, end: 1 });
-  // a second of the left thumbstick forward raises the view, of the right
-  // one forward and right moves it forward and right
-  const moved2 = await page.evaluate(() => {
+  // a second of the left thumbstick forward and right raises the view and
+  // tilts it down, of the right one forward and right moves it forward and
+  // right
+  const moved2 = await page.evaluate(async () => {
+    const THREE = await import("three");
     const app = window.__app;
     const identity = { x: 0, y: 0, z: 0, qx: 0, qy: 0, qz: 0, qw: 1 };
     const before = [...app.viewOffset];
-    const world = app.world.position.toArray();
+    const pitch = app.viewPitch;
     const hands = JSON.stringify(app.xrTeleop.placement);
     // released first: a frame after a pause moves nothing by itself
     app.applyXRFrame({ pose_reference: identity }, 100);
@@ -243,25 +245,42 @@ test("controller frames drive the arms through the same pipeline", async () => {
       app.applyXRFrame(
         {
           pose_reference: identity,
-          joystick_left: [0, 0, 0, -1],
+          joystick_left: [0, 0, 1, -1],
           joystick_right: [0, 0, 1, -1],
         },
         100 + i / 72,
       );
     }
+    // the moved eye point (head cameras + viewOffset) is still drawn at the
+    // headset, at the origin here
+    const eye = new THREE.Vector3(...app.headPosition()).add(
+      new THREE.Vector3(...app.viewOffset),
+    );
+    app.world.updateMatrixWorld(true);
+    app.world.localToWorld(eye);
+    // and the robot's forward, tilted down by viewPitch, is straight ahead
+    const p = app.viewPitch;
+    const ahead = new THREE.Vector3(Math.cos(p), 0, -Math.sin(p))
+      .applyQuaternion(app.world.quaternion)
+      .toArray();
     return {
       by: app.viewOffset.map((v, i) => v - before[i]),
-      worldBy: app.world.position.toArray().map((v, i) => v - world[i]),
+      pitchBy: app.viewPitch - pitch,
+      eye: eye.toArray(),
+      ahead,
       handsKept: JSON.stringify(app.xrTeleop.placement) === hands,
     };
   });
-  // forward, right (-y) and up in the arm_origin frame, so the world goes
-  // the other way in the headset's space (y-up, -z ahead)
-  const expected = { by: [0.3, -0.3, 0.3], worldBy: [-0.3, -0.3, 0.3] };
+  // forward, right (-y) and up in the arm_origin frame, 30 degrees down
+  const expected = [0.3, -0.3, 0.3];
   for (let i = 0; i < 3; i++) {
-    expect(moved2.by[i]).toBeCloseTo(expected.by[i], 5);
-    expect(moved2.worldBy[i]).toBeCloseTo(expected.worldBy[i], 3);
+    expect(moved2.by[i]).toBeCloseTo(expected[i], 5);
   }
+  expect(moved2.pitchBy).toBeCloseTo(Math.PI / 6, 5);
+  expect(Math.hypot(...moved2.eye)).toBeLessThan(1e-6);
+  expect(moved2.ahead[0]).toBeCloseTo(0, 6);
+  expect(moved2.ahead[1]).toBeCloseTo(0, 6);
+  expect(moved2.ahead[2]).toBeCloseTo(-1, 6);
   expect(moved2.handsKept).toBe(true); // and the hands reach where they did
   // ending the session puts the world back and keeps the last pose
   await page.evaluate(() => window.__app.onSessionEnd());

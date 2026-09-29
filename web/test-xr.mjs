@@ -202,6 +202,25 @@ describe("worldPlacement", () => {
     assert.ok(near(base[1], anchor.xr[1] - HEAD_OFFSET[2], 1e-12), "below");
   });
 
+  it("pitch tilts the world up about the anchor", () => {
+    const origin = { pos: [0.185, 0, 1.34], quat: [1, 0, 0, 0] };
+    const anchor = { world: [0.143, 0, 1.75], xr: [0, 1.6, 0] };
+    const pitch = 0.3;
+    const { pos, quat } = worldPlacement(
+      origin,
+      IDENTITY,
+      CONFIG,
+      anchor,
+      pitch,
+    );
+    const placed = quatRotVec(quat, anchor.world).map((v, i) => v + pos[i]);
+    nearVec(placed, anchor.xr, 1e-12, "the anchor stays put");
+    // looking straight ahead looks `pitch` down the robot's forward
+    const down = [Math.cos(pitch), 0, -Math.sin(pitch)];
+    nearVec(quatRotVec(quat, down), [0, 0, -1], 1e-12, "ahead");
+    nearVec(quatRotVec(quat, [0, 1, 0]), [-1, 0, 0], 1e-12, "left stays left");
+  });
+
   it("turns MuJoCo z-up into WebXR y-up", () => {
     const origin = { pos: [0, 0, 0], quat: [1, 0, 0, 0] };
     const { quat } = worldPlacement(origin, IDENTITY, CONFIG);

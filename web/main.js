@@ -58,6 +58,7 @@ import { XRHud } from "./xr-hud.js";
 import {
   DEFAULT_NECK_PIVOT_OFFSET,
   DEFAULT_VIEW_OFFSET,
+  DEFAULT_VIEW_PITCH,
   HEAD_CAMERAS,
   headAnchor,
   worldPlacement,
@@ -83,6 +84,9 @@ const VIEW_OFFSET_RANGE = [
   [-0.3, 1.0],
 ];
 const VIEW_STICK_DEADZONE = 0.2;
+// ... and tilt it down at this speed (rad/s), within this range.
+const VIEW_PITCH_SPEED = (30 * Math.PI) / 180;
+const VIEW_PITCH_RANGE = [(-10 * Math.PI) / 180, (60 * Math.PI) / 180];
 
 // A measured neck pivot offset outlives the page (dora-openarm-webxr keeps
 // it in neck_pivot.yaml): the whole point of measuring an operator is
@@ -270,6 +274,7 @@ class App {
     this.xrPlaced = false;
     this.xrButtonX = false; // last frame's X, for the press edge
     this.viewOffset = [...DEFAULT_VIEW_OFFSET]; // kept across sessions
+    this.viewPitch = DEFAULT_VIEW_PITCH;
     this.xrReference = null; // the headset pose the world is placed from
     this.xrTime = null; // last frame's time, for the thumbstick
 
@@ -455,33 +460,35 @@ class App {
   // Place the MuJoCo world in the headset's reference space, anchored to
   // the headset pose of the first frame: the headset starts viewOffset
   // from the robot's head (between its head cameras), overlooking the arms
-  // below. A head turn then moves neither the world nor the targets.
+  // below, and looking straight ahead looks viewPitch down. A head turn
+  // then moves neither the world nor the targets.
   //
-  // The hands go through the placement from the robot's head itself: a
-  // hand held where it was reaches the same place whatever the view offset,
-  // and the grippers are drawn that offset away from the controllers.
+  // The hands go through the level placement from the robot's head itself:
+  // a hand held where it was reaches the same place whatever the view, and
+  // the grippers are drawn moved (and turned about the eyes) by it.
   placeWorld(reference) {
     this.xrReference = reference;
     const origin = this.controller.originPose(this.mjData);
     const head = this.headPosition();
-    const place = (viewOffset) =>
+    const place = (viewOffset, pitch) =>
       worldPlacement(
         origin,
         reference,
         this.xrTeleop,
         headAnchor(origin, reference, head, viewOffset),
+        pitch,
       );
-    const { pos, quat } = place(this.viewOffset);
+    const { pos, quat } = place(this.viewOffset, this.viewPitch);
     this.world.position.set(pos[0], pos[1], pos[2]);
     this.world.quaternion.set(quat[1], quat[2], quat[3], quat[0]);
-    this.xrTeleop.placement = place(null);
+    this.xrTeleop.placement = place(null, 0);
     this.xrPlaced = true;
   }
 
   // Move the view with the thumbsticks: the left one up and down (pushed
-  // forward raises it), the right one forward, back and sideways. The world
-  // is placed again from the same headset pose, so only the view moves, and
-  // the hands keep their reach.
+  // forward raises it) and its tilt (right looks further down), the right
+  // one forward, back and sideways. The world is placed again from the same
+  // headset pose, so only the view moves, and the hands keep their reach.
   adjustView(left, right, dt) {
     if (!this.xrPlaced || dt <= 0) return;
     // xr-standard: the thumbstick is axes[2..3] (touchpad first), -y forward
@@ -490,11 +497,18 @@ class App {
       const xy = axes.length >= 4 ? [axes[2], axes[3]] : [axes[0], axes[1]];
       return xy.map((v) => (Math.abs(v) > VIEW_STICK_DEADZONE ? v : 0));
     };
-    const [, leftY] = stick(left);
+    const [leftX, leftY] = stick(left);
     const [rightX, rightY] = stick(right);
     // arm_origin frame: forward is +x, right is -y, up is +z
     const rate = [-rightY, -rightX, -leftY];
-    if (rate.every((v) => v === 0)) return;
+    if (rate.every((v) => v === 0) && leftX === 0) return;
+    this.viewPitch = Math.min(
+      VIEW_PITCH_RANGE[1],
+      Math.max(
+        VIEW_PITCH_RANGE[0],
+        this.viewPitch + leftX * VIEW_PITCH_SPEED * dt,
+      ),
+    );
     this.viewOffset = this.viewOffset.map((v, i) =>
       Math.min(
         VIEW_OFFSET_RANGE[i][1],
@@ -561,9 +575,12 @@ class App {
     if (this.calibrationMessage) lines.push(this.calibrationMessage);
     lines.push(this.lastStatus ?? "");
     const [x, y, z] = this.viewOffset.map((v) => v.toFixed(2));
+    const pitch = ((this.viewPitch * 180) / Math.PI).toFixed(0);
     lines.push(
-      `view from the head cameras: forward ${x} left ${y} up ${z} m ` +
-        "(left stick: up/down, right stick: forward/back/sideways)",
+      `view from the head cameras: forward ${x} left ${y} up ${z} m, ` +
+        `${pitch} deg down\n` +
+        "  left stick: up/down, tilt (sideways)  " +
+        "right stick: forward/back/sideways",
     );
     lines.push("X: reset    B: leave VR");
     return lines.join("\n");

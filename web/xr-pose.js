@@ -78,6 +78,12 @@ export const HEAD_OFFSET = [0.038, 0, 0.11];
 // thumbsticks move it in the session.
 export const DEFAULT_VIEW_OFFSET = [-0.08, 0, 0.3];
 
+// How far down (radians) the view looks when the operator looks straight
+// ahead: the world is tilted up about the eyes by this much, since a
+// headset's view follows the head. The left thumbstick's sideways axis
+// changes it in the session.
+export const DEFAULT_VIEW_PITCH = (15 * Math.PI) / 180;
+
 // How the controller poses become arm targets:
 //
 // * "direct": through the world placement, so each virtual gripper is drawn
@@ -236,8 +242,22 @@ export function robotPoseToXR(pos, quat, reference, config) {
 // * With `anchor` ({ world, xr }), the MuJoCo world point `world` is drawn
 //   at the WebXR point `xr` instead: e.g. headAnchor, which puts the
 //   headset where the robot's head would be.
-export function worldPlacement(origin, reference, config, anchor = null) {
-  const quat = quatMul(quatConj(ROBOT_ROTATION), quatConj(origin.quat));
+//
+// `pitch` tilts the world up about the anchor (about WebXR's x axis, the
+// operator's left-right), so that looking straight ahead looks that far
+// down into the robot's workspace.
+export function worldPlacement(
+  origin,
+  reference,
+  config,
+  anchor = null,
+  pitch = 0,
+) {
+  const tilt = [Math.cos(pitch / 2), Math.sin(pitch / 2), 0, 0];
+  const quat = quatMul(
+    tilt,
+    quatMul(quatConj(ROBOT_ROTATION), quatConj(origin.quat)),
+  );
   const world = anchor ? anchor.world : origin.pos;
   const xr = anchor ? anchor.xr : robotToXR([0, 0, 0], reference, config);
   const shifted = quatRotVec(quat, world);
