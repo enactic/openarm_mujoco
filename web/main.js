@@ -54,7 +54,7 @@ import {
 import { buildVFS } from "./model-vfs.js";
 import { TeleopState } from "./teleop.js";
 import { readFrame } from "./xr-frame.js";
-import { XRHud } from "./xr-hud.js";
+import { XRHUD } from "./xr-hud.js";
 import {
   DEFAULT_NECK_PIVOT_OFFSET,
   DEFAULT_VIEW_OFFSET,
@@ -187,7 +187,7 @@ class App {
     // The HUD rides on the camera, which WebXR moves with the
     // head; on the desktop it is hidden.
     this.scene.add(this.camera);
-    this.hud = new XRHud();
+    this.hud = new XRHUD();
     this.camera.add(this.hud.mesh);
     this.handMapping = "direct"; // xr-pose.js's HAND_MAPPINGS
     this.calibrationEnabled = false;

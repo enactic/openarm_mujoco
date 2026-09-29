@@ -47,7 +47,7 @@ export function wrapLine(line, maxWidth, measure) {
   return pieces;
 }
 
-export class XRHud {
+export class XRHUD {
   constructor() {
     this.canvas = document.createElement("canvas");
     this.canvas.width = WIDTH;
