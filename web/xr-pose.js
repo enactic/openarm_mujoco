@@ -22,8 +22,13 @@
 // (teleop.js) directly: XRTeleop.processFrame() takes the same frame object
 // the dora client sends (see xr-frame.js) and overwrites the teleop targets
 // with the controller poses. That conversion is the "neck" hand mapping; by
-// default ("direct") the hands go through the world placement instead, so
-// the grippers are drawn at the controllers (see HAND_MAPPINGS).
+// default ("direct") the hands go through the world placement instead (see
+// HAND_MAPPINGS).
+//
+// Only adjustPose (and its inverses), OneEuroPoseSmoother and XRTeleop are
+// ports. The world placement (worldPlacement, headAnchor) and the direct
+// mapping (directPose, directPoseToXR) are this page's own: dora draws no
+// world, only the robot's camera feed, so it has nothing to place.
 //
 // Quaternions are [w, x, y, z] like the rest of this app (ik.js); WebXR's
 // {x, y, z, w} orientation is converted on the way in.
