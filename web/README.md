@@ -21,7 +21,8 @@ directory into an `MjVFS`, following each XML's `<model file>` /
 `meshdir` references recursively. A dropdown switches between all v2
 scenes (`openarm_bimanual.xml`, `cell/*`, `pedestal/*`); each starts from
 its `home` keyframe (or the IK home solution when the scene has none),
-and Backspace returns to that scene's own home pose. Cell scenes have a
+and Backspace (like the Reset button) resets the whole scene to it. Cell
+scenes have a
 lifter (no UI control yet — a keyboard binding is planned), and the cell
 enclosure is drawn see-through.
 
@@ -53,22 +54,32 @@ pinned `three` / `@mujoco/mujoco` versions for Node, plus Playwright).
 
 Drive the arms with the keyboard (same bindings and semantics as
 [dora-openarm-keyboard](https://github.com/enactic/dora-openarm-keyboard):
-hold to move, tool-frame rotation, `+`/`-` speed scale, `Backspace` to
-return home, and losing tab focus releases every held key). `keymap.js` and
-`teleop.js` are direct ports of dora-openarm-keyboard's `keymap.py` and
-`teleop.py`, including its home pose (`0.216 ±0.1535 -0.22`, rpy
-`0 -90 0` in the `arm_origin` frame); the simulation starts from the IK
-solution of that pose.
+hold to move, hold Shift to rotate instead (in the tool frame), `0` to
+walk back home, and losing tab focus releases every held key).
+`keymap.js` and `teleop.js` are direct ports of dora-openarm-keyboard's
+`keymap.py` and `teleop.py`, including its home pose (`0.216 ±0.1535
+-0.22`, rpy `0 -90 0` in the `arm_origin` frame); the simulation starts
+from the IK solution of that pose.
 
-| | Left arm | Right arm |
-|---|---|---|
-| +X / -X | W / S | U / J |
-| +Y / -Y | A / D | H / K |
-| +Z / -Z | R / F | O / L |
-| +Pitch / -Pitch | E / C | I / , |
-| +Yaw / -Yaw | Q / Z | Y / N |
-| +Roll / -Roll | T / B | P / / |
-| Gripper close / open | G / V | ; / . |
+| Category | Keys | Alone | With Shift |
+|---|---|---|---|
+| Left arm | W / S | ±X | ±Pitch |
+| | A / D | ±Y | ±Roll |
+| | R / F | ±Z | ±Yaw |
+| Right arm | I / K | ±X | ±Pitch |
+| | J / L | ±Y | ±Roll |
+| | Y / H | ±Z | ±Yaw |
+| Left gripper | C / X | Open / close | |
+| Right gripper | N / M | Open / close | |
+| Control | 0 | Walk both arms back to their home pose | |
+| | Backspace | Reset the environment (this page's own) | |
+
+`0` moves the targets home at the same speeds as the motion keys, so the
+arms come back at a speed the operator already knows rather than snapping
+back. Any motion or gripper key cancels it and hands control straight
+back, and the grippers are left alone, so an arm carries what it holds
+home. dora-openarm-keyboard's Esc, which quits its node, does nothing
+here: a page has nothing to quit.
 
 ## WebXR (VR controllers)
 

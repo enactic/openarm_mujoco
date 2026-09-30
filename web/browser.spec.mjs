@@ -78,15 +78,15 @@ test("holding W moves the left EE straight +x, right EE stays", async () => {
   expect(Math.abs(afterRight[0] - beforeRight[0])).toBeLessThan(0.01);
 });
 
-test("holding O moves the right EE up", async () => {
+test("holding Y moves the right EE up", async () => {
   const before = await rightEE();
-  await page.keyboard.down("o");
-  await page.keyboard.down(";"); // close the right gripper along the way
+  await page.keyboard.down("y");
+  await page.keyboard.down("m"); // close the right gripper along the way
   await expect
     .poll(async () => (await rightEE())[2], { timeout: 20_000 })
     .toBeGreaterThan(before[2] + 0.02);
-  await page.keyboard.up("o");
-  await page.keyboard.up(";");
+  await page.keyboard.up("y");
+  await page.keyboard.up("m");
   await settle();
 });
 
@@ -101,7 +101,7 @@ test("Backspace returns both arms home", async () => {
   const ee = await leftEE();
   const target = await page.evaluate(() => window.__app.targets.left.pos);
   expect(Math.hypot(...ee.map((v, i) => v - target[i]))).toBeLessThan(0.01);
-  expect(target).not.toEqual(home); // W/O session had moved the target
+  expect(target).not.toEqual(home); // W/Y session had moved the target
 });
 
 test("the lifter carries the arms up, Backspace resets it", async () => {
@@ -118,6 +118,88 @@ test("the lifter carries the arms up, Backspace resets it", async () => {
   await expect
     .poll(() => page.evaluate(() => window.__app.lifterHeight))
     .toBe(0);
+  await settle();
+});
+
+test("a key released after Shift stops, and Shift turns keys into rotation", async () => {
+  const held = () => page.evaluate(() => [...window.__app.held].sort());
+  // Shift changes event.key: "w" is released as "W", which it must still
+  // let go of. Playwright reports "w" either way, so send that keyup here.
+  await page.keyboard.down("w");
+  await page.keyboard.down("Shift");
+  await page.evaluate(() =>
+    window.dispatchEvent(
+      new KeyboardEvent("keyup", { key: "W", code: "KeyW", shiftKey: true }),
+    ),
+  );
+  expect(await held()).toEqual(["shift"]);
+  await page.keyboard.up("w"); // let Playwright release it too
+  const before = await page.evaluate(() => {
+    const arm = window.__app.teleop.arms.left;
+    return { pos: [...arm.pos], quat: [...arm.quat] };
+  });
+  await page.keyboard.down("s");
+  await page.waitForTimeout(300);
+  await page.keyboard.up("s");
+  await page.keyboard.up("Shift");
+  expect(await held()).toEqual([]);
+  const after = await page.evaluate(() => {
+    const arm = window.__app.teleop.arms.left;
+    return { pos: [...arm.pos], quat: [...arm.quat] };
+  });
+  expect(after.pos).toEqual(before.pos); // rotated, not moved
+  expect(after.quat).not.toEqual(before.quat);
+  await page.keyboard.press("Backspace");
+  await settle();
+});
+
+test("0 walks both arms home, and a motion key cancels it", async () => {
+  const home = await page.evaluate(() => [
+    ...window.__app.teleop.arms.left.homePos,
+  ]);
+  await page.keyboard.down("w");
+  await expect
+    .poll(() => page.evaluate(() => window.__app.teleop.arms.left.pos[0]))
+    .toBeGreaterThan(home[0] + 0.02);
+  await page.keyboard.up("w");
+  await page.keyboard.press("0");
+  expect(await page.evaluate(() => window.__app.teleop.homing)).toBe(true);
+  await page.keyboard.press("s"); // cancels it well short of home
+  const cancelled = await page.evaluate(() => ({
+    homing: window.__app.teleop.homing,
+    x: window.__app.teleop.arms.left.pos[0],
+  }));
+  expect(cancelled.homing).toBe(false);
+  expect(cancelled.x).toBeGreaterThan(home[0] + 0.005);
+  await page.keyboard.press("0");
+  await expect
+    .poll(() => page.evaluate(() => window.__app.teleop.homing), {
+      timeout: 20_000,
+    })
+    .toBe(false);
+  const pos = await page.evaluate(() => window.__app.teleop.arms.left.pos);
+  expect(pos).toEqual(home);
+  await settle();
+});
+
+test("key repeats leave the home return running, a gripper key cancels it", async () => {
+  const homing = () => page.evaluate(() => window.__app.teleop.homing);
+  await page.keyboard.down("w");
+  await expect
+    .poll(() => page.evaluate(() => window.__app.teleop.arms.left.pos[0]))
+    .toBeGreaterThan(
+      await page.evaluate(
+        () => window.__app.teleop.arms.left.homePos[0] + 0.02,
+      ),
+    );
+  await page.keyboard.press("0");
+  // W is still down: a second down() is the browser's auto-repeat
+  await page.keyboard.down("w");
+  expect(await homing()).toBe(true);
+  await page.keyboard.up("w");
+  await page.keyboard.press("x");
+  expect(await homing()).toBe(false);
+  await page.keyboard.press("Backspace");
   await settle();
 });
 

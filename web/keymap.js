@@ -15,18 +15,16 @@
 // Key bindings for keyboard teleoperation, ported from
 // dora-openarm-keyboard (src/dora_openarm_keyboard/keymap.py).
 //
-// The left half of the keyboard drives the left arm and the right half the
-// right arm. Both halves use the same geometric shape, shifted five columns
-// across, so each pair straddles its home-row anchor identically.
-
-export const LINEAR = "linear";
-export const ANGULAR = "angular";
-export const GRIP = "grip";
+// Each arm has its own motion and gripper keys, so both can be driven at the
+// same time without selecting one first. Shift is a momentary modifier:
+// while it is held, the motion keys drive their rotation axis instead of
+// their translation axis, and releasing it always returns to translation.
 
 export const LEFT = "left";
 export const RIGHT = "right";
 
-// Axis indices shared by LINEAR (x, y, z) and ANGULAR (roll, pitch, yaw).
+// Axis indices shared by the linear (x, y, z) and angular (roll, pitch,
+// yaw) parts of a motion binding.
 const X = 0,
   Y = 1,
   Z = 2;
@@ -34,55 +32,70 @@ const ROLL = 0,
   PITCH = 1,
   YAW = 2;
 
-// key -> [arm, kind, axis, sign]. For GRIP, sign +1 closes and -1 opens.
-export const KEYMAP = {
+// key -> [side, linear axis, angular axis, sign]. A held key advances its
+// linear axis, or its angular axis while ROTATION_KEY is also held.
+export const MOTION_KEYS = {
   // left arm
-  w: [LEFT, LINEAR, X, +1],
-  s: [LEFT, LINEAR, X, -1],
-  a: [LEFT, LINEAR, Y, +1],
-  d: [LEFT, LINEAR, Y, -1],
-  r: [LEFT, LINEAR, Z, +1],
-  f: [LEFT, LINEAR, Z, -1],
-  e: [LEFT, ANGULAR, PITCH, +1],
-  c: [LEFT, ANGULAR, PITCH, -1],
-  q: [LEFT, ANGULAR, YAW, +1],
-  z: [LEFT, ANGULAR, YAW, -1],
-  t: [LEFT, ANGULAR, ROLL, +1],
-  b: [LEFT, ANGULAR, ROLL, -1],
-  g: [LEFT, GRIP, 0, +1],
-  v: [LEFT, GRIP, 0, -1],
+  w: [LEFT, X, PITCH, +1],
+  s: [LEFT, X, PITCH, -1],
+  a: [LEFT, Y, ROLL, +1],
+  d: [LEFT, Y, ROLL, -1],
+  r: [LEFT, Z, YAW, +1],
+  f: [LEFT, Z, YAW, -1],
   // right arm
-  u: [RIGHT, LINEAR, X, +1],
-  j: [RIGHT, LINEAR, X, -1],
-  h: [RIGHT, LINEAR, Y, +1],
-  k: [RIGHT, LINEAR, Y, -1],
-  o: [RIGHT, LINEAR, Z, +1],
-  l: [RIGHT, LINEAR, Z, -1],
-  i: [RIGHT, ANGULAR, PITCH, +1],
-  ",": [RIGHT, ANGULAR, PITCH, -1],
-  y: [RIGHT, ANGULAR, YAW, +1],
-  n: [RIGHT, ANGULAR, YAW, -1],
-  p: [RIGHT, ANGULAR, ROLL, +1],
-  "/": [RIGHT, ANGULAR, ROLL, -1],
-  ";": [RIGHT, GRIP, 0, +1],
-  ".": [RIGHT, GRIP, 0, -1],
+  i: [RIGHT, X, PITCH, +1],
+  k: [RIGHT, X, PITCH, -1],
+  j: [RIGHT, Y, ROLL, +1],
+  l: [RIGHT, Y, ROLL, -1],
+  y: [RIGHT, Z, YAW, +1],
+  h: [RIGHT, Z, YAW, -1],
 };
 
-// Edge-triggered control keys, handled on key-down rather than while held.
+// key -> [side, sign], where +1 closes the gripper and -1 opens it.
+export const GRIP_KEYS = {
+  c: [LEFT, -1],
+  x: [LEFT, +1],
+  n: [RIGHT, -1],
+  m: [RIGHT, +1],
+};
+
+// Held to reinterpret the motion keys as rotation.
+export const ROTATION_KEY = "shift";
+// Edge-triggered controls.
+export const HOME_KEY = "0";
+// This page's own: reset the whole environment, like the Reset button.
 export const RESET_KEY = "backspace";
-export const SPEED_UP_KEYS = ["+", "="];
-export const SPEED_DOWN_KEYS = ["-", "_"];
+
+export function drivesMotion(key) {
+  return Object.hasOwn(MOTION_KEYS, key) || Object.hasOwn(GRIP_KEYS, key);
+}
 
 export const HELP_TEXT = `\
-              LEFT ARM (left hand)   RIGHT ARM (right hand)
-  +X / -X          W / S                    U / J
-  +Y / -Y          A / D                    H / K
-  +Z / -Z          R / F                    O / L
-  +Pitch / -Pitch  E / C                    I / ,
-  +Yaw   / -Yaw    Q / Z                    Y / N
-  +Roll  / -Roll   T / B                    P / /
-  gripper close    G                        ;
-  gripper open     V                        .
+Left arm
+--------
+  W / S      +/- X   (+/- Pitch with Shift)
+  A / D      +/- Y   (+/- Roll  with Shift)
+  R / F      +/- Z   (+/- Yaw   with Shift)
 
-  + / -      speed scale up / down
-  Backspace  reset to the home pose`;
+Right arm
+---------
+  I / K      +/- X   (+/- Pitch with Shift)
+  J / L      +/- Y   (+/- Roll  with Shift)
+  Y / H      +/- Z   (+/- Yaw   with Shift)
+
+  Shift      hold to rotate instead of translate
+
+Left gripper
+------------
+  C          Open
+  X          Close
+
+Right gripper
+-------------
+  N          Open
+  M          Close
+
+Control
+-------
+  0          Return both arms home; any motion key aborts
+  Backspace  Reset the environment`;
