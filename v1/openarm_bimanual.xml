@@ -290,7 +290,7 @@ limitations under the License.
                         <geom name="openarm_left_hand_visual_1" pos="0 0 -0.6586"
                           quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh"
                           mesh="hand_1.obj" class="visual" />
-                        <body name="openarm_left_hand_tcp" pos="1e-06 0 0.08"
+                        <body name="openarm_left_hand_tcp" pos="0 0 0.08"
                           quat="1.0 0.0 0.0 0.0" />
                         <body name="openarm_left_right_finger" pos="0 -0.005 0.015"
                           quat="0 0 0 1">
@@ -469,7 +469,7 @@ limitations under the License.
                         <geom name="openarm_right_hand_visual_1" pos="0 0 -0.6586"
                           quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh"
                           mesh="hand_1.obj" class="visual" />
-                        <body name="openarm_right_hand_tcp" pos="1e-06 0 0.08"
+                        <body name="openarm_right_hand_tcp" pos="0 0 0.08"
                           quat="1.0 0.0 0.0 0.0" />
                         <body name="openarm_right_right_finger" pos="0 -0.005 0.015"
                           quat="0 0 0 1">

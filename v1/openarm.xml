@@ -77,6 +77,7 @@ limitations under the License.
     <mesh name="link0_0.obj" file="visual/arm/link0_0.obj" scale="0.001 0.001 0.001" />
     <mesh name="link0_1.obj" file="visual/arm/link0_1.obj" scale="0.001 0.001 0.001" />
     <mesh name="link1_0.obj" file="visual/arm/link1_0.obj" scale="0.001 0.001 0.001" />
+    <mesh name="link1_1.obj" file="visual/arm/link1_1.obj" scale="0.001 0.001 0.001" />
     <mesh name="link1_2.obj" file="visual/arm/link1_2.obj" scale="0.001 0.001 0.001" />
     <mesh name="link1_3.obj" file="visual/arm/link1_3.obj" scale="0.001 0.001 0.001" />
     <mesh name="link2_0.obj" file="visual/arm/link2_0.obj" scale="0.001 0.001 0.001" />
@@ -122,6 +123,8 @@ limitations under the License.
           type="mesh" mesh="link1_collision" class="collision" />
         <geom name="openarm_link1_visual_0" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0"
           material="matte_black" type="mesh" mesh="link1_0.obj" class="visual" />
+        <geom name="openarm_link1_visual_1" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0"
+          material="matte_black" type="mesh" mesh="link1_1.obj" class="visual" />
         <geom name="openarm_link1_visual_2" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0"
           material="matte_black" type="mesh" mesh="link1_2.obj" class="visual" />
         <geom name="openarm_link1_visual_3" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0"
@@ -226,7 +229,7 @@ limitations under the License.
                         material="metal_silver" type="mesh" mesh="hand_0.obj" class="visual" />
                       <geom name="openarm_hand_visual_1" pos="0 0 -0.6586" quat="1.0 0.0 0.0 0.0"
                         material="metal_silver" type="mesh" mesh="hand_1.obj" class="visual" />
-                      <body name="openarm_hand_tcp" pos="1e-06 0 0.08"
+                      <body name="openarm_hand_tcp" pos="0 0 0.08"
                         quat="1.0 0.0 0.0 0.0" />
                       <body name="openarm_right_finger" pos="0 -0.005 0.015" quat="0 0 0 1">
                         <joint name="openarm_finger_joint1" type="slide" ref="0.0"
