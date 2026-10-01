@@ -12,15 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Generate the pre-mirrored V2 collision meshes across Y=0."""
+"""Generate the pre-mirrored V1/V2 collision meshes across Y=0."""
 
 from pathlib import Path
 import struct
 
 
 _TRIANGLE = struct.Struct("<12fH")
-_COLLISION = Path(__file__).resolve().parents[1] / "v2" / "assets" / "collision"
-_MESHES = (
+_ROOT = Path(__file__).resolve().parents[1]
+_V1_COLLISION = _ROOT / "v1" / "meshes" / "collision" / "arm"
+_V1_MESHES = [f"link{i}.stl" for i in (0, 1, 2, 5, 6, 7)]
+_V2_COLLISION = _ROOT / "v2" / "assets" / "collision"
+_V2_MESHES = (
     ["base_link.stl", "ee_base_link.stl"]
     + [f"link{i}.stl" for i in (1, 2, 6)]
     + [f"link5_part_{i:02d}.stl" for i in range(3)]
@@ -52,10 +55,14 @@ def mirror_stl(source: Path, destination: Path) -> None:
 
 
 def main() -> None:
-    """Regenerate the 16 mirrored V2 collision assets from their originals."""
-    for name in _MESHES:
-        source = _COLLISION / name
-        mirror_stl(source, source.with_stem(f"{source.stem}_left"))
+    """Regenerate six V1 and 16 V2 mirrored collision assets."""
+    for directory, names in (
+        (_V1_COLLISION, _V1_MESHES),
+        (_V2_COLLISION, _V2_MESHES),
+    ):
+        for name in names:
+            source = directory / name
+            mirror_stl(source, source.with_stem(f"{source.stem}_left"))
 
 
 if __name__ == "__main__":

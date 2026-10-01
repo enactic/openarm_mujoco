@@ -26,7 +26,7 @@ limitations under the License.
     </default>
     <default class="lifter">
       <joint limited="true" type="slide" damping="50" />
-      <position kp="8000" kv="4000" forcelimited="true" forcerange="-3000 3000" ctrllimited="true" />
+      <position forcelimited="true" forcerange="-3000 3000" ctrllimited="true" />
     </default>
   </default>
 
