@@ -163,14 +163,22 @@ test("0 walks both arms home, and a motion key cancels it", async () => {
     .toBeGreaterThan(home[0] + 0.02);
   await page.keyboard.up("w");
   await page.keyboard.press("0");
-  expect(await page.evaluate(() => window.__app.teleop.homing)).toBe(true);
-  await page.keyboard.press("s"); // cancels it well short of home
-  const cancelled = await page.evaluate(() => ({
-    homing: window.__app.teleop.homing,
-    x: window.__app.teleop.arms.left.pos[0],
-  }));
-  expect(cancelled.homing).toBe(false);
-  expect(cancelled.x).toBeGreaterThan(home[0] + 0.005);
+  // Animation frames advance the target between separate Playwright calls,
+  // so S is pressed and the state around it read within one browser task.
+  const cancel = await page.evaluate(() => {
+    const { teleop } = window.__app;
+    const before = { homing: teleop.homing, pos: [...teleop.arms.left.pos] };
+    const init = { key: "s", code: "KeyS" };
+    window.dispatchEvent(new KeyboardEvent("keydown", init));
+    window.dispatchEvent(new KeyboardEvent("keyup", init));
+    const after = { homing: teleop.homing, pos: [...teleop.arms.left.pos] };
+    return { before, after };
+  });
+  expect(cancel.before.homing).toBe(true);
+  expect(cancel.after.homing).toBe(false);
+  // cancelling leaves the target where the home return had brought it
+  expect(cancel.after.pos).toEqual(cancel.before.pos);
+  expect(cancel.after.pos).not.toEqual(home); // short of home
   await page.keyboard.press("0");
   await expect
     .poll(() => page.evaluate(() => window.__app.teleop.homing), {
