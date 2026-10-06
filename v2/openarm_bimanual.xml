@@ -19,17 +19,21 @@ limitations under the License.
   <default>
     <joint stiffness="0" ref="0.0" />
     <default class="robot">
+      <!-- Armatures approximate motor rotor readouts * gear ratio squared (kg*m^2).
+           Damping references from motor readouts, assuming the same conversion (N*m*s/rad):
+           DM8009P ~0.13, DM4340 ~0.33, DM4310 ~0.03. Reference only; gearbox contributions
+           are unconfirmed. Applied damping is unchanged. -->
       <default class="motor_DM8009">
-        <joint frictionloss="0.2" damping="1.0" armature="0.0081" limited="true" type="hinge" />
-        <position kp="200" kv="150" forcelimited="true" forcerange="-40 40" ctrllimited="true" />
+        <joint frictionloss="0.2" damping="1.0" armature="0.016" limited="true" type="hinge" />
+        <position forcelimited="true" forcerange="-40 40" ctrllimited="true" />
       </default>
       <default class="motor_DM4340">
-        <joint frictionloss="0.1" damping="0.9" armature="0.1600" limited="true" type="hinge" />
-        <position kp="100" kv="30" forcelimited="true" forcerange="-27 27" ctrllimited="true" />
+        <joint frictionloss="0.1" damping="0.9" armature="0.030" limited="true" type="hinge" />
+        <position forcelimited="true" forcerange="-27 27" ctrllimited="true" />
       </default>
       <default class="motor_DM4310">
-        <joint frictionloss="0.04" damping="0.9" armature="0.0100" limited="true" type="hinge" />
-        <position kp="200" kv="5" forcelimited="true" forcerange="-7 7" ctrllimited="true" />
+        <joint frictionloss="0.04" damping="0.9" armature="0.002" limited="true" type="hinge" />
+        <position forcelimited="true" forcerange="-7 7" ctrllimited="true" />
         <!-- Keep gripper-specific friction and damping; inherit DM4310 inertia and limits. -->
         <default class="motor_finger">
           <joint frictionloss="0" damping="0.6"/>
