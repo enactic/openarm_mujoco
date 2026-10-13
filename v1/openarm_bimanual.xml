@@ -280,9 +280,12 @@ limitations under the License.
                       <!-- Control point at the joint7 origin, matching the V2 placement. -->
                       <site name="left_ee_control_point" pos="0 0 0" quat="0 1 0 0" size="0.01" rgba="0 1 0 1" />
                       <body name="openarm_left_hand" pos="0 0 0.1001">
-                        <!-- Mass matches openarm_description#64 and openarm_isaac_lab#19. -->
-                        <inertial pos="0 0 0" mass="0.127"
-                          fullinertia="0.0002473 0.00001763 0.0002521 0 1e-06 0" />
+                        <!-- Fixed-hand CAD estimate: openarm_hardware 1.0.1, STEP/OpenArm01_follower.step.
+                             Connector, 155 mm rail, six CBE3-8 and four CBE3-5 screws;
+                             densities 8000/7850/7700 kg/m^3, normalized to 0.127 kg.
+                             COM is hand-local; inertia is about COM in hand axes. -->
+                        <inertial pos="0 0 0.005271405924486466" mass="0.127"
+                          fullinertia="0.00025481949945745574 0.000019046752582464985 0.0002604898624535354 0 0 0" />
                         <geom name="openarm_left_hand_collision" pos="0 0 -0.6586"
                           quat="1.0 0.0 0.0 0.0" type="mesh" mesh="hand_collision"
                           class="collision" />
@@ -460,9 +463,9 @@ limitations under the License.
                         class="visual" />
                       <site name="right_ee_control_point" pos="0 0 0" quat="0 1 0 0" size="0.01" rgba="1 0 0 1" />
                       <body name="openarm_right_hand" pos="0 0 0.1001">
-                        <!-- Mass matches openarm_description#64 and openarm_isaac_lab#19. -->
-                        <inertial pos="0 0 0" mass="0.127"
-                          fullinertia="0.0002473 0.00001763 0.0002521 0 1e-06 0" />
+                        <!-- Same fixed-hand CAD estimate and local axes as the left hand. -->
+                        <inertial pos="0 0 0.005271405924486466" mass="0.127"
+                          fullinertia="0.00025481949945745574 0.000019046752582464985 0.0002604898624535354 0 0 0" />
                         <geom name="openarm_right_hand_collision" pos="0 0 -0.6586"
                           quat="1.0 0.0 0.0 0.0" type="mesh" mesh="hand_collision"
                           class="collision" />
