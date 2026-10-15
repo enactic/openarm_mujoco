@@ -294,20 +294,20 @@ limitations under the License.
                         <body name="openarm_left_hand_tcp" pos="0 0 0.093"
                           quat="1.0 0.0 0.0 0.0" />
                         <body name="openarm_left_right_finger" pos="0 -0.005 0.015"
-                          quat="0 0 0 1">
+                          quat="1.0 0.0 0.0 0.0">
                           <joint name="openarm_left_finger_joint1" type="slide" ref="0.0"
-                            class="motor_finger" range="0.0 0.044" axis="0 1 0" />
-                          <inertial pos="0.0064528 0.01702 0.0219685" quat="1.0 0.0 0.0 0.0"
+                            class="motor_finger" range="0.0 0.044" axis="0 -1 0" />
+                          <inertial pos="-0.0064528 -0.01702 0.0219685" quat="1.0 0.0 0.0 0.0"
                             mass="0.03602545343277134"
                             diaginertia="2.3749999999999997e-06 2.3749999999999997e-06 7.5e-07" />
                           <geom name="openarm_left_right_finger_collision"
-                            pos="0.0 -0.05 -0.673001" quat="1.0 0.0 0.0 0.0" type="mesh"
+                            pos="0.0 0.05 -0.673001" quat="0 0 0 1" type="mesh"
                             mesh="finger_collision" class="collision" />
-                          <geom name="openarm_left_right_finger_visual_0" pos="0.0 -0.05 -0.673001"
-                            quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh"
+                          <geom name="openarm_left_right_finger_visual_0" pos="0.0 0.05 -0.673001"
+                            quat="0 0 0 1" material="default_material" type="mesh"
                             mesh="finger_0.obj" class="visual" />
-                          <geom name="openarm_left_right_finger_visual_1" pos="0.0 -0.05 -0.673001"
-                            quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh"
+                          <geom name="openarm_left_right_finger_visual_1" pos="0.0 0.05 -0.673001"
+                            quat="0 0 0 1" material="matte_black" type="mesh"
                             mesh="finger_1.obj" class="visual" />
                         </body>
                         <body name="openarm_left_left_finger" pos="0 0.005 0.015"
@@ -473,21 +473,21 @@ limitations under the License.
                         <body name="openarm_right_hand_tcp" pos="0 0 0.093"
                           quat="1.0 0.0 0.0 0.0" />
                         <body name="openarm_right_right_finger" pos="0 -0.005 0.015"
-                          quat="0 0 0 1">
+                          quat="1.0 0.0 0.0 0.0">
                           <joint name="openarm_right_finger_joint1" type="slide" ref="0.0"
-                            class="motor_finger" range="0.0 0.044" axis="0 1 0" />
-                          <inertial pos="0.0064528 0.01702 0.0219685" quat="1.0 0.0 0.0 0.0"
+                            class="motor_finger" range="0.0 0.044" axis="0 -1 0" />
+                          <inertial pos="-0.0064528 -0.01702 0.0219685" quat="1.0 0.0 0.0 0.0"
                             mass="0.03602545343277134"
                             diaginertia="2.3749999999999997e-06 2.3749999999999997e-06 7.5e-07" />
                           <geom name="openarm_right_right_finger_collision"
-                            pos="0.0 -0.05 -0.673001" quat="1.0 0.0 0.0 0.0" type="mesh"
+                            pos="0.0 0.05 -0.673001" quat="0 0 0 1" type="mesh"
                             mesh="finger_collision" class="collision" />
                           <geom name="openarm_right_right_finger_visual_0"
-                            pos="0.0 -0.05 -0.673001" quat="1.0 0.0 0.0 0.0"
+                            pos="0.0 0.05 -0.673001" quat="0 0 0 1"
                             material="default_material" type="mesh" mesh="finger_0.obj"
                             class="visual" />
                           <geom name="openarm_right_right_finger_visual_1"
-                            pos="0.0 -0.05 -0.673001" quat="1.0 0.0 0.0 0.0" material="matte_black"
+                            pos="0.0 0.05 -0.673001" quat="0 0 0 1" material="matte_black"
                             type="mesh" mesh="finger_1.obj" class="visual" />
                         </body>
                         <body name="openarm_right_left_finger" pos="0 0.005 0.015"
