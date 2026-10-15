@@ -207,9 +207,8 @@ limitations under the License.
                   <body name="openarm_link7" pos="-0.0375 0.0 0.0" quat="1.0 0.0 0.0 0.0">
                     <joint name="openarm_joint7" type="hinge" ref="0.0" class="motor_DM4310"
                       range="-1.570796 1.570796" axis="0 1 0" />
-                    <inertial pos="6.875510271106056e-05 0.01266175250761268 0.06951945409987448"
-                      mass="0.4659771327380578"
-                      fullinertia="0.000639 0.000497 0.000342 1e-06 1e-06 8.9e-05" />
+                    <inertial pos="-9.897454675528511e-05 0.003372444724450437 0.06138919729233123" mass="0.4054971268153967"
+                      fullinertia="0.0003637830920674498 0.0003351190950225729 0.0001865112723189818 0 0 7.094884219324384e-05" />
                     <geom name="openarm_link7_collision" pos="0.0 -0.0 -0.5585"
                       quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link7_collision" class="collision" />
                     <geom name="openarm_link7_visual_0" pos="0.0 -0.0 -0.5585"
@@ -221,8 +220,8 @@ limitations under the License.
                     <site name="ee_control_point" pos="0 0 0" quat="0 1 0 0" size="0.01"
                       rgba="1 0 0 1" />
                     <body name="openarm_hand" pos="0 0 0.1001">
-                      <inertial pos="0 0 0.005271405924486466" mass="0.127"
-                        fullinertia="0.00025481949945745574 0.000019046752582464985 0.0002604898624535354 0 0 0" />
+                      <inertial pos="0 0 0.005122940871819574" mass="0.1723111736408497"
+                        fullinertia="0.000250930641371331 5.560627616753029e-05 0.0002906093338421478 1.18380219510342e-05 0 0" />
                       <geom name="openarm_hand_collision" pos="0 0 -0.6586"
                         quat="1.0 0.0 0.0 0.0" type="mesh" mesh="hand_collision"
                         class="collision" />
@@ -235,9 +234,8 @@ limitations under the License.
                       <body name="openarm_right_finger" pos="0 -0.005 0.015" quat="1.0 0.0 0.0 0.0">
                         <joint name="openarm_finger_joint1" type="slide" ref="0.0"
                           class="motor_finger" range="0.0 0.044" axis="0 -1 0" />
-                        <inertial pos="-0.0064528 -0.01702 0.0219685" quat="1.0 0.0 0.0 0.0"
-                          mass="0.03602545343277134"
-                          diaginertia="2.3749999999999997e-06 2.3749999999999997e-06 7.5e-07" />
+                        <inertial pos="0.004646697332048465 -0.01217890651468325 0.01335289447269551" mass="0.07444998664008126"
+                          fullinertia="3.284268617249738e-05 4.17523619254798e-05 1.882116318207188e-05 -4.813534779503441e-07 4.110240982958172e-06 -3.504307786795564e-06" />
                         <geom name="openarm_right_finger_collision" pos="0.0 0.05 -0.673001"
                           quat="0 0 0 1" type="mesh" mesh="finger_collision"
                           class="collision" />
@@ -251,9 +249,8 @@ limitations under the License.
                       <body name="openarm_left_finger" pos="0 0.005 0.015" quat="1.0 0.0 0.0 0.0">
                         <joint name="openarm_finger_joint2" type="slide" ref="0.0"
                           class="motor_finger" range="0.0 0.044" axis="0 1 0" />
-                        <inertial pos="0.0064528 0.01702 0.0219685" quat="1.0 0.0 0.0 0.0"
-                          mass="0.03602545343277134"
-                          diaginertia="2.3749999999999997e-06 2.3749999999999997e-06 7.5e-07" />
+                        <inertial pos="-0.004646697332048465 0.01217890651468325 0.01335289447269551" mass="0.07444998664008126"
+                          fullinertia="3.284268617249738e-05 4.17523619254798e-05 1.882116318207188e-05 -4.813534779503441e-07 -4.110240982958172e-06 3.504307786795564e-06" />
                         <geom name="openarm_left_finger_collision" pos="0.0 -0.05 -0.673001"
                           quat="1.0 0.0 0.0 0.0" type="mesh" mesh="finger_collision"
                           class="collision" />
