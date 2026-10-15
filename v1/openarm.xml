@@ -230,7 +230,7 @@ limitations under the License.
                         material="metal_silver" type="mesh" mesh="hand_0.obj" class="visual" />
                       <geom name="openarm_hand_visual_1" pos="0 0 -0.6586" quat="1.0 0.0 0.0 0.0"
                         material="metal_silver" type="mesh" mesh="hand_1.obj" class="visual" />
-                      <body name="openarm_hand_tcp" pos="0 0 0.08"
+                      <body name="openarm_hand_tcp" pos="0 0 0.093"
                         quat="1.0 0.0 0.0 0.0" />
                       <body name="openarm_right_finger" pos="0 -0.005 0.015" quat="0 0 0 1">
                         <joint name="openarm_finger_joint1" type="slide" ref="0.0"
