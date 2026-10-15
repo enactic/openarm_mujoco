@@ -41,7 +41,8 @@ limitations under the License.
       <default class="motor_finger">
         <!-- Approximate linkage-reflected inertia, split between two coupled fingers: 0.55 kg each. -->
         <joint type="slide" limited="true" damping="9" frictionloss="0" armature="0.55" />
-        <position forcelimited="true" forcerange="-333 333" ctrllimited="true" ctrlrange="-0.005 0.044" />
+        <!-- Uniform bound over the stroke: DM4310 peak 7 Nm / V1 linkage max|dq/dtheta|. -->
+        <position forcelimited="true" forcerange="-150.75 150.75" ctrllimited="true" ctrlrange="-0.005 0.044" />
       </default>
       <default class="collision">
         <geom material="collision_material" condim="3" conaffinity="1" priority="1" group="3"
