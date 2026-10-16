@@ -141,8 +141,8 @@ limitations under the License.
     <body name="openarm_body_link0" pos="0 0 0" quat="1.0 0.0 0.0 0.0">
       <!-- Shoulder-center origin: +x forward, +y left, +z up. -->
       <site name="arm_origin" pos="0 0 0.697" size="0.02" rgba="1 0.8 0 1" group="4" />
-      <inertial pos="0.0 0.0 0.296442186206" quat="1.0 0.0 0.0 0.0" mass="13.89"
-        diaginertia="0.432375 0.432375 0.051" />
+      <inertial pos="-0.016206894902 0 0.244091987626" quat="1.0 0.0 0.0 0.0" mass="3.74"
+        diaginertia="0.248946829107 0.253033907704 0.0140271775534" />
       <geom name="openarm_body_link0_collision" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" type="mesh"
         mesh="body_link0_3.obj" class="collision" />
       <geom name="openarm_body_link0_visual_0" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0"
