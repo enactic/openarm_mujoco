@@ -139,7 +139,7 @@ limitations under the License.
 
     <body name="openarm_body_link0" pos="0 0 0" quat="1.0 0.0 0.0 0.0">
       <!-- Shoulder-center origin: +x forward, +y left, +z up. -->
-      <site name="arm_origin" pos="0 0 0.698" size="0.02" rgba="1 0.8 0 1" group="4" />
+      <site name="arm_origin" pos="0 0 0.697" size="0.02" rgba="1 0.8 0 1" group="4" />
       <inertial pos="0.0 0.0 0.296442186206" quat="1.0 0.0 0.0 0.0" mass="13.89"
         diaginertia="0.432375 0.432375 0.051" />
       <geom name="openarm_body_link0_collision" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" type="mesh"
@@ -156,7 +156,7 @@ limitations under the License.
         material="metal_silver" type="mesh" mesh="body_link0_4.obj" class="visual" />
       <geom name="openarm_body_link0_visual_5" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0"
         material="matte_black" type="mesh" mesh="body_link0_5.obj" class="visual" />
-      <body name="openarm_left_link0" pos="0.0 0.031 0.698"
+      <body name="openarm_left_link0" pos="0.0 0.030 0.697"
         quat="0.7071054825112363 -0.7071080798594735 0.0 0.0">
         <inertial pos="-0.0009483362816297526 -0.0001580207020448382 0.03076860287587199"
           mass="1.1432284943239561" fullinertia="0.001128 0.000962 0.00147 4e-06 -3.3e-05 7e-06" />
@@ -335,7 +335,7 @@ limitations under the License.
           </body>
         </body>
       </body>
-      <body name="openarm_right_link0" pos="0.0 -0.031 0.698"
+      <body name="openarm_right_link0" pos="0.0 -0.030 0.697"
         quat="0.7071054825112363 0.7071080798594735 0.0 0.0">
         <inertial pos="-0.0009483362816297526 0.0001580207020448382 0.03076860287587199"
           mass="1.1432284943239561" fullinertia="0.001128 0.000962 0.00147 -4e-06 -3.3e-05 -7e-06" />

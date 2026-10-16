@@ -49,8 +49,8 @@ Scene furniture (floor, lights, cameras, keyframes) stays in the scenes.
     <geom name="openarm_body_link0_visual"    type="mesh" mesh="body_link0"      class="pedestal_visual"    material="openarm_body_link0_material" />
     <geom name="openarm_body_link0_collision" type="mesh" mesh="body_link0_symp" class="pedestal_collision" />
 
-    <!-- arms attach at the pedestal top (z=0.698) -->
-    <frame pos="0 0 0.698">
+    <!-- arms attach at the pedestal top (z=0.697) -->
+    <frame pos="0 0 0.697">
       <attach model="bimanual" prefix=""/>
     </frame>
   </worldbody>

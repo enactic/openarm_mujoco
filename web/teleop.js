@@ -24,11 +24,11 @@
 import { eulerZYXToQuat, quatConj, quatError, quatMul } from "./ik.js";
 import { GRIP_KEYS, LEFT, MOTION_KEYS, RIGHT, ROTATION_KEY } from "./keymap.js";
 
-// End-effector home pose in the arm_origin frame, identical to
-// dora-openarm-keyboard's defaults (the scene's `home` keyframe).
+// End-effector home pose in the arm_origin frame, matching
+// the scene's `home` keyframe.
 export const DEFAULT_HOME = {
-  [LEFT]: [0.216, 0.1535, -0.22],
-  [RIGHT]: [0.216, -0.1535, -0.22],
+  [LEFT]: [0.216, 0.1525, -0.22],
+  [RIGHT]: [0.216, -0.1525, -0.22],
 };
 const DEFAULT_HOME_RPY_DEG = [0, -90, 0];
 

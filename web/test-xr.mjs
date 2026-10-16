@@ -119,7 +119,7 @@ describe("controller pose mapping (main.py: _adjust_pose)", () => {
     const left = robotToXR(DEFAULT_HOME.left, IDENTITY, CONFIG);
     const right = robotToXR(DEFAULT_HOME.right, IDENTITY, CONFIG);
     assert.ok(left[0] < 0 && right[0] > 0, "left hand on the left");
-    assert.ok(near(right[0] - left[0], 0.307, 1e-9));
+    assert.ok(near(right[0] - left[0], 0.305, 1e-9));
     assert.ok(left[1] < 0, "below the eyes");
     assert.ok(left[2] < -0.2, "in front");
   });
