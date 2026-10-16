@@ -56,8 +56,8 @@ Drive the arms with the keyboard (same bindings and semantics as
 [dora-openarm-keyboard](https://github.com/enactic/dora-openarm-keyboard):
 hold to move, hold Shift to rotate instead (in the tool frame), `0` to
 walk back home, and losing tab focus releases every held key).
-`keymap.js` and `teleop.js` are direct ports of dora-openarm-keyboard's
-`keymap.py` and `teleop.py`, including its home pose (`0.216 ±0.1535
+`keymap.js` and `teleop.js` are based on dora-openarm-keyboard's
+`keymap.py` and `teleop.py`. The home pose matches the model (`0.216 ±0.1525
 -0.22`, rpy `0 -90 0` in the `arm_origin` frame); the simulation starts
 from the IK solution of that pose.
 

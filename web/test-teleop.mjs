@@ -145,7 +145,7 @@ describe("full pipeline in the cell scene", () => {
     controller = new PoseController(mujoco, model);
     teleop = new TeleopState();
 
-    // dora-openarm-keyboard's default home target, snapshotted before
+    // The default home target, snapshotted before
     // startFromHome overwrites teleop's home with the measured keyframe pose
     defaultHome = {
       pos: [...teleop.arms.left.pos],
