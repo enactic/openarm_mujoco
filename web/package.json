@@ -12,7 +12,7 @@
   "author": "Enactic, Inc.",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@mujoco/mujoco": "^3.15.0",
+    "@mujoco/mujoco": "^3.16.0",
     "@playwright/test": "^1.64.1",
     "@xmldom/xmldom": "^0.9.12",
     "three": "^0.186.1"
