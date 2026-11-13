@@ -55,10 +55,12 @@ limitations under the License.
     <material name="cell_base_link_01_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
     <mesh name="cell_base_link_left_00_y180" file="visual/arm/base_link_00_y180.obj" scale="1 -1 1" />
     <mesh name="cell_base_link_left_01_y180" file="visual/arm/base_link_01_y180.obj" scale="1 -1 1" />
-    <mesh name="cell_base_link_left_collision" file="collision/base_link_left.stl" />
+    <mesh name="cell_base_link_left_collision_00" file="collision/arm/base_link_00_motor_left.stl" />
+    <mesh name="cell_base_link_left_collision_01" file="collision/arm/base_link_01_plate_left.stl" />
     <mesh name="cell_base_link_right_00_y180" file="visual/arm/base_link_00_y180.obj" />
     <mesh name="cell_base_link_right_01_y180" file="visual/arm/base_link_01_y180.obj" />
-    <mesh name="cell_base_link_right_collision" file="collision/base_link.stl" />
+    <mesh name="cell_base_link_right_collision_00" file="collision/arm/base_link_00_motor.stl" />
+    <mesh name="cell_base_link_right_collision_01" file="collision/arm/base_link_01_plate.stl" />
   </asset>
 
   <actuator>
@@ -101,13 +103,15 @@ limitations under the License.
         <inertial pos="-0.00253124 0.0258186 -2.70658e-05" quat="-1.46856942085e-06 0.70739772103 0.706815721259 2.1457591538e-05" mass="1.14323" diaginertia="0.00159935 0.00113608 0.000750542" />
         <geom name="base_link_left_00" type="mesh" mesh="cell_base_link_left_00_y180" material="cell_base_link_00_mat" class="visual" />
         <geom name="base_link_left_01" type="mesh" mesh="cell_base_link_left_01_y180" material="cell_base_link_01_mat" class="visual" />
-        <geom name="base_link_left_collision_00" type="mesh" mesh="cell_base_link_left_collision" quat="0 0 1 0" class="collision" />
+        <geom name="base_link_left_collision_00" type="mesh" mesh="cell_base_link_left_collision_00" quat="0 0 1 0" class="collision" />
+        <geom name="base_link_left_collision_01" type="mesh" mesh="cell_base_link_left_collision_01" quat="0 0 1 0" class="collision" />
       </body>
       <body name="openarm_right_base_link" pos="0 -0.03 0">
         <inertial pos="-0.00253124 -0.0258186 -2.70658e-05" quat="2.1457591538e-05 0.706815721259 0.70739772103 -1.46856942085e-06" mass="1.14323" diaginertia="0.00159935 0.00113608 0.000750542" />
         <geom name="base_link_right_00" type="mesh" mesh="cell_base_link_right_00_y180" material="cell_base_link_00_mat" class="visual" />
         <geom name="base_link_right_01" type="mesh" mesh="cell_base_link_right_01_y180" material="cell_base_link_01_mat" class="visual" />
-        <geom name="base_link_right_collision_00" type="mesh" mesh="cell_base_link_right_collision" quat="0 0 1 0" class="collision" />
+        <geom name="base_link_right_collision_00" type="mesh" mesh="cell_base_link_right_collision_00" quat="0 0 1 0" class="collision" />
+        <geom name="base_link_right_collision_01" type="mesh" mesh="cell_base_link_right_collision_01" quat="0 0 1 0" class="collision" />
       </body>
     </body>
 
