@@ -51,6 +51,14 @@ limitations under the License.
     <mesh name="sheet_mesh"   file="visual/cell/sheet.obj"  scale="0.01  0.01  0.01"/>
     <!-- <mesh name="body_link0_5" file="visual/cell/cover.obj"  scale="0.001 0.001 0.001"/> -->
     <model name="bimanual" file="../openarm_bimanual.xml"/>
+    <material name="cell_base_link_00_mat" rgba="0.247 0.247 0.247 1" specular="0.0" shininess="0.0" />
+    <material name="cell_base_link_01_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
+    <mesh name="cell_base_link_left_00_y180" file="visual/arm/base_link_00_y180.obj" scale="1 -1 1" />
+    <mesh name="cell_base_link_left_01_y180" file="visual/arm/base_link_01_y180.obj" scale="1 -1 1" />
+    <mesh name="cell_base_link_left_collision" file="collision/base_link_left.stl" />
+    <mesh name="cell_base_link_right_00_y180" file="visual/arm/base_link_00_y180.obj" />
+    <mesh name="cell_base_link_right_01_y180" file="visual/arm/base_link_01_y180.obj" />
+    <mesh name="cell_base_link_right_collision" file="collision/base_link.stl" />
   </asset>
 
   <actuator>
@@ -83,11 +91,24 @@ limitations under the License.
 
     <!-- lifter body: arms attach here and slide vertically -->
     <body name="openarm_lifter_link" pos="0.185 0 1.34">
+      <!-- Attach first to import the shared visual and collision defaults. -->
+      <attach model="bimanual" body="openarm_arm_chains" prefix="" />
       <geom name="body_lifter" type="box" pos="-0.01575 0 0"   size="0.04575 0.030 0.061"  material="cell_matte_black" class="cell_visual"/>
       <geom name="body_lifter_col" type="box" pos="-0.01575 0 0"   size="0.04575 0.030 0.061"  class="cell_collision"/>
       <inertial pos="0 0 0" mass="5.0" diaginertia="0.1 0.1 0.1"/>
       <joint name="openarm_lifter_joint" class="lifter" axis="0 0 1" range="0 0.3"/>
-      <attach model="bimanual" prefix=""/>
+      <body name="openarm_left_base_link" pos="0 0.03 0">
+        <inertial pos="-0.00253124 0.0258186 -2.70658e-05" quat="-1.46856942085e-06 0.70739772103 0.706815721259 2.1457591538e-05" mass="1.14323" diaginertia="0.00159935 0.00113608 0.000750542" />
+        <geom name="base_link_left_00" type="mesh" mesh="cell_base_link_left_00_y180" material="cell_base_link_00_mat" class="visual" />
+        <geom name="base_link_left_01" type="mesh" mesh="cell_base_link_left_01_y180" material="cell_base_link_01_mat" class="visual" />
+        <geom name="base_link_left_collision_00" type="mesh" mesh="cell_base_link_left_collision" quat="0 0 1 0" class="collision" />
+      </body>
+      <body name="openarm_right_base_link" pos="0 -0.03 0">
+        <inertial pos="-0.00253124 -0.0258186 -2.70658e-05" quat="2.1457591538e-05 0.706815721259 0.70739772103 -1.46856942085e-06" mass="1.14323" diaginertia="0.00159935 0.00113608 0.000750542" />
+        <geom name="base_link_right_00" type="mesh" mesh="cell_base_link_right_00_y180" material="cell_base_link_00_mat" class="visual" />
+        <geom name="base_link_right_01" type="mesh" mesh="cell_base_link_right_01_y180" material="cell_base_link_01_mat" class="visual" />
+        <geom name="base_link_right_collision_00" type="mesh" mesh="cell_base_link_right_collision" quat="0 0 1 0" class="collision" />
+      </body>
     </body>
 
   </worldbody>
