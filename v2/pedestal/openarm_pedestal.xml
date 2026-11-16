@@ -36,18 +36,48 @@ Scene furniture (floor, lights, cameras, keyframes) stays in the scenes.
   </default>
 
   <asset>
-    <material name="openarm_body_link0_material" rgba="0.247 0.247 0.247 1.0" reflectance="0.05" shininess="0.5"/>
 
-    <mesh name="body_link0"      content_type="model/stl" file="visual/body/body_link0.stl"     scale="0.001 0.001 0.001" />
+    <mesh name="body_link0_00" file="visual/body/body_link0_00.obj" />
+    <mesh name="body_link0_01" file="visual/body/body_link0_01.obj" />
+    <mesh name="body_link0_02" file="visual/body/body_link0_02.obj" />
+    <mesh name="body_link0_03" file="visual/body/body_link0_03.obj" />
+    <mesh name="body_link0_04" file="visual/body/body_link0_04.obj" />
+    <mesh name="body_link0_05" file="visual/body/body_link0_05.obj" />
+    <mesh name="zed_mount_00" file="visual/zed_mount/zed_mount_00.obj" />
+    <mesh name="zed_mount_01" file="visual/zed_mount/zed_mount_01.obj" />
+    <material name="body_link0_00_mat" rgba="0.866666667 0.909803922 1 1" specular="0.0" shininess="0.0" />
+    <material name="body_link0_01_mat" rgba="0.866666667 0.909803922 1 1" specular="0.0" shininess="0.0" />
+    <material name="body_link0_02_mat" rgba="0.866666667 0.909803922 1 1" specular="0.0" shininess="0.0" />
+    <material name="body_link0_03_mat" rgba="0.09412 0.09412 0.09412 1" specular="0.0" shininess="0.0" />
+    <material name="body_link0_04_mat" rgba="0.866666667 0.909803922 1 1" specular="0.0" shininess="0.0" />
+    <material name="body_link0_05_mat" rgba="0.247 0.247 0.247 1" specular="0.0" shininess="0.0" />
+    <material name="zed_mount_00_mat" rgba="0.247 0.247 0.247 1" specular="0.0" shininess="0.0" />
+    <material name="zed_mount_01_mat" rgba="1 0.949019608 0.909803922 1" specular="0.0" shininess="0.0" />
     <mesh name="body_link0_symp" content_type="model/stl" file="collision/body_link0_symp.stl" scale="0.001 0.001 0.001" />
 
     <model name="bimanual" file="../openarm_bimanual.xml"/>
+    <!-- ZED Mini mesh: Stereolabs, Apache-2.0.
+         Source: https://github.com/stereolabs/zed-ros2-description/tree/22468247c1653d08a1e213809f3e9ce76291487d -->
+    <mesh name="zedm" file="visual/zed/zedm.stl" />
+    <material name="zedm_mat" rgba="0 0 0 1" />
   </asset>
 
   <worldbody>
     <!-- static fixation base -->
-    <geom name="openarm_body_link0_visual"    type="mesh" mesh="body_link0"      class="pedestal_visual"    material="openarm_body_link0_material" />
+    <geom name="body_link0_00_visual" type="mesh" mesh="body_link0_00" material="body_link0_00_mat" class="pedestal_visual" />
+    <geom name="body_link0_01_visual" type="mesh" mesh="body_link0_01" material="body_link0_01_mat" class="pedestal_visual" />
+    <geom name="body_link0_02_visual" type="mesh" mesh="body_link0_02" material="body_link0_02_mat" class="pedestal_visual" />
+    <geom name="body_link0_03_visual" type="mesh" mesh="body_link0_03" material="body_link0_03_mat" class="pedestal_visual" />
+    <geom name="body_link0_04_visual" type="mesh" mesh="body_link0_04" material="body_link0_04_mat" class="pedestal_visual" />
+    <geom name="body_link0_05_visual" type="mesh" mesh="body_link0_05" material="body_link0_05_mat" class="pedestal_visual" />
     <geom name="openarm_body_link0_collision" type="mesh" mesh="body_link0_symp" class="pedestal_collision" />
+
+    <frame name="zed_mount_visual" pos="0.03 0 0.743">
+      <geom name="zed_mount_00_visual" type="mesh" mesh="zed_mount_00" material="zed_mount_00_mat" class="pedestal_visual" />
+      <geom name="zed_mount_01_visual" type="mesh" mesh="zed_mount_01" material="zed_mount_01_mat" class="pedestal_visual" />
+      <!-- Mesh pose includes the official camera-center offset. -->
+      <geom name="zedm_visual" type="mesh" mesh="zedm" pos="0.0386446426247 0.000966585 0.0710378956814" euler="0 1.08210413624 0" material="zedm_mat" class="pedestal_visual" />
+    </frame>
 
     <!-- arms attach at the pedestal top (z=0.697) -->
     <frame pos="0 0 0.697">
