@@ -16,6 +16,10 @@ limitations under the License.
 -->
 
 <mujoco>
+  <statistic extent="0.736088898238483" />
+  <visual>
+    <map znear="0.0339632890264028" /> <!-- 25 mm / extent -->
+  </visual>
   <default>
     <joint stiffness="0" ref="0.0" />
     <default class="robot">

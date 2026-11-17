@@ -254,8 +254,19 @@ test("controller frames drive the arms through the same pipeline", async () => {
     // a second of frames: the One Euro filter has settled by then
     for (let i = 1; i <= 72; i++) app.applyXRFrame(frame, i / 72);
     // where the point viewOffset from the head cameras ended up in the
-    // headset's space (the cell's arm_origin frame is the world's)
+    // headset's space
     const head = app.headPosition();
+    const { mujoco } = app.controller;
+    const headCameras = ["camera_head_left", "camera_head_right"].map(
+      (name) => {
+        const id = mujoco.mj_name2id(
+          app.mjModel,
+          mujoco.mjtObj.mjOBJ_CAMERA.value,
+          name,
+        );
+        return [...app.mjData.cam_xpos.slice(id * 3, id * 3 + 3)];
+      },
+    );
     const camera = new THREE.Vector3(...head).add(
       new THREE.Vector3(...app.viewOffset),
     );
@@ -272,6 +283,7 @@ test("controller frames drive the arms through the same pipeline", async () => {
       placed: app.xrPlaced,
       worldUp: app.world.quaternion.toArray(),
       head,
+      headCameras,
       camera: camera.toArray(),
       handsHead: handsHead.toArray(),
     };
@@ -281,9 +293,12 @@ test("controller frames drive the arms through the same pipeline", async () => {
   expect(moved.worldUp).not.toEqual([0, 0, 0, 1]); // turned y-up for the headset
   // between cell.xml's camera_head_left/right, and viewOffset from that
   // drawn at the headset (identity pose here)
-  expect(moved.head[0]).toBeCloseTo(0.223, 6);
-  expect(moved.head[1]).toBeCloseTo(0, 6);
-  expect(moved.head[2]).toBeCloseTo(1.45, 6);
+  for (let i = 0; i < 3; i++) {
+    expect(moved.head[i]).toBeCloseTo(
+      (moved.headCameras[0][i] + moved.headCameras[1][i]) / 2,
+      6,
+    );
+  }
   expect(Math.hypot(...moved.camera)).toBeLessThan(1e-6);
   expect(Math.hypot(...moved.handsHead)).toBeLessThan(1e-6);
   await expect
@@ -328,6 +343,8 @@ test("controller frames drive the arms through the same pipeline", async () => {
     const identity = { x: 0, y: 0, z: 0, qx: 0, qy: 0, qz: 0, qw: 1 };
     const before = [...app.viewOffset];
     const pitch = app.viewPitch;
+    // Refresh the anchor at the current lifter pose before changing only the view.
+    app.placeWorld(identity);
     const hands = JSON.stringify(app.xrTeleop.placement);
     // released first: a frame after a pause moves nothing by itself
     app.applyXRFrame({ pose_reference: identity }, 100);

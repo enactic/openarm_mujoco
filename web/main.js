@@ -299,6 +299,10 @@ class App {
   // scene's extent).
   frameCamera() {
     const stat = this.mjModel.stat;
+    const map = this.mjModel.vis.map;
+    this.camera.near = map.znear * stat.extent;
+    this.camera.updateProjectionMatrix();
+    map.delete?.();
     const g = this.mjModel.vis.global;
     const az = (g.azimuth * Math.PI) / 180;
     const el = (g.elevation * Math.PI) / 180;
