@@ -42,26 +42,28 @@ at their body-pos defaults.
   <worldbody>
     <attach model="cell" prefix=""/>
 
-    <!-- The stick (360 mm long, along x), grasped at its centre and used as a pusher
-         that extends the reach forward. The tool lane sits at y=-0.26, outside the
-         band the right fingers settle over from the home keyframe. -->
-    <body name="stick" pos="0.405 -0.26 1.019">
-      <freejoint />
-      <geom name="stick_geom" type="box" size="0.18 0.013 0.014" rgba="0.55 0.35 0.15 1"
-            mass="0.06" friction="1 0.01 0.001" contype="1" conaffinity="1" />
-    </body>
+    <frame name="cell_task_surface" pos="0 0 1.0095">
+      <!-- The stick (360 mm long, along x), grasped at its centre and used as a pusher
+           that extends the reach forward. The tool lane sits at y=-0.26, outside the
+           band the right fingers settle over from the home keyframe. -->
+      <body name="stick" pos="0.405 -0.26 0.014">
+        <freejoint />
+        <geom name="stick_geom" type="box" size="0.18 0.013 0.014" rgba="0.55 0.35 0.15 1"
+              mass="0.06" friction="1 0.01 0.001" contype="1" conaffinity="1" />
+      </body>
 
-    <!-- Block to move, just past the gripper's top-down reach (~0.36 m). -->
-    <body name="block" pos="0.645 -0.26 1.028">
-      <freejoint />
-      <geom name="block_geom" type="box" size="0.03 0.03 0.023" rgba="0.2 0.55 0.85 1"
-            mass="0.1" friction="0.6 0.01 0.001" contype="1" conaffinity="1" />
-    </body>
+      <!-- Block to move, just past the gripper's top-down reach (~0.36 m). -->
+      <body name="block" pos="0.645 -0.26 0.023">
+        <freejoint />
+        <geom name="block_geom" type="box" size="0.03 0.03 0.023" rgba="0.2 0.55 0.85 1"
+              mass="0.1" friction="0.6 0.01 0.001" contype="1" conaffinity="1" />
+      </body>
 
-    <!-- Far goal (out of bare reach; reachable only via the stick's tip). -->
-    <body name="goal" pos="0.705 -0.26 1.007">
-      <site name="goal_site" type="cylinder" size="0.05 0.001" rgba="0.2 0.8 0.3 0.4"/>
-    </body>
+      <!-- Far goal (out of bare reach; reachable only via the stick's tip). -->
+      <body name="goal" pos="0.705 -0.26 0.002">
+        <site name="goal_site" type="cylinder" size="0.05 0.001" rgba="0.2 0.8 0.3 0.4"/>
+      </body>
+    </frame>
   </worldbody>
 
   <equality>

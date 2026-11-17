@@ -99,9 +99,11 @@ def main() -> int:
             "cell_rail_col2",
         ]
 
-        for name in wall_names:
-            geom_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, name)
-            if geom_id != -1:
+        for geom_id in range(model.ngeom):
+            name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, geom_id)
+            if name and any(
+                name == wall or name.startswith(f"{wall}_") for wall in wall_names
+            ):
                 # Disable collision
                 model.geom_contype[geom_id] = 0
                 model.geom_conaffinity[geom_id] = 0

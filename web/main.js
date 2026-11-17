@@ -267,14 +267,18 @@ class App {
       this.controller = new PoseController(mujoco, this.mjModel);
       this.startFromHome();
 
-      // the cell enclosure mesh is drawn see-through so the arms stay visible
+      // Keep the legacy enclosure and its split visual parts see-through.
       this.transparentGeomIds = new Set();
-      const cellVis = mujoco.mj_name2id(
-        this.mjModel,
-        mujoco.mjtObj.mjOBJ_GEOM.value,
-        "cell_vis",
-      );
-      if (cellVis >= 0) this.transparentGeomIds.add(cellVis);
+      for (let id = 0; id < this.mjModel.ngeom; id++) {
+        const name = mujoco.mj_id2name(
+          this.mjModel,
+          mujoco.mjtObj.mjOBJ_GEOM.value,
+          id,
+        );
+        if (name === "cell_vis" || name?.startsWith("cell_vis_")) {
+          this.transparentGeomIds.add(id);
+        }
+      }
 
       this.mjvScene = new mujoco.MjvScene(this.mjModel, this.maxGeoms);
       this.initLighting();

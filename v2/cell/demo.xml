@@ -33,19 +33,21 @@ limitations under the License.
   <worldbody>
     <attach model="cell" prefix=""/>
 
-    <body name="orange_cube" pos="0.45 0.0 1.05">
-      <freejoint/>
-      <geom type="box" size="0.02 0.02 0.02" rgba="1.0 0.4 0.0 1"
-            mass="0.05" friction="1 0.5 0.01" contype="1" conaffinity="1"/>
-    </body>
+    <frame name="cell_task_surface" pos="0 0 1.0095">
+      <body name="orange_cube" pos="0.45 0 0.045">
+        <freejoint/>
+        <geom type="box" size="0.02 0.02 0.02" rgba="1.0 0.4 0.0 1"
+              mass="0.05" friction="1 0.5 0.01" contype="1" conaffinity="1"/>
+      </body>
 
-    <body name="black_frame" pos="0.47 0.15 1.005">
-      <geom type="box" pos="0 0 0.005"    size="0.07 0.07 0.005" rgba="0.1 0.1 0.1 1" contype="1" conaffinity="1"/>
-      <geom type="box" pos="0.065 0 0.02"  size="0.005 0.07 0.02" rgba="0.1 0.1 0.1 1" contype="1" conaffinity="1"/>
-      <geom type="box" pos="-0.065 0 0.02" size="0.005 0.07 0.02" rgba="0.1 0.1 0.1 1" contype="1" conaffinity="1"/>
-      <geom type="box" pos="0 0.065 0.02"  size="0.06 0.005 0.02" rgba="0.1 0.1 0.1 1" contype="1" conaffinity="1"/>
-      <geom type="box" pos="0 -0.065 0.02" size="0.06 0.005 0.02" rgba="0.1 0.1 0.1 1" contype="1" conaffinity="1"/>
-    </body>
+      <body name="black_frame" pos="0.47 0.15 0">
+        <geom type="box" pos="0 0 0.005"    size="0.07 0.07 0.005" rgba="0.1 0.1 0.1 1" contype="1" conaffinity="1"/>
+        <geom type="box" pos="0.065 0 0.02"  size="0.005 0.07 0.02" rgba="0.1 0.1 0.1 1" contype="1" conaffinity="1"/>
+        <geom type="box" pos="-0.065 0 0.02" size="0.005 0.07 0.02" rgba="0.1 0.1 0.1 1" contype="1" conaffinity="1"/>
+        <geom type="box" pos="0 0.065 0.02"  size="0.06 0.005 0.02" rgba="0.1 0.1 0.1 1" contype="1" conaffinity="1"/>
+        <geom type="box" pos="0 -0.065 0.02" size="0.06 0.005 0.02" rgba="0.1 0.1 0.1 1" contype="1" conaffinity="1"/>
+      </body>
+    </frame>
   </worldbody>
 
 </mujoco>
