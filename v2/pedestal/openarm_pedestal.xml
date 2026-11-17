@@ -53,13 +53,20 @@ Scene furniture (floor, lights, cameras, keyframes) stays in the scenes.
     <material name="body_link0_05_mat" rgba="0.247 0.247 0.247 1" specular="0.0" shininess="0.0" />
     <material name="zed_mount_00_mat" rgba="0.247 0.247 0.247 1" specular="0.0" shininess="0.0" />
     <material name="zed_mount_01_mat" rgba="1 0.949019608 0.909803922 1" specular="0.0" shininess="0.0" />
-    <mesh name="body_link0_symp" content_type="model/stl" file="collision/body_link0_symp.stl" scale="0.001 0.001 0.001" />
+    <mesh name="body_base_bracket_left_collision" file="collision/body/base_bracket_left.stl" />
+    <mesh name="body_base_bracket_right_collision" file="collision/body/base_bracket_right.stl" />
+    <mesh name="body_base_plate_collision" file="collision/body/base_plate.stl" />
+    <mesh name="body_chest_cover_collision" file="collision/body/chest_cover.stl" />
+    <mesh name="body_column_collision" file="collision/body/column.stl" />
+    <mesh name="body_diagonal_brace_collision" file="collision/body/diagonal_brace.stl" />
 
     <model name="bimanual" file="../openarm_bimanual.xml"/>
     <!-- ZED Mini mesh: Stereolabs, Apache-2.0.
          Source: https://github.com/stereolabs/zed-ros2-description/tree/22468247c1653d08a1e213809f3e9ce76291487d -->
     <mesh name="zedm" file="visual/zed/zedm.stl" />
     <material name="zedm_mat" rgba="0 0 0 1" />
+    <mesh name="zed_mount_shell_collision" file="collision/zed_mount/zed_mount_shell.stl" />
+    <mesh name="zed_mount_support_collision" file="collision/zed_mount/zed_mount_support.stl" />
   </asset>
 
   <worldbody>
@@ -70,13 +77,23 @@ Scene furniture (floor, lights, cameras, keyframes) stays in the scenes.
     <geom name="body_link0_03_visual" type="mesh" mesh="body_link0_03" material="body_link0_03_mat" class="pedestal_visual" />
     <geom name="body_link0_04_visual" type="mesh" mesh="body_link0_04" material="body_link0_04_mat" class="pedestal_visual" />
     <geom name="body_link0_05_visual" type="mesh" mesh="body_link0_05" material="body_link0_05_mat" class="pedestal_visual" />
-    <geom name="openarm_body_link0_collision" type="mesh" mesh="body_link0_symp" class="pedestal_collision" />
+    <geom name="body_base_bracket_left_collision" type="mesh" mesh="body_base_bracket_left_collision" class="pedestal_collision" />
+    <geom name="body_base_bracket_right_collision" type="mesh" mesh="body_base_bracket_right_collision" class="pedestal_collision" />
+    <geom name="body_base_plate_collision" type="mesh" mesh="body_base_plate_collision" class="pedestal_collision" />
+    <geom name="body_chest_cover_collision" type="mesh" mesh="body_chest_cover_collision" class="pedestal_collision" />
+    <geom name="body_column_collision" type="mesh" mesh="body_column_collision" class="pedestal_collision" />
+    <geom name="body_diagonal_brace_collision" type="mesh" mesh="body_diagonal_brace_collision" class="pedestal_collision" />
 
     <frame name="zed_mount_visual" pos="0.03 0 0.743">
       <geom name="zed_mount_00_visual" type="mesh" mesh="zed_mount_00" material="zed_mount_00_mat" class="pedestal_visual" />
       <geom name="zed_mount_01_visual" type="mesh" mesh="zed_mount_01" material="zed_mount_01_mat" class="pedestal_visual" />
       <!-- Mesh pose includes the official camera-center offset. -->
       <geom name="zedm_visual" type="mesh" mesh="zedm" pos="0.0386446426247 0.000966585 0.0710378956814" euler="0 1.08210413624 0" material="zedm_mat" class="pedestal_visual" />
+    </frame>
+    <frame name="zed_mount_collision" pos="0.03 0 0.743">
+      <geom name="zed_mount_shell_collision" type="mesh" mesh="zed_mount_shell_collision" class="pedestal_collision" />
+      <geom name="zed_mount_support_collision" type="mesh" mesh="zed_mount_support_collision" class="pedestal_collision" />
+      <geom name="zedm_collision" type="mesh" mesh="zedm" class="pedestal_collision" pos="0.0386446426247 0.000966585 0.0710378956814" euler="0 1.08210413624 0" />
     </frame>
 
     <!-- arms attach at the pedestal top (z=0.697) -->

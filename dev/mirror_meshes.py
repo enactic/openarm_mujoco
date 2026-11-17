@@ -23,16 +23,19 @@ _ROOT = Path(__file__).resolve().parents[1]
 _V1_COLLISION = _ROOT / "v1" / "meshes" / "collision" / "arm"
 _V1_MESHES = [f"link{i}.stl" for i in (0, 1, 2, 5, 6, 7)]
 _V2_COLLISION = _ROOT / "v2" / "assets" / "collision"
-_V2_MESHES = (
-    ["base_link.stl", "ee_base_link.stl"]
-    + [f"link{i}.stl" for i in (1, 2, 6)]
-    + [f"link5_part_{i:02d}.stl" for i in range(3)]
-    + [
-        f"finger_{side}_part_{part:02d}.stl"
-        for side in ("inner", "outer")
-        for part in range(4)
-    ]
-)
+_V2_MESHES = [
+    str(path.relative_to(_V2_COLLISION))
+    for pattern in (
+        "arm/base_link_*.stl",
+        "arm/link1.stl",
+        "arm/link2_*.stl",
+        "arm/link5_*.stl",
+        "arm/link6_*.stl",
+        "gripper/*.stl",
+    )
+    for path in sorted(_V2_COLLISION.glob(pattern))
+    if not path.stem.endswith("_left")
+]
 
 
 def mirror_stl(source: Path, destination: Path) -> None:
@@ -55,7 +58,7 @@ def mirror_stl(source: Path, destination: Path) -> None:
 
 
 def main() -> None:
-    """Regenerate six V1 and 16 V2 mirrored collision assets."""
+    """Regenerate the V1 and V2 mirrored collision assets."""
     for directory, names in (
         (_V1_COLLISION, _V1_MESHES),
         (_V2_COLLISION, _V2_MESHES),
