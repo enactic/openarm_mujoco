@@ -73,6 +73,8 @@ def openarm_bimanual_paths() -> list[str]:
     return [
         asset_path("openarm_bimanual.xml"),
         asset_path("assets"),
+        asset_path("openarm_bimanual_common.xml"),
+        asset_path("components"),
     ]
 
 

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // Load a scene and everything it references into an MjVFS, mirroring the v2
-// directory layout: sub-models (file="....xml") recurse, mesh assets resolve
+// directory layout: sub-models and XML includes recurse, mesh assets resolve
 // against each XML's own meshdir. readFile abstracts the byte source and
 // DOMParserImpl the XML parser (fetch + the native DOMParser in the browser,
 // fs + @xmldom/xmldom in the Node tests), so both sides load models by
@@ -50,7 +50,7 @@ export async function buildVFS(mujoco, scenePath, readFile, DOMParserImpl) {
       if (f) refs.push([elements[i].tagName, f]);
     }
     for (const [tag, f] of refs) {
-      if (tag === "model") {
+      if (tag === "model" || tag === "include") {
         await addXML(norm(dir + f));
       } else if (tag === "mesh") {
         const p = norm(dir + (meshdir ? `${meshdir}/` : "") + f);
