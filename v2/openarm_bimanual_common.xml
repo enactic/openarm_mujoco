@@ -1,0 +1,237 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--
+Copyright 2026 Enactic, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<mujoco>
+  <default>
+    <joint stiffness="0" ref="0.0" />
+    <default class="robot">
+      <!-- Armatures approximate motor rotor readouts * gear ratio squared (kg*m^2).
+           Damping references from motor readouts, assuming the same conversion (N*m*s/rad):
+           DM8009P ~0.13, DM4340 ~0.33, DM4310 ~0.03. Reference only; gearbox contributions
+           are unconfirmed. Applied damping is unchanged. -->
+      <default class="motor_DM8009">
+        <joint frictionloss="0.2" damping="1.0" armature="0.016" limited="true" type="hinge" />
+        <position forcelimited="true" forcerange="-40 40" ctrllimited="true" />
+      </default>
+      <default class="motor_DM4340">
+        <joint frictionloss="0.1" damping="0.9" armature="0.030" limited="true" type="hinge" />
+        <position forcelimited="true" forcerange="-27 27" ctrllimited="true" />
+      </default>
+      <default class="motor_DM4310">
+        <joint frictionloss="0.04" damping="0.9" armature="0.002" limited="true" type="hinge" />
+        <position forcelimited="true" forcerange="-7 7" ctrllimited="true" />
+        <!-- Keep gripper-specific friction and damping; inherit DM4310 inertia and limits. -->
+        <default class="motor_finger">
+          <joint frictionloss="0" damping="0.6" />
+        </default>
+      </default>
+      <default class="collision">
+        <geom material="collision_material" condim="3" conaffinity="1" priority="1" group="3" solref="0.005 1" friction="1 0.01 0.01" />
+        <!-- The fingertips grip with condim=4, which activates the torsional
+             friction coefficient (the second entry of friction) so a pinched
+             object cannot spin about the pinch axis.  0.01 m is the effective
+             radius of the pad's contact patch; rolling friction stays off. -->
+        <default class="fingertip">
+          <geom condim="4" />
+        </default>
+      </default>
+      <default class="visual">
+        <geom contype="0" conaffinity="0" group="2" />
+      </default>
+    </default>
+  </default>
+  <compiler angle="radian" meshdir="assets" />
+  <!-- Grasping needs the elliptic friction cone: under the default pyramidal
+       cone a pinched object creeps out of the jaws under load however high the
+       friction coefficients are, and impratio raises the stiffness of the
+       friction constraints relative to the normal ones so a firmly held object
+       stops sliding on the pads.  <option> does not carry across <attach>, so
+       every scene repeats these settings and the integrator. -->
+  <option timestep="0.001" integrator="implicitfast" cone="elliptic" impratio="10" />
+  <asset>
+    <material name="collision_material" rgba="0.8 0.2 0.2 0.5" />
+    <material name="pale_silver" rgba="0.752941 0.752941 0.752941 1" specular="1.0" shininess="0.9" reflectance="0.8" />
+    <material name="metal_silver" rgba="0.65 0.65 0.65 1.0" specular="1.0" shininess="0.9" reflectance="0.8" />
+    <material name="matte_black" rgba="0.247 0.247 0.247 1.0" reflectance="0.05" shininess="0.5" />
+    <!-- Pre-mirrored left collision meshes: temporary workaround for
+         https://github.com/google-deepmind/mujoco/issues/3604.
+         Regenerate with dev/mirror_meshes.py. -->
+    <mesh name="base_link_left_00" content_type="model/obj" file="visual/arm/base_link_00.obj" scale="1 -1 1" />
+    <mesh name="base_link_left_01" content_type="model/obj" file="visual/arm/base_link_01.obj" scale="1 -1 1" />
+    <mesh name="base_link_left_collision_00" content_type="model/stl" file="collision/base_link_left.stl" />
+    <mesh name="link1_left_00" content_type="model/obj" file="visual/arm/link1_00.obj" scale="1 -1 1" />
+    <mesh name="link1_left_01" content_type="model/obj" file="visual/arm/link1_01.obj" scale="1 -1 1" />
+    <mesh name="link1_left_02" content_type="model/obj" file="visual/arm/link1_02.obj" scale="1 -1 1" />
+    <mesh name="link1_left_collision_00" content_type="model/stl" file="collision/link1_left.stl" />
+    <mesh name="link2_left_00" content_type="model/obj" file="visual/arm/link2_00.obj" scale="1 -1 1" />
+    <mesh name="link2_left_01" content_type="model/obj" file="visual/arm/link2_01.obj" scale="1 -1 1" />
+    <mesh name="link2_left_02" content_type="model/obj" file="visual/arm/link2_02.obj" scale="1 -1 1" />
+    <mesh name="link2_left_collision_00" content_type="model/stl" file="collision/link2_left.stl" />
+    <mesh name="link3_left_00" content_type="model/obj" file="visual/arm/link3_00.obj" />
+    <mesh name="link3_left_01" content_type="model/obj" file="visual/arm/link3_01.obj" />
+    <mesh name="link3_left_02" content_type="model/obj" file="visual/arm/link3_02.obj" />
+    <mesh name="link3_left_collision_00" content_type="model/stl" file="collision/link3.stl" />
+    <mesh name="link4_left_00" content_type="model/obj" file="visual/arm/link4_00.obj" />
+    <mesh name="link4_left_01" content_type="model/obj" file="visual/arm/link4_01.obj" />
+    <mesh name="link4_left_02" content_type="model/obj" file="visual/arm/link4_02.obj" />
+    <mesh name="link4_left_collision_00" content_type="model/stl" file="collision/link4.stl" />
+    <mesh name="link5_left_00" content_type="model/obj" file="visual/arm/link5_00.obj" scale="1 -1 1" />
+    <mesh name="link5_left_01" content_type="model/obj" file="visual/arm/link5_01.obj" scale="1 -1 1" />
+    <mesh name="link5_left_02" content_type="model/obj" file="visual/arm/link5_02.obj" scale="1 -1 1" />
+    <mesh name="link5_left_collision_00" content_type="model/stl" file="collision/link5_part_00_left.stl" />
+    <mesh name="link5_left_collision_01" content_type="model/stl" file="collision/link5_part_01_left.stl" />
+    <mesh name="link5_left_collision_02" content_type="model/stl" file="collision/link5_part_02_left.stl" />
+    <mesh name="link6_left_00" content_type="model/obj" file="visual/arm/link6_00.obj" scale="1 -1 1" />
+    <mesh name="link6_left_01" content_type="model/obj" file="visual/arm/link6_01.obj" scale="1 -1 1" />
+    <mesh name="link6_left_02" content_type="model/obj" file="visual/arm/link6_02.obj" scale="1 -1 1" />
+    <mesh name="link6_left_collision_00" content_type="model/stl" file="collision/link6_left.stl" />
+    <mesh name="ee_base_link_left_00" content_type="model/obj" file="visual/gripper/ee_base_link_00.obj" scale="1 -1 1" />
+    <mesh name="ee_base_link_left_01" content_type="model/obj" file="visual/gripper/ee_base_link_01.obj" scale="1 -1 1" />
+    <mesh name="ee_base_link_left_02" content_type="model/obj" file="visual/gripper/ee_base_link_02.obj" scale="1 -1 1" />
+    <mesh name="ee_base_link_left_collision_00" content_type="model/stl" file="collision/ee_base_link_left.stl" />
+    <mesh name="finger_inner_left_00" content_type="model/obj" file="visual/gripper/finger_inner_00.obj" scale="1 -1 1" />
+    <mesh name="finger_inner_left_01" content_type="model/obj" file="visual/gripper/finger_inner_01.obj" scale="1 -1 1" />
+    <mesh name="finger_inner_left_02" content_type="model/obj" file="visual/gripper/finger_inner_02.obj" scale="1 -1 1" />
+    <mesh name="finger_inner_left_collision_00" content_type="model/stl" file="collision/finger_inner_part_00_left.stl" />
+    <mesh name="finger_inner_left_collision_01" content_type="model/stl" file="collision/finger_inner_part_01_left.stl" />
+    <mesh name="finger_inner_left_collision_02" content_type="model/stl" file="collision/finger_inner_part_02_left.stl" />
+    <mesh name="finger_inner_left_collision_03" content_type="model/stl" file="collision/finger_inner_part_03_left.stl" />
+    <mesh name="finger_outer_left_00" content_type="model/obj" file="visual/gripper/finger_outer_00.obj" scale="1 -1 1" />
+    <mesh name="finger_outer_left_01" content_type="model/obj" file="visual/gripper/finger_outer_01.obj" scale="1 -1 1" />
+    <mesh name="finger_outer_left_02" content_type="model/obj" file="visual/gripper/finger_outer_02.obj" scale="1 -1 1" />
+    <mesh name="finger_outer_left_collision_00" content_type="model/stl" file="collision/finger_outer_part_00_left.stl" />
+    <mesh name="finger_outer_left_collision_01" content_type="model/stl" file="collision/finger_outer_part_01_left.stl" />
+    <mesh name="finger_outer_left_collision_02" content_type="model/stl" file="collision/finger_outer_part_02_left.stl" />
+    <mesh name="finger_outer_left_collision_03" content_type="model/stl" file="collision/finger_outer_part_03_left.stl" />
+    <mesh name="base_link_right_00" content_type="model/obj" file="visual/arm/base_link_00.obj" />
+    <mesh name="base_link_right_01" content_type="model/obj" file="visual/arm/base_link_01.obj" />
+    <mesh name="base_link_right_collision_00" content_type="model/stl" file="collision/base_link.stl" />
+    <mesh name="link1_right_00" content_type="model/obj" file="visual/arm/link1_00.obj" />
+    <mesh name="link1_right_01" content_type="model/obj" file="visual/arm/link1_01.obj" />
+    <mesh name="link1_right_02" content_type="model/obj" file="visual/arm/link1_02.obj" />
+    <mesh name="link1_right_collision_00" content_type="model/stl" file="collision/link1.stl" />
+    <mesh name="link2_right_00" content_type="model/obj" file="visual/arm/link2_00.obj" />
+    <mesh name="link2_right_01" content_type="model/obj" file="visual/arm/link2_01.obj" />
+    <mesh name="link2_right_02" content_type="model/obj" file="visual/arm/link2_02.obj" />
+    <mesh name="link2_right_collision_00" content_type="model/stl" file="collision/link2.stl" />
+    <mesh name="link3_right_00" content_type="model/obj" file="visual/arm/link3_00.obj" />
+    <mesh name="link3_right_01" content_type="model/obj" file="visual/arm/link3_01.obj" />
+    <mesh name="link3_right_02" content_type="model/obj" file="visual/arm/link3_02.obj" />
+    <mesh name="link3_right_collision_00" content_type="model/stl" file="collision/link3.stl" />
+    <mesh name="link4_right_00" content_type="model/obj" file="visual/arm/link4_00.obj" />
+    <mesh name="link4_right_01" content_type="model/obj" file="visual/arm/link4_01.obj" />
+    <mesh name="link4_right_02" content_type="model/obj" file="visual/arm/link4_02.obj" />
+    <mesh name="link4_right_collision_00" content_type="model/stl" file="collision/link4.stl" />
+    <mesh name="link5_right_00" content_type="model/obj" file="visual/arm/link5_00.obj" />
+    <mesh name="link5_right_01" content_type="model/obj" file="visual/arm/link5_01.obj" />
+    <mesh name="link5_right_02" content_type="model/obj" file="visual/arm/link5_02.obj" />
+    <mesh name="link5_right_collision_00" content_type="model/stl" file="collision/link5_part_00.stl" />
+    <mesh name="link5_right_collision_01" content_type="model/stl" file="collision/link5_part_01.stl" />
+    <mesh name="link5_right_collision_02" content_type="model/stl" file="collision/link5_part_02.stl" />
+    <mesh name="link6_right_00" content_type="model/obj" file="visual/arm/link6_00.obj" />
+    <mesh name="link6_right_01" content_type="model/obj" file="visual/arm/link6_01.obj" />
+    <mesh name="link6_right_02" content_type="model/obj" file="visual/arm/link6_02.obj" />
+    <mesh name="link6_right_collision_00" content_type="model/stl" file="collision/link6.stl" />
+    <mesh name="ee_base_link_right_00" content_type="model/obj" file="visual/gripper/ee_base_link_00.obj" />
+    <mesh name="ee_base_link_right_01" content_type="model/obj" file="visual/gripper/ee_base_link_01.obj" />
+    <mesh name="ee_base_link_right_02" content_type="model/obj" file="visual/gripper/ee_base_link_02.obj" />
+    <mesh name="ee_base_link_right_collision_00" content_type="model/stl" file="collision/ee_base_link.stl" />
+    <mesh name="finger_inner_right_00" content_type="model/obj" file="visual/gripper/finger_inner_00.obj" />
+    <mesh name="finger_inner_right_01" content_type="model/obj" file="visual/gripper/finger_inner_01.obj" />
+    <mesh name="finger_inner_right_02" content_type="model/obj" file="visual/gripper/finger_inner_02.obj" />
+    <mesh name="finger_inner_right_collision_00" content_type="model/stl" file="collision/finger_inner_part_00.stl" />
+    <mesh name="finger_inner_right_collision_01" content_type="model/stl" file="collision/finger_inner_part_01.stl" />
+    <mesh name="finger_inner_right_collision_02" content_type="model/stl" file="collision/finger_inner_part_02.stl" />
+    <mesh name="finger_inner_right_collision_03" content_type="model/stl" file="collision/finger_inner_part_03.stl" />
+    <mesh name="finger_outer_right_00" content_type="model/obj" file="visual/gripper/finger_outer_00.obj" />
+    <mesh name="finger_outer_right_01" content_type="model/obj" file="visual/gripper/finger_outer_01.obj" />
+    <mesh name="finger_outer_right_02" content_type="model/obj" file="visual/gripper/finger_outer_02.obj" />
+    <mesh name="finger_outer_right_collision_00" content_type="model/stl" file="collision/finger_outer_part_00.stl" />
+    <mesh name="finger_outer_right_collision_01" content_type="model/stl" file="collision/finger_outer_part_01.stl" />
+    <mesh name="finger_outer_right_collision_02" content_type="model/stl" file="collision/finger_outer_part_02.stl" />
+    <mesh name="finger_outer_right_collision_03" content_type="model/stl" file="collision/finger_outer_part_03.stl" />
+    <material name="base_link_00_mat" rgba="0.247 0.247 0.247 1" specular="0.0" shininess="0.0" />
+    <material name="base_link_01_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
+    <material name="link1_00_mat" rgba="0.247 0.247 0.247 1" specular="0.0" shininess="0.0" />
+    <material name="link1_01_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
+    <material name="link1_02_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
+    <material name="link2_00_mat" rgba="0.247 0.247 0.247 1" specular="0.0" shininess="0.0" />
+    <material name="link2_01_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
+    <material name="link2_02_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
+    <material name="link3_00_mat" rgba="0.247 0.247 0.247 1" specular="0.0" shininess="0.0" />
+    <material name="link3_01_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
+    <material name="link3_02_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
+    <material name="link4_00_mat" rgba="0.247 0.247 0.247 1" specular="0.0" shininess="0.0" />
+    <material name="link4_01_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
+    <material name="link4_02_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
+    <material name="link4_03_mat" rgba="0.247 0.247 0.247 1" specular="0.0" shininess="0.0" />
+    <material name="link4_04_mat" rgba="0.247 0.247 0.247 1" specular="0.0" shininess="0.0" />
+    <material name="link5_00_mat" rgba="0.247 0.247 0.247 1" specular="0.0" shininess="0.0" />
+    <material name="link5_01_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
+    <material name="link5_02_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
+    <material name="link6_00_mat" rgba="0.247 0.247 0.247 1" specular="0.0" shininess="0.0" />
+    <material name="link6_01_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
+    <material name="link6_02_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
+    <material name="ee_base_link_02_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
+    <material name="ee_base_link_01_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
+    <material name="ee_base_link_00_mat" rgba="0.247 0.247 0.247 1" specular="0.0" shininess="0.0" />
+    <material name="ee_base_link_03_mat" rgba="0.501960784 1 0.501960784 1" specular="0.0" shininess="0.0" />
+    <material name="ee_base_link_04_mat" rgba="0.694117647 0.694117647 0.694117647 1" specular="0.0" shininess="0.0" />
+    <material name="ee_base_link_05_mat" rgba="0.694117647 0.694117647 0.694117647 1" specular="0.0" shininess="0.0" />
+    <material name="finger_inner_02_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
+    <material name="finger_inner_01_mat" rgba="0.5 0.5 0.5 1" specular="0.0" shininess="0.0" />
+    <material name="finger_inner_00_mat" rgba="0.247 0.247 0.247 1" specular="0.0" shininess="0.0" />
+    <material name="finger_outer_02_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
+    <material name="finger_outer_01_mat" rgba="0.5 0.5 0.5 1" specular="0.0" shininess="0.0" />
+    <material name="finger_outer_00_mat" rgba="0.247 0.247 0.247 1" specular="0.0" shininess="0.0" />
+    <mesh name="link4_left_03" content_type="model/obj" file="visual/arm/link4_03.obj" />
+    <mesh name="link4_left_04" content_type="model/obj" file="visual/arm/link4_04.obj" />
+    <mesh name="link4_right_03" content_type="model/obj" file="visual/arm/link4_03.obj" />
+    <mesh name="link4_right_04" content_type="model/obj" file="visual/arm/link4_04.obj" />
+    <mesh name="ee_base_link_left_03" content_type="model/obj" file="visual/gripper/ee_base_link_03.obj" scale="1 -1 1" />
+    <mesh name="ee_base_link_left_04" content_type="model/obj" file="visual/gripper/ee_base_link_04.obj" scale="1 -1 1" />
+    <mesh name="ee_base_link_left_05" content_type="model/obj" file="visual/gripper/ee_base_link_05.obj" scale="1 -1 1" />
+    <mesh name="ee_base_link_right_03" content_type="model/obj" file="visual/gripper/ee_base_link_03.obj" />
+    <mesh name="ee_base_link_right_04" content_type="model/obj" file="visual/gripper/ee_base_link_04.obj" />
+    <mesh name="ee_base_link_right_05" content_type="model/obj" file="visual/gripper/ee_base_link_05.obj" />
+  </asset>
+  <equality>
+    <joint name="openarm_left_ee_finger_joint_mimic" joint1="openarm_left_finger_joint1" joint2="openarm_left_finger_joint2" polycoef="0 1 0 0 0" solimp="0.95 0.99 0.001" solref="0.005 1" />
+    <joint name="openarm_right_ee_finger_joint_mimic" joint1="openarm_right_finger_joint1" joint2="openarm_right_finger_joint2" polycoef="0 1 0 0 0" solimp="0.95 0.99 0.001" solref="0.005 1" />
+  </equality>
+  <actuator>
+    <position name="left_joint1_ctrl" joint="openarm_left_joint1" class="motor_DM8009" kp="230" kv="2.7" ctrlrange="-3.49066 1.39626" />
+    <position name="left_joint2_ctrl" joint="openarm_left_joint2" class="motor_DM8009" kp="230" kv="2.7" ctrlrange="-3.31613 0.174533" />
+    <position name="left_joint3_ctrl" joint="openarm_left_joint3" class="motor_DM4340" kp="190" kv="2.2" ctrlrange="-1.5708 1.5708" />
+    <position name="left_joint4_ctrl" joint="openarm_left_joint4" class="motor_DM4340" kp="190" kv="2.2" ctrlrange="0 2.44346" />
+    <position name="left_joint5_ctrl" joint="openarm_left_joint5" class="motor_DM4310" kp="30" kv="1.5" ctrlrange="-1.5708 1.5708" />
+    <position name="left_joint6_ctrl" joint="openarm_left_joint6" class="motor_DM4310" kp="30" kv="1.5" ctrlrange="-0.785398 0.785398" />
+    <position name="left_joint7_ctrl" joint="openarm_left_joint7" class="motor_DM4310" kp="30" kv="1.5" ctrlrange="-1.5708 1.5708" />
+    <position name="left_finger1_ctrl" joint="openarm_left_finger_joint1" class="motor_finger" kp="10" kv="0.2" ctrlrange="-0.4 0.7854" />
+    <position name="right_joint1_ctrl" joint="openarm_right_joint1" class="motor_DM8009" kp="230" kv="2.7" ctrlrange="-1.39626 3.49066" />
+    <position name="right_joint2_ctrl" joint="openarm_right_joint2" class="motor_DM8009" kp="230" kv="2.7" ctrlrange="-0.174533 3.31613" />
+    <position name="right_joint3_ctrl" joint="openarm_right_joint3" class="motor_DM4340" kp="190" kv="2.2" ctrlrange="-1.5708 1.5708" />
+    <position name="right_joint4_ctrl" joint="openarm_right_joint4" class="motor_DM4340" kp="190" kv="2.2" ctrlrange="0 2.44346" />
+    <position name="right_joint5_ctrl" joint="openarm_right_joint5" class="motor_DM4310" kp="30" kv="1.5" ctrlrange="-1.5708 1.5708" />
+    <position name="right_joint6_ctrl" joint="openarm_right_joint6" class="motor_DM4310" kp="30" kv="1.5" ctrlrange="-0.785398 0.785398" />
+    <position name="right_joint7_ctrl" joint="openarm_right_joint7" class="motor_DM4310" kp="30" kv="1.5" ctrlrange="-1.5708 1.5708" />
+    <position name="right_finger1_ctrl" joint="openarm_right_finger_joint1" class="motor_finger" kp="10" kv="0.2" ctrlrange="-0.7854 0.4" />
+  </actuator>
+  <contact>
+
+  </contact>
+</mujoco>
