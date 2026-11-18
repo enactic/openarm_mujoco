@@ -151,7 +151,9 @@ limitations under the License.
       <geom name="cell_rail_col1_cable_chain" pos="0.065 -0.053075 0.489185" class="cell_collision" type="box" size="0.06 0.023075 0.237675" />
       <geom name="cell_rail_col1_brace_left" pos="0.03 0.080515355 0.764617721" class="cell_collision" type="mesh" mesh="cell_column_left_brace_mesh" />
       <geom name="cell_rail_col1_brace_right" pos="0.03 -0.08051979 0.764622155" class="cell_collision" type="mesh" mesh="cell_column_right_brace_mesh" />
-      <!-- Optical center: 16 mm forward from the CAD camera reference. -->
+      <!-- legacy frame (original MuJoCo, Cell base): pos="0.245 0 0.795" xyaxes="0 -1 0 1 0 0".
+           legacy frame (unshifted CAD/Isaac): pos="0.526165063509461 0 0.737346493924647", same xyaxes.
+           Manually shifted 16 mm forward after real-image comparison; further calibration required. -->
       <camera name="camera_ceiling" pos="0.526165063509461 0 0.721346493924647" xyaxes="0 -1 0 1 0 0" fovy="52.9" resolution="960 600" />
       <body name="openarm_lifter_link" pos="0.185 0 0.34">
         <!-- Attach first to import the shared visual and collision defaults. -->
