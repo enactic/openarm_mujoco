@@ -30,6 +30,8 @@ limitations under the License.
       <geom name="link2_right_01" type="mesh" mesh="link2_right_01" class="visual" material="link2_01_mat" />
       <geom name="link2_right_02" type="mesh" mesh="link2_right_02" class="visual" material="link2_02_mat" />
       <geom name="link2_right_collision_00" type="mesh" mesh="link2_right_collision_00" class="collision" />
+      <geom name="link2_right_collision_01" type="mesh" mesh="link2_right_collision_01" class="collision" />
+      <geom name="link2_right_collision_02" type="mesh" mesh="link2_right_collision_02" class="collision" />
       <body name="openarm_right_link3" pos="0 0 -0.06625">
         <inertial pos="-0.00300862 -0.000514813 -0.109368" quat="0.998906 -0.00891348 0.0458105 0.00280505" mass="1.07386" diaginertia="0.00129561 0.00114038 0.000553361" />
         <joint name="openarm_right_joint3" pos="0 0 0" axis="0 0 -1" range="-1.5708 1.5708" actuatorfrcrange="-27 27" class="motor_DM4340" />
@@ -37,6 +39,8 @@ limitations under the License.
         <geom name="link3_right_01" type="mesh" mesh="link3_right_01" class="visual" material="link3_01_mat" />
         <geom name="link3_right_02" type="mesh" mesh="link3_right_02" class="visual" material="link3_02_mat" />
         <geom name="link3_right_collision_00" type="mesh" mesh="link3_right_collision_00" class="collision" />
+        <geom name="link3_right_collision_01" type="mesh" mesh="link3_right_collision_01" class="collision" />
+        <geom name="link3_right_collision_02" type="mesh" mesh="link3_right_collision_02" class="collision" />
         <body name="openarm_right_link4" pos="0 0 -0.15375">
           <inertial pos="-0.00310326 -0.00136539 -0.0574601" quat="0.996952 0.00947325 0.00348083 0.0773554" mass="0.634853" diaginertia="0.000469894 0.000433114 0.000245134" />
           <joint name="openarm_right_joint4" pos="0 0 0" axis="0 -1 0" range="0 2.4435" actuatorfrcrange="-27 27" class="motor_DM4340" />
@@ -46,6 +50,9 @@ limitations under the License.
           <geom name="link4_right_03" type="mesh" mesh="link4_right_03" class="visual" material="link4_03_mat" />
           <geom name="link4_right_04" type="mesh" mesh="link4_right_04" class="visual" material="link4_04_mat" />
           <geom name="link4_right_collision_00" type="mesh" mesh="link4_right_collision_00" class="collision" />
+          <geom name="link4_right_collision_01" type="mesh" mesh="link4_right_collision_01" class="collision" />
+          <geom name="link4_right_collision_02" type="mesh" mesh="link4_right_collision_02" class="collision" />
+          <geom name="link4_right_collision_03" type="mesh" mesh="link4_right_collision_03" class="collision" />
           <body name="openarm_right_link5" pos="0 0 -0.0955">
             <inertial pos="-0.000737189 -0.000412407 -0.0470938" quat="0.728019 -0.00297125 -0.0023482 0.685547" mass="0.615659" diaginertia="0.000334799 0.00027946 0.000176657" />
             <joint name="openarm_right_joint5" pos="0 0 0" axis="0 0 -1" range="-1.5708 1.5708" actuatorfrcrange="-7 7" class="motor_DM4310" />
@@ -55,6 +62,12 @@ limitations under the License.
             <geom name="link5_right_collision_00" type="mesh" mesh="link5_right_collision_00" class="collision" />
             <geom name="link5_right_collision_01" type="mesh" mesh="link5_right_collision_01" class="collision" />
             <geom name="link5_right_collision_02" type="mesh" mesh="link5_right_collision_02" class="collision" />
+            <geom name="link5_right_collision_03" type="mesh" mesh="link5_right_collision_03" class="collision" />
+            <geom name="link5_right_collision_04" type="mesh" mesh="link5_right_collision_04" class="collision" />
+            <geom name="link5_right_collision_05" type="mesh" mesh="link5_right_collision_05" class="collision" />
+            <geom name="link5_right_collision_06" type="mesh" mesh="link5_right_collision_06" class="collision" />
+            <geom name="link5_right_collision_07" type="mesh" mesh="link5_right_collision_07" class="collision" />
+            <geom name="link5_right_collision_08" type="mesh" mesh="link5_right_collision_08" class="collision" />
             <body name="openarm_right_link6" pos="0 0 -0.1205">
               <inertial pos="2.27438e-05 0.000686496 5.44e-05" quat="0.999832 0.0183155 0.000397003 0.000757974" mass="0.475203" diaginertia="0.000179276 0.000136249 0.000135339" />
               <joint name="openarm_right_joint6" pos="0 0 0" axis="0 1 0" range="-0.7854 0.7854" actuatorfrcrange="-7 7" class="motor_DM4310" />
@@ -62,6 +75,11 @@ limitations under the License.
               <geom name="link6_right_01" type="mesh" mesh="link6_right_01" class="visual" material="link6_01_mat" />
               <geom name="link6_right_02" type="mesh" mesh="link6_right_02" class="visual" material="link6_02_mat" />
               <geom name="link6_right_collision_00" type="mesh" mesh="link6_right_collision_00" class="collision" />
+              <geom name="link6_right_collision_01" type="mesh" mesh="link6_right_collision_01" class="collision" />
+              <geom name="link6_right_collision_02" type="mesh" mesh="link6_right_collision_02" class="collision" />
+              <geom name="link6_right_collision_03" type="mesh" mesh="link6_right_collision_03" class="collision" />
+              <geom name="link6_right_collision_04" type="mesh" mesh="link6_right_collision_04" class="collision" />
+              <geom name="link6_right_collision_05" type="mesh" mesh="link6_right_collision_05" class="collision" />
               <body name="openarm_right_ee_base_link">
                 <inertial pos="0.0137902 0.0084073 -0.05938" quat="0.648846 0.760121 0.0169317 0.0304587" mass="0.52832" diaginertia="0.000219417 0.000166122 0.000155742" />
                 <joint name="openarm_right_joint7" pos="0 0 0" axis="1 0 0" range="-1.5708 1.5708" actuatorfrcrange="-7 7" class="motor_DM4310" />
@@ -84,6 +102,7 @@ limitations under the License.
                   <geom name="finger_inner_right_collision_01" type="mesh" mesh="finger_inner_right_collision_01" class="fingertip" />
                   <geom name="finger_inner_right_collision_02" type="mesh" mesh="finger_inner_right_collision_02" class="fingertip" />
                   <geom name="finger_inner_right_collision_03" type="mesh" mesh="finger_inner_right_collision_03" class="fingertip" />
+                  <geom name="finger_inner_right_collision_04" type="mesh" mesh="finger_inner_right_collision_04" class="fingertip" />
                 </body>
                 <body name="openarm_right_ee_outer_finger" pos="-0.00143 -0.018 -0.068">
                   <inertial pos="-0.012796 -0.0020183 -0.026792" quat="0.982097 0.0906989 -0.165079 -0.00294117" mass="0.11372" diaginertia="3.70662e-05 3.60159e-05 1.33599e-05" />
@@ -95,6 +114,7 @@ limitations under the License.
                   <geom name="finger_outer_right_collision_01" type="mesh" mesh="finger_outer_right_collision_01" class="fingertip" />
                   <geom name="finger_outer_right_collision_02" type="mesh" mesh="finger_outer_right_collision_02" class="fingertip" />
                   <geom name="finger_outer_right_collision_03" type="mesh" mesh="finger_outer_right_collision_03" class="fingertip" />
+                  <geom name="finger_outer_right_collision_04" type="mesh" mesh="finger_outer_right_collision_04" class="fingertip" />
                 </body>
               </body>
             </body>
