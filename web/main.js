@@ -732,17 +732,25 @@ class App {
 
     const geoms = this.mjvScene.geoms;
     const n = geoms.size();
+    const materialSide = this.mjvScene.flags[
+      mujoco.mjtRndFlag.mjRND_CULL_FACE.value
+    ]
+      ? THREE.FrontSide
+      : THREE.DoubleSide;
     for (let i = 0; i < n; i++) {
       const g = geoms.get(i);
       let mesh = this.meshes[i];
       if (!mesh) {
-        // DoubleSide: mirrored meshes (scale="1 -1 1") have flipped winding
         const material = new THREE.MeshPhongMaterial({
-          side: THREE.DoubleSide,
+          side: materialSide,
         });
         mesh = new THREE.Mesh(this.getBufferGeometry(g), material);
         this.meshes.push(mesh);
         this.world.add(mesh);
+      }
+      if (mesh.material.side !== materialSide) {
+        mesh.material.side = materialSide;
+        mesh.material.needsUpdate = true;
       }
       mesh.visible = true;
       this.applyGeomAppearance(mesh, g);
