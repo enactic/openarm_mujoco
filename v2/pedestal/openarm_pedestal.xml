@@ -24,13 +24,7 @@ Scene furniture (floor, lights, cameras, keyframes) stays in the scenes.
 <mujoco model="openarm_pedestal">
   <compiler meshdir="../assets" angle="radian"/>
 
-  <statistic extent="1.05137399951144" />
-
   <option timestep="0.001" integrator="implicitfast" cone="elliptic" impratio="10"/>
-
-  <visual>
-    <map znear="0.0237784080751637" /> <!-- 25 mm / extent -->
-  </visual>
 
   <default>
     <default class="pedestal_visual">
@@ -66,7 +60,7 @@ Scene furniture (floor, lights, cameras, keyframes) stays in the scenes.
     <mesh name="body_column_collision" file="collision/body/column.stl" />
     <mesh name="body_diagonal_brace_collision" file="collision/body/diagonal_brace.stl" />
 
-    <model name="bimanual" file="../openarm_bimanual.xml"/>
+    <model name="bimanual" file="../openarm_bimanual_model.xml"/>
     <!-- ZED Mini mesh: Stereolabs, Apache-2.0.
          Source: https://github.com/stereolabs/zed-ros2-description/tree/22468247c1653d08a1e213809f3e9ce76291487d -->
     <mesh name="zedm" file="visual/zed/zedm.stl" />
