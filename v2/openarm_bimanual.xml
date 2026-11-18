@@ -19,6 +19,6 @@ limitations under the License.
   <include file="openarm_bimanual_model.xml" />
   <statistic extent="0.736088898238483" />
   <visual>
-    <map znear="0.0339632890264028" /> <!-- Near clip: 25 mm -->
+    <map znear="0.0292084285627064" /> <!-- Near clip: 21.5 mm -->
   </visual>
 </mujoco>
