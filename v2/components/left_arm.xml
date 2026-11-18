@@ -90,6 +90,7 @@ limitations under the License.
                 <geom name="ee_base_link_left_04" pos="0.0205 0 0" quat="1 0 0 0" type="mesh" mesh="ee_base_link_left_04" class="visual" material="ee_base_link_04_mat" />
                 <geom name="ee_base_link_left_05" pos="0.0205 0 0" quat="1 0 0 0" type="mesh" mesh="ee_base_link_left_05" class="visual" material="ee_base_link_05_mat" />
                 <geom name="ee_base_link_left_collision_00" pos="0.0205 0 0" quat="1 0 0 0" type="mesh" mesh="ee_base_link_left_collision_00" class="collision" />
+                <!-- legacy frame: original MuJoCo wrist pose, retained pending extrinsic calibration. -->
                 <camera name="camera_wrist_left" pos="0.023 0.0182 -0.10236" euler="-0.366519 0.22689 -1.5708" fovy="52.9" resolution="960 600" />
                 <site name="left_ee_control_point" pos="0 0 0.0" size="0.01" rgba="0 1 0 1" />
                 <body name="openarm_left_ee_inner_finger" pos="-0.00143 -0.018 -0.068">
