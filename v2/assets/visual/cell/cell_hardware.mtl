@@ -1,0 +1,8 @@
+newmtl cell_hardware_mat
+Ka 0.62621 0.62621 0.62621
+Kd 0.62621 0.62621 0.62621
+Ks 0.28 0.28 0.28
+Ke 0 0 0
+Ns 38.4
+d 1
+illum 2

@@ -1,0 +1,8 @@
+newmtl cell_light_curtain_yellow_mat
+Ka 0.95 0.65 0
+Kd 0.95 0.65 0
+Ks 0.1675 0.1675 0.1675
+Ke 0 0 0
+Ns 22.4
+d 1
+illum 2

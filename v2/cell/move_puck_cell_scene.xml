@@ -16,9 +16,8 @@ limitations under the License.
 
 <!--
 Cell variant of move_puck_scene.xml: the same low puck and two goal markers,
-placed on the cell workspace table. Objects keep their pose relative to the
-arm base (pedestal scene -> cell: x+0.185, z+0.605; pedestal table top z=0.40,
-cell table top z=1.005). The cell provides floor, lights, cameras and the
+placed on the cell workspace table. Objects use the sheet surface (z=1.0095) as their height reference.
+The cell provides floor, lights, cameras and the
 "home" keyframe via <attach>; the puck starts at its body-pos default.
 -->
 <mujoco model="openarm_v20_move_puck_cell">
@@ -28,6 +27,7 @@ cell table top z=1.005). The cell provides floor, lights, cameras and the
   <option timestep="0.001" integrator="implicitfast" cone="elliptic" impratio="10"/>
 
   <visual>
+    <map znear="0.00714285714285714" /> <!-- 25 mm / extent -->
     <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
     <rgba haze="0.15 0.25 0.35 1"/>
     <global azimuth="0" elevation="-20"/>
@@ -41,21 +41,23 @@ cell table top z=1.005). The cell provides floor, lights, cameras and the
   <worldbody>
     <attach model="cell" prefix=""/>
 
-    <!-- A low puck (70 x 70 x 44 mm) to push or grasp, centered between the
-         grippers, clear of their home-pose zone. -->
-    <body name="puck" pos="0.485 0.0 1.027">
-      <freejoint />
-      <geom name="puck_geom" type="box" size="0.035 0.035 0.022" rgba="0.85 0.4 0.1 1"
-            mass="0.12" friction="0.9 0.01 0.001" contype="1" conaffinity="1" />
-    </body>
+    <frame name="cell_task_surface" pos="0 0 1.0095">
+      <!-- A low puck (70 x 70 x 44 mm) to push or grasp, centered between the
+           grippers, clear of their home-pose zone. -->
+      <body name="puck" pos="0.485 0 0.022">
+        <freejoint />
+        <geom name="puck_geom" type="box" size="0.035 0.035 0.022" rgba="0.85 0.4 0.1 1"
+              mass="0.12" friction="0.9 0.01 0.001" contype="1" conaffinity="1" />
+      </body>
 
-    <!-- Goal regions (visual markers, non-colliding). -->
-    <body name="goal_a" pos="0.625 -0.16 1.007">
-      <site name="goal_a_site" type="cylinder" size="0.05 0.001" rgba="0.2 0.8 0.3 0.4"/>
-    </body>
-    <body name="goal_b" pos="0.625 0.16 1.007">
-      <site name="goal_b_site" type="cylinder" size="0.05 0.001" rgba="0.3 0.5 0.9 0.4"/>
-    </body>
+      <!-- Goal regions (visual markers, non-colliding). -->
+      <body name="goal_a" pos="0.625 -0.16 0.002">
+        <site name="goal_a_site" type="cylinder" size="0.05 0.001" rgba="0.2 0.8 0.3 0.4"/>
+      </body>
+      <body name="goal_b" pos="0.625 0.16 0.002">
+        <site name="goal_b_site" type="cylinder" size="0.05 0.001" rgba="0.3 0.5 0.9 0.4"/>
+      </body>
+    </frame>
   </worldbody>
 
 </mujoco>

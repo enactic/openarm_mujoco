@@ -72,6 +72,7 @@ def openarm_bimanual_paths() -> list[str]:
     """Return the list of the absolute path to bimanual file and the other required files/directories."""
     return [
         asset_path("openarm_bimanual.xml"),
+        asset_path("openarm_bimanual_model.xml"),
         asset_path("assets"),
         asset_path("openarm_bimanual_common.xml"),
         asset_path("components"),

@@ -1,0 +1,8 @@
+newmtl cell_white_sheet_mat
+Ka 0.95 0.94 0.9
+Kd 0.95 0.94 0.9
+Ks 0.05 0.05 0.05
+Ke 0 0 0
+Ns 10
+d 1
+illum 2

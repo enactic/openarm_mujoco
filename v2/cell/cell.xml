@@ -34,6 +34,7 @@ limitations under the License.
   <option timestep="0.001" integrator="implicitfast" cone="elliptic" impratio="10" />
 
   <visual>
+    <map znear="0.00714285714285714" /> <!-- 25 mm / extent -->
     <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
     <rgba haze="0.15 0.25 0.35 1"/>
     <global azimuth="0" elevation="-20"/>
@@ -45,12 +46,63 @@ limitations under the License.
     <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3"
       markrgb="0.8 0.8 0.8" width="300" height="300"/>
     <material name="groundplane"    texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
-    <material name="cell_matte_black"    rgba="0.247 0.247 0.247 1.0" reflectance="0.05" shininess="0.5"/>
-    <material name="cell_matte_offwhite" rgba="0.95 0.94 0.90 1"      reflectance="0.05" shininess="0.1"/>
-    <mesh name="cell_mesh"    file="visual/cell/cell.obj"   scale="0.01  0.01  0.01"/>
-    <mesh name="sheet_mesh"   file="visual/cell/sheet.obj"  scale="0.01  0.01  0.01"/>
+    <mesh name="cell_cam_pcb" file="visual/cell/cell_cam_pcb.obj" />
+    <mesh name="cell_cam_base_plate" file="visual/cell/cell_cam_base_plate.obj" />
+    <mesh name="cell_cam_lens" file="visual/cell/cell_cam_lens.obj" />
+    <mesh name="cell_frame" file="visual/cell/cell_frame.obj" />
+    <mesh name="cell_light_curtain_yellow" file="visual/cell/cell_light_curtain_yellow.obj" />
+    <mesh name="cell_light_curtain_black" file="visual/cell/cell_light_curtain_black.obj" />
+    <mesh name="cell_guide" file="visual/cell/cell_guide.obj" />
+    <mesh name="cell_cable_chain_support" file="visual/cell/cell_cable_chain_support.obj" />
+    <mesh name="cell_hardware" file="visual/cell/cell_hardware.obj" />
+    <mesh name="cell_left_wall" file="visual/cell/cell_left_wall.obj" />
+    <mesh name="cell_roof_left" file="visual/cell/cell_roof_left.obj" />
+    <mesh name="cell_right_wall" file="visual/cell/cell_right_wall.obj" />
+    <mesh name="cell_roof_right" file="visual/cell/cell_roof_right.obj" />
+    <mesh name="cell_front_wall" file="visual/cell/cell_front_wall.obj" />
+    <mesh name="cell_plastic" file="visual/cell/cell_plastic.obj" />
+    <mesh name="cell_cable_chain" file="visual/cell/cell_cable_chain.obj" />
+    <mesh name="cell_desktop" file="visual/cell/cell_desktop.obj" />
+    <mesh name="cell_ceiling_cam_support" file="visual/cell/cell_ceiling_cam_support.obj" />
+    <mesh name="cell_white_sheet" file="visual/cell/cell_white_sheet.obj" />
+    <mesh name="cell_carriage" file="visual/cell/cell_carriage.obj" />
+    <mesh name="zed_mount_00" file="visual/zed_mount/zed_mount_00.obj" />
+    <mesh name="zed_mount_01" file="visual/zed_mount/zed_mount_01.obj" />
+    <material name="cell_cam_pcb_mat" rgba="0.501960784 1 0.501960784 1" specular="0.0" shininess="0.0" />
+    <material name="cell_cam_base_plate_mat" rgba="0.220916 0.220916 0.234795 1" specular="0.1175" shininess="0.175" />
+    <material name="cell_cam_lens_mat" rgba="0.220916 0.220916 0.234795 1" specular="0.1175" shininess="0.175" />
+    <material name="cell_frame_mat" rgba="0.151704 0.151704 0.171844 1" specular="0.1675" shininess="0.175" />
+    <material name="cell_light_curtain_yellow_mat" rgba="0.95 0.65 0 1" specular="0.1675" shininess="0.175" />
+    <material name="cell_light_curtain_black_mat" rgba="0.151704 0.151704 0.171844 1" specular="0.1675" shininess="0.175" />
+    <material name="cell_guide_mat" rgba="0.151704 0.151704 0.171844 1" specular="0.1675" shininess="0.175" />
+    <material name="cell_cable_chain_support_mat" rgba="0.151704 0.151704 0.171844 1" specular="0.1675" shininess="0.175" />
+    <material name="cell_hardware_mat" rgba="0.62621 0.62621 0.62621 1" specular="0.28" shininess="0.3" />
+    <material name="cell_left_wall_mat" rgba="0.171844 0.189748 0.205984 1" specular="0.08" shininess="0.175" />
+    <material name="cell_roof_left_mat" rgba="0.171844 0.189748 0.205984 1" specular="0.08" shininess="0.175" />
+    <material name="cell_right_wall_mat" rgba="0.171844 0.189748 0.205984 1" specular="0.08" shininess="0.175" />
+    <material name="cell_roof_right_mat" rgba="0.171844 0.189748 0.205984 1" specular="0.08" shininess="0.175" />
+    <material name="cell_front_wall_mat" rgba="0.171844 0.189748 0.205984 1" specular="0.08" shininess="0.175" />
+    <material name="cell_plastic_mat" rgba="0.112075 0.112075 0.128354 1" specular="0.08" shininess="0.1" />
+    <material name="cell_cable_chain_mat" rgba="0.112075 0.112075 0.128354 1" specular="0.08" shininess="0.1" />
+    <material name="cell_desktop_mat" rgba="0.151704 0.151704 0.171844 1" specular="0.1675" shininess="0.175" />
+    <material name="cell_ceiling_cam_support_mat" rgba="0.151704 0.151704 0.171844 1" specular="0.1675" shininess="0.175" />
+    <material name="cell_white_sheet_mat" rgba="0.95 0.94 0.9 1" specular="0.05000000000000001" shininess="0.078125" />
+    <material name="cell_carriage_mat" rgba="0.62621 0.62621 0.62621 1" specular="0.28" shininess="0.3" />
+    <material name="zed_mount_00_mat" rgba="0.247 0.247 0.247 1" specular="0.0" shininess="0.0" />
+    <material name="zed_mount_01_mat" rgba="1 0.949019608 0.909803922 1" specular="0.0" shininess="0.0" />
     <!-- <mesh name="body_link0_5" file="visual/cell/cover.obj"  scale="0.001 0.001 0.001"/> -->
     <model name="bimanual" file="../openarm_bimanual_cell.xml"/>
+    <!-- ZED Mini mesh: Stereolabs, Apache-2.0.
+         Source: https://github.com/stereolabs/zed-ros2-description/tree/22468247c1653d08a1e213809f3e9ce76291487d -->
+    <mesh name="zedm" file="visual/zed/zedm.stl" />
+    <material name="zedm_mat" rgba="0 0 0 1" />
+    <mesh name="zed_mount_shell_collision" file="collision/zed_mount/zed_mount_shell.stl" />
+    <mesh name="zed_mount_support_collision" file="collision/zed_mount/zed_mount_support.stl" />
+    <mesh name="cell_table_left_ramp_mesh" file="collision/cell/table_left_ramp.stl" />
+    <mesh name="cell_table_right_ramp_mesh" file="collision/cell/table_right_ramp.stl" />
+    <mesh name="cell_table_front_ramp_mesh" file="collision/cell/table_front_ramp.stl" />
+    <mesh name="cell_column_left_brace_mesh" file="collision/cell/column_left_brace.stl" />
+    <mesh name="cell_column_right_brace_mesh" file="collision/cell/column_right_brace.stl" />
   </asset>
 
   <actuator>
@@ -59,38 +111,69 @@ limitations under the License.
   </actuator>
 
   <worldbody>
-
-    <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>
-
-    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
-
-    <geom name="cell_vis" type="mesh" mesh="cell_mesh"  pos="0 0.550 0"      euler="0 0 -1.5708" material="cell_matte_black"    class="cell_visual"/>
-    <geom name="sheet"    type="mesh" mesh="sheet_mesh" pos="0.4225 0 1.005" euler="0 0 -1.5708" material="cell_matte_offwhite" class="cell_visual"/>
-
-    <geom name="cell_table_col"      type="box" pos="0.41 0 1.00"    size="0.41 0.55 0.005" class="cell_collision"/>
-    <geom name="cell_left_wall_col"  type="box" pos="0.43 0.52 1.42" size="0.43 0.03 0.42"  class="cell_collision"/>
-    <geom name="cell_right_wall_col" type="box" pos="0.43 -0.52 1.42" size="0.43 0.03 0.42" class="cell_collision"/>
-    <geom name="cell_front_wall_col" type="box" pos="0.85 0 1.42"    size="0.03 0.49 0.42"  class="cell_collision"/>
-    <geom name="cell_roof_col"       type="box" pos="0.41 0 1.82"    size="0.41 0.55 0.005" class="cell_collision"/>
-    <geom name="cell_rail_col1"       type="box" pos="0.03 0 1.525"   size="0.03 0.03 0.3"  class="cell_collision"/>
-    <geom name="cell_rail_col2"       type="box" pos="0.0915 0 1.535"   size="0.0315 0.039 0.29"  class="cell_collision"/>
-    <!-- <geom name="cell_rail_col"       type="box" pos="0.058 0 1.55"   size="0.003 0.03 0.3"  class="cell_collision"/> -->
-
-    <camera name="camera_ceiling" pos="0.245 0 1.8" xyaxes="0 -1 0 1 0 0"    fovy="66" resolution="960 600"/>
-    <!-- need to adjust x after lifter link is adjusted -->
-    <camera name="camera_head_left"    pos="0.223 0.0315 1.45"  xyaxes="0 -1 0 0.882948 0 0.469472" fovy="52" resolution="1280 720"/>
-    <camera name="camera_head_right"    pos="0.223 -0.0315 1.45"  xyaxes="0 -1 0 0.882948 0 0.469472" fovy="52" resolution="1280 720"/>
-
-    <!-- lifter body: arms attach here and slide vertically -->
-    <body name="openarm_lifter_link" pos="0.185 0 1.34">
-      <!-- Attach first to import the shared visual and collision defaults. -->
-      <attach model="bimanual" prefix="" />
-      <geom name="body_lifter" type="box" pos="-0.01575 0 0"   size="0.04575 0.030 0.061"  material="cell_matte_black" class="cell_visual"/>
-      <geom name="body_lifter_col" type="box" pos="-0.01575 0 0"   size="0.04575 0.030 0.061"  class="cell_collision"/>
-      <inertial pos="0 0 0" mass="5.0" diaginertia="0.1 0.1 0.1"/>
-      <joint name="openarm_lifter_joint" class="lifter" axis="0 0 1" range="0 0.3"/>
-    </body>
-
+    <light pos="0 0 1.5" dir="0 0 -1" directional="true" />
+    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane" />
+    <frame name="cell_frame" pos="0 0 1.0075">
+      <frame name="cell_visual_frame">
+        <geom name="cell_vis_cam_pcb" type="mesh" mesh="cell_cam_pcb" material="cell_cam_pcb_mat" class="cell_visual" />
+        <geom name="cell_vis_cam_base_plate" type="mesh" mesh="cell_cam_base_plate" material="cell_cam_base_plate_mat" class="cell_visual" />
+        <geom name="cell_vis_cam_lens" type="mesh" mesh="cell_cam_lens" material="cell_cam_lens_mat" class="cell_visual" />
+        <geom name="cell_vis" type="mesh" mesh="cell_frame" material="cell_frame_mat" class="cell_visual" />
+        <geom name="cell_vis_light_curtain_yellow" type="mesh" mesh="cell_light_curtain_yellow" material="cell_light_curtain_yellow_mat" class="cell_visual" />
+        <geom name="cell_vis_light_curtain_black" type="mesh" mesh="cell_light_curtain_black" material="cell_light_curtain_black_mat" class="cell_visual" />
+        <geom name="cell_vis_guide" type="mesh" mesh="cell_guide" material="cell_guide_mat" class="cell_visual" />
+        <geom name="cell_vis_cable_chain_support" type="mesh" mesh="cell_cable_chain_support" material="cell_cable_chain_support_mat" class="cell_visual" />
+        <geom name="cell_vis_hardware" type="mesh" mesh="cell_hardware" material="cell_hardware_mat" class="cell_visual" />
+        <geom name="cell_vis_left_wall" type="mesh" mesh="cell_left_wall" material="cell_left_wall_mat" class="cell_visual" />
+        <geom name="cell_vis_roof_left" type="mesh" mesh="cell_roof_left" material="cell_roof_left_mat" class="cell_visual" />
+        <geom name="cell_vis_right_wall" type="mesh" mesh="cell_right_wall" material="cell_right_wall_mat" class="cell_visual" />
+        <geom name="cell_vis_roof_right" type="mesh" mesh="cell_roof_right" material="cell_roof_right_mat" class="cell_visual" />
+        <geom name="cell_vis_front_wall" type="mesh" mesh="cell_front_wall" material="cell_front_wall_mat" class="cell_visual" />
+        <geom name="cell_vis_plastic" type="mesh" mesh="cell_plastic" material="cell_plastic_mat" class="cell_visual" />
+        <geom name="cell_vis_cable_chain" type="mesh" mesh="cell_cable_chain" material="cell_cable_chain_mat" class="cell_visual" />
+        <geom name="cell_vis_desktop" type="mesh" mesh="cell_desktop" material="cell_desktop_mat" class="cell_visual" />
+        <geom name="cell_vis_ceiling_cam_support" type="mesh" mesh="cell_ceiling_cam_support" material="cell_ceiling_cam_support_mat" class="cell_visual" />
+        <geom name="sheet" type="mesh" mesh="cell_white_sheet" material="cell_white_sheet_mat" class="cell_visual" />
+      </frame>
+      <geom name="cell_left_wall_col" pos="0.425 0.52 0.435" class="cell_collision" type="box" size="0.425 0.03 0.44" />
+      <geom name="cell_right_wall_col" pos="0.425 -0.52 0.435" class="cell_collision" type="box" size="0.425 0.03 0.44" />
+      <geom name="cell_front_wall_col" pos="0.82 0 0.435" class="cell_collision" type="box" size="0.03 0.49 0.44" />
+      <geom name="cell_roof_col" pos="0.425 0 0.845" class="cell_collision" type="box" size="0.425 0.55 0.03" />
+      <geom name="cell_table_col" pos="0.425 0 -0.0325" class="cell_collision" type="box" size="0.425 0.55 0.0325" />
+      <geom name="cell_white_sheet_col" pos="0.4225 0 0.001" class="cell_collision" type="box" size="0.325 0.45 0.001" />
+      <geom name="table_left_ramp" pos="0.424995 0.500442281 0.044554719" class="cell_collision" type="mesh" mesh="cell_table_left_ramp_mesh" />
+      <geom name="table_right_ramp" pos="0.424995 -0.500442473 0.044554527" class="cell_collision" type="mesh" mesh="cell_table_right_ramp_mesh" />
+      <geom name="table_front_ramp" pos="0.800295544 0 0.044554422" class="cell_collision" type="mesh" mesh="cell_table_front_ramp_mesh" />
+      <geom name="cell_roof_col_camera_bracket" pos="0.529165 0 0.787735" class="cell_collision" type="box" size="0.061835 0.03 0.032745" />
+      <geom name="cell_roof_col_camera_body" pos="0.52392 5e-06 0.737925" class="cell_collision" type="box" size="0.01925 0.016995 0.020575" />
+      <geom name="cell_rail_col1" pos="0.03 0 0.515" class="cell_collision" type="box" size="0.03 0.03 0.3" />
+      <geom name="cell_rail_col2" pos="0.0975 0 0.515" class="cell_collision" type="box" size="0.0375 0.0417 0.3" />
+      <geom name="cell_rail_col1_cable_chain" pos="0.065 -0.053075 0.489185" class="cell_collision" type="box" size="0.06 0.023075 0.237675" />
+      <geom name="cell_rail_col1_brace_left" pos="0.03 0.080515355 0.764617721" class="cell_collision" type="mesh" mesh="cell_column_left_brace_mesh" />
+      <geom name="cell_rail_col1_brace_right" pos="0.03 -0.08051979 0.764622155" class="cell_collision" type="mesh" mesh="cell_column_right_brace_mesh" />
+      <camera name="camera_ceiling" pos="0.245 0 0.795" xyaxes="0 -1 0 1 0 0" fovy="66" resolution="960 600" />
+      <body name="openarm_lifter_link" pos="0.185 0 0.34">
+        <!-- Attach first to import the shared visual and collision defaults. -->
+        <attach model="bimanual" prefix="" />
+        <geom name="body_lifter" type="mesh" mesh="cell_carriage" material="cell_carriage_mat" class="cell_visual" />
+        <frame name="zed_mount_visual" pos="0.03 0 0.046">
+          <geom name="zed_mount_00_visual" type="mesh" mesh="zed_mount_00" material="zed_mount_00_mat" class="cell_visual" />
+          <geom name="zed_mount_01_visual" type="mesh" mesh="zed_mount_01" material="zed_mount_01_mat" class="cell_visual" />
+          <!-- Mesh pose includes the official camera-center offset. -->
+          <geom name="zedm_visual" type="mesh" mesh="zedm" pos="0.0386446426247 0.000966585 0.0710378956814" euler="0 1.08210413624 0" material="zedm_mat" class="cell_visual" />
+          <camera name="camera_head_left" pos="0.0386446426247 0.032466585 0.0710378956814" xyaxes="0 -1 0 0.882947592859 0 0.469471562786" fovy="52" resolution="1280 720" />
+          <camera name="camera_head_right" pos="0.0386446426247 -0.030533415 0.0710378956814" xyaxes="0 -1 0 0.882947592859 0 0.469471562786" fovy="52" resolution="1280 720" />
+        </frame>
+        <frame name="zed_mount_collision" pos="0.03 0 0.046">
+          <geom name="zed_mount_shell_collision" type="mesh" mesh="zed_mount_shell_collision" class="cell_collision" />
+          <geom name="zed_mount_support_collision" type="mesh" mesh="zed_mount_support_collision" class="cell_collision" />
+          <geom name="zedm_collision" type="mesh" mesh="zedm" class="cell_collision" pos="0.0386446426247 0.000966585 0.0710378956814" euler="0 1.08210413624 0" />
+        </frame>
+        <geom name="body_lifter_col" type="box" pos="-0.00975 0 0" size="0.03975 0.03 0.061" class="cell_collision" />
+        <inertial pos="-0.058048 0 -0.009924" mass="2.82498" fullinertia="0.004187795 0.00548083 0.004165976 0 -0.000783984 0" />
+        <joint name="openarm_lifter_joint" class="lifter" axis="0 0 1" range="0 0.3" />
+      </body>
+    </frame>
   </worldbody>
   <keyframe>
     <key name="home"

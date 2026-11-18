@@ -16,9 +16,8 @@ limitations under the License.
 
 <!--
 Cell variant of peg_socket_scene.xml: the same cylindrical peg and octagonal
-socket, placed on the cell workspace table. Objects keep their pose relative to
-the arm base (pedestal scene -> cell: x+0.185, z+0.605; pedestal table top
-z=0.40, cell table top z=1.005). The cell provides floor, lights, cameras and
+socket, placed on the cell workspace table. Objects use the sheet surface (z=1.0095) as their height reference.
+The cell provides floor, lights, cameras and
 the "home" keyframe via <attach>; the peg starts at its body-pos default.
 -->
 <mujoco model="openarm_v20_peg_socket_cell">
@@ -28,6 +27,7 @@ the "home" keyframe via <attach>; the peg starts at its body-pos default.
   <option timestep="0.001" integrator="implicitfast" cone="elliptic" impratio="10"/>
 
   <visual>
+    <map znear="0.00714285714285714" /> <!-- 25 mm / extent -->
     <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
     <rgba haze="0.15 0.25 0.35 1"/>
     <global azimuth="0" elevation="-20"/>
@@ -41,29 +41,31 @@ the "home" keyframe via <attach>; the peg starts at its body-pos default.
   <worldbody>
     <attach model="cell" prefix=""/>
 
-    <!-- The peg: a cylinder (radius 0.014, half-length 0.045) standing on the
-         table, clear of the grippers' home-pose footprint. -->
-    <body name="peg" pos="0.545 -0.10 1.05">
-      <joint name="peg_free" type="free"/>
-      <geom name="peg_geom" type="cylinder" size="0.014 0.045" rgba="0.15 0.3 0.85 1"
-            mass="0.05" friction="2.0 0.1 0.01" contype="1" conaffinity="1" />
-    </body>
+    <frame name="cell_task_surface" pos="0 0 1.0095">
+      <!-- The peg: a cylinder (radius 0.014, half-length 0.045) standing on the
+           table, clear of the grippers' home-pose footprint. -->
+      <body name="peg" pos="0.545 -0.1 0.045">
+        <joint name="peg_free" type="free"/>
+        <geom name="peg_geom" type="cylinder" size="0.014 0.045" rgba="0.15 0.3 0.85 1"
+              mass="0.05" friction="2.0 0.1 0.01" contype="1" conaffinity="1" />
+      </body>
 
-    <!-- The socket: a CIRCULAR pocket approximated by eight wall segments forming
-         an octagon (inner apothem 0.020 m, walls 0.05 m tall). The round peg
-         (radius 0.014 m) threads down through the centre and rests on the table;
-         a cylinder needs no yaw alignment, so any approach orientation works. -->
-    <body name="socket" pos="0.545 -0.26 1.005">
-      <geom name="socket_0" type="box" size="0.012 0.005 0.025" pos="0.025 0 0.025" euler="0 0 1.5708" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
-      <geom name="socket_1" type="box" size="0.012 0.005 0.025" pos="0.01768 0.01768 0.025" euler="0 0 2.3562" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
-      <geom name="socket_2" type="box" size="0.012 0.005 0.025" pos="0 0.025 0.025" euler="0 0 3.1416" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
-      <geom name="socket_3" type="box" size="0.012 0.005 0.025" pos="-0.01768 0.01768 0.025" euler="0 0 3.9270" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
-      <geom name="socket_4" type="box" size="0.012 0.005 0.025" pos="-0.025 0 0.025" euler="0 0 4.7124" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
-      <geom name="socket_5" type="box" size="0.012 0.005 0.025" pos="-0.01768 -0.01768 0.025" euler="0 0 5.4978" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
-      <geom name="socket_6" type="box" size="0.012 0.005 0.025" pos="0 -0.025 0.025" euler="0 0 0" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
-      <geom name="socket_7" type="box" size="0.012 0.005 0.025" pos="0.01768 -0.01768 0.025" euler="0 0 0.7854" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
-      <site name="socket_center" pos="0 0 0.05" size="0.004" rgba="0.9 0.2 0.2 0.6"/>
-    </body>
+      <!-- The socket: a CIRCULAR pocket approximated by eight wall segments forming
+           an octagon (inner apothem 0.020 m, walls 0.05 m tall). The round peg
+           (radius 0.014 m) threads down through the centre and rests on the table;
+           a cylinder needs no yaw alignment, so any approach orientation works. -->
+      <body name="socket" pos="0.545 -0.26 0">
+        <geom name="socket_0" type="box" size="0.012 0.005 0.025" pos="0.025 0 0.025" euler="0 0 1.5708" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+        <geom name="socket_1" type="box" size="0.012 0.005 0.025" pos="0.01768 0.01768 0.025" euler="0 0 2.3562" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+        <geom name="socket_2" type="box" size="0.012 0.005 0.025" pos="0 0.025 0.025" euler="0 0 3.1416" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+        <geom name="socket_3" type="box" size="0.012 0.005 0.025" pos="-0.01768 0.01768 0.025" euler="0 0 3.9270" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+        <geom name="socket_4" type="box" size="0.012 0.005 0.025" pos="-0.025 0 0.025" euler="0 0 4.7124" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+        <geom name="socket_5" type="box" size="0.012 0.005 0.025" pos="-0.01768 -0.01768 0.025" euler="0 0 5.4978" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+        <geom name="socket_6" type="box" size="0.012 0.005 0.025" pos="0 -0.025 0.025" euler="0 0 0" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+        <geom name="socket_7" type="box" size="0.012 0.005 0.025" pos="0.01768 -0.01768 0.025" euler="0 0 0.7854" rgba="0.5 0.5 0.55 1" contype="1" conaffinity="1"/>
+        <site name="socket_center" pos="0 0 0.05" size="0.004" rgba="0.9 0.2 0.2 0.6"/>
+      </body>
+    </frame>
   </worldbody>
 
   <equality>
