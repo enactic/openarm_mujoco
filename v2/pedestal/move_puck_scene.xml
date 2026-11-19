@@ -27,7 +27,7 @@ puck can be pushed to a goal with the closed gripper, or grasped and placed
   <option timestep="0.001" integrator="implicitfast" cone="elliptic" impratio="10" />
 
   <visual>
-    <map znear="0.0227272727272727" /> <!-- 25 mm / extent -->
+    <map znear="0.0185454545454545" /> <!-- Near clip: 20.4 mm -->
     <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
     <rgba haze="0.15 0.25 0.35 1"/>
     <global azimuth="150" elevation="-20"/>

@@ -90,7 +90,10 @@ limitations under the License.
                 <geom name="ee_base_link_left_04" pos="0.0205 0 0" quat="1 0 0 0" type="mesh" mesh="ee_base_link_left_04" class="visual" material="ee_base_link_04_mat" />
                 <geom name="ee_base_link_left_05" pos="0.0205 0 0" quat="1 0 0 0" type="mesh" mesh="ee_base_link_left_05" class="visual" material="ee_base_link_05_mat" />
                 <geom name="ee_base_link_left_collision_00" pos="0.0205 0 0" quat="1 0 0 0" type="mesh" mesh="ee_base_link_left_collision_00" class="collision" />
-                <camera name="camera_wrist_left" pos="0.023 0.0182 -0.10236" euler="-0.366519 0.22689 -1.5708" fovy="66" resolution="960 600" />
+                <!-- legacy frame (original MuJoCo): pos="0.023 0.0182 -0.10236" euler="-0.366519 0.22689 -1.5708".
+                     legacy frame (unshifted CAD/Isaac): pos="0.0218353 0.024136 -0.086895" quat="0.676215661106 -0.206761341879 -0.049327479509 -0.705371481522".
+                     Manually shifted 16 mm forward after real-image comparison; further calibration required. -->
+                <camera name="camera_wrist_left" pos="0.018235698724 0.0185484974467 -0.101449129513" quat="0.676215661106 -0.206761341879 -0.049327479509 -0.705371481522" fovy="52.9" resolution="960 600" />
                 <site name="left_ee_control_point" pos="0 0 0.0" size="0.01" rgba="0 1 0 1" />
                 <body name="openarm_left_ee_inner_finger" pos="-0.00143 -0.018 -0.068">
                   <inertial pos="-0.0124991 -0.00176593 -0.0241663" quat="0.982638 0.0922084 -0.15927 -0.0235197" mass="0.125979" diaginertia="3.8543e-05 3.6883e-05 1.43942e-05" />
