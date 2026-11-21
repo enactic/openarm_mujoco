@@ -159,19 +159,24 @@ limitations under the License.
         <!-- Attach first to import the shared visual and collision defaults. -->
         <attach model="bimanual" prefix="" />
         <geom name="body_lifter" type="mesh" mesh="cell_carriage" material="cell_carriage_mat" class="cell_visual" />
-        <frame name="zed_mount_visual" pos="0.03 0 0.046">
-          <geom name="zed_mount_00_visual" type="mesh" mesh="zed_mount_00" material="zed_mount_00_mat" class="cell_visual" />
-          <geom name="zed_mount_01_visual" type="mesh" mesh="zed_mount_01" material="zed_mount_01_mat" class="cell_visual" />
-          <!-- Mesh pose includes the official camera-center offset. -->
-          <geom name="zedm_visual" type="mesh" mesh="zedm" pos="0.0386446426247 0.000966585 0.0710378956814" euler="0 1.08210413624 0" material="zedm_mat" class="cell_visual" />
-          <camera name="camera_head_left" pos="0.0386446426247 0.032466585 0.0710378956814" xyaxes="0 -1 0 0.882947592859 0 0.469471562786" fovy="52" resolution="1280 720" />
-          <camera name="camera_head_right" pos="0.0386446426247 -0.030533415 0.0710378956814" xyaxes="0 -1 0 0.882947592859 0 0.469471562786" fovy="52" resolution="1280 720" />
-        </frame>
-        <frame name="zed_mount_collision" pos="0.03 0 0.046">
-          <geom name="zed_mount_shell_collision" type="mesh" mesh="zed_mount_shell_collision" class="cell_collision" />
-          <geom name="zed_mount_support_collision" type="mesh" mesh="zed_mount_support_collision" class="cell_collision" />
-          <geom name="zedm_collision" type="mesh" mesh="zedm" class="cell_collision" pos="0.0386446426247 0.000966585 0.0710378956814" euler="0 1.08210413624 0" />
-        </frame>
+        <body name="openarm_body_zed_support_base_link" pos="0.03 0 0.046">
+          <!-- Mount mass properties from openarm_description; camera inertia is not specified separately there. -->
+          <inertial pos="0.014296 0.0034952 0.047826" mass="0.13704"
+            fullinertia="0.00018293 0.00011247 0.00012779 -6.3997e-06 -3.1024e-05 -8.6526e-06" />
+          <frame name="zed_mount_visual">
+            <geom name="zed_mount_00_visual" type="mesh" mesh="zed_mount_00" material="zed_mount_00_mat" class="cell_visual" />
+            <geom name="zed_mount_01_visual" type="mesh" mesh="zed_mount_01" material="zed_mount_01_mat" class="cell_visual" />
+            <!-- Mesh pose includes the official camera-center offset. -->
+            <geom name="zedm_visual" type="mesh" mesh="zedm" pos="0.0386446426247 0.000966585 0.0710378956814" euler="0 1.08210413624 0" material="zedm_mat" class="cell_visual" />
+            <camera name="camera_head_left" pos="0.0386446426247 0.032466585 0.0710378956814" xyaxes="0 -1 0 0.882947592859 0 0.469471562786" fovy="52" resolution="1280 720" />
+            <camera name="camera_head_right" pos="0.0386446426247 -0.030533415 0.0710378956814" xyaxes="0 -1 0 0.882947592859 0 0.469471562786" fovy="52" resolution="1280 720" />
+          </frame>
+          <frame name="zed_mount_collision">
+            <geom name="zed_mount_shell_collision" type="mesh" mesh="zed_mount_shell_collision" class="cell_collision" />
+            <geom name="zed_mount_support_collision" type="mesh" mesh="zed_mount_support_collision" class="cell_collision" />
+            <geom name="zedm_collision" type="mesh" mesh="zedm" class="cell_collision" pos="0.0386446426247 0.000966585 0.0710378956814" euler="0 1.08210413624 0" />
+          </frame>
+        </body>
         <geom name="body_lifter_col" type="box" pos="-0.00975 0 0" size="0.03975 0.03 0.061" class="cell_collision" />
         <inertial pos="-0.058048 0 -0.009924" mass="2.82498" fullinertia="0.004187795 0.00548083 0.004165976 0 -0.000783984 0" />
         <joint name="openarm_lifter_joint" class="lifter" axis="0 0 1" range="0 0.3" />
