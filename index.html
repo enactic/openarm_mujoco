@@ -47,6 +47,14 @@
         <pre id="help"></pre>
       </details>
       <details>
+        <summary>External control</summary>
+        <label class="xr-label">WebSocket URLs (comma-separated)
+          <input id="remote-urls" style="width: 95%" value="ws://127.0.0.1:1337, ws://127.0.0.1:1338" />
+        </label>
+        <button id="remote-connect">Connect</button><button id="remote-disconnect" disabled>Disconnect</button>
+        <div id="remote-status">Local control</div>
+      </details>
+      <details>
         <summary>WebXR</summary>
         <label class="xr-label">
           hands

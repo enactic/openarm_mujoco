@@ -44,7 +44,7 @@ import {
   SHININESS_SCALE,
   skybox,
 } from "./appearance.js";
-import { PoseController } from "./ik.js";
+import { PoseController, poseWorldToLocal } from "./ik.js";
 import {
   drivesMotion,
   HELP_TEXT,
@@ -53,6 +53,7 @@ import {
   ROTATION_KEY,
 } from "./keymap.js";
 import { buildVFS } from "./model-vfs.js";
+import { RemoteControlBridge } from "./remote-control.js";
 import { TeleopState } from "./teleop.js";
 import { readFrame } from "./xr-frame.js";
 import { XRHUD } from "./xr-hud.js";
@@ -211,6 +212,7 @@ class App {
   }
 
   disposeScene() {
+    this.bridge?.close();
     for (const mesh of this.meshes) {
       this.world.remove(mesh);
       mesh.material.dispose();
@@ -553,6 +555,61 @@ class App {
     }
   }
 
+  connectRemoteControl(urls) {
+    if (!this.mjModel || this.bridge) return;
+    this.held.clear();
+    this.teleop.cancelHome();
+    this.holdCurrentPose();
+    this.bridge = new RemoteControlBridge(
+      mujoco,
+      this.mjModel,
+      this.mjData,
+      (reason) => {
+        this.bridge = null;
+        this.holdCurrentPose();
+        document.getElementById("remote-status").textContent = reason;
+        document.getElementById("remote-connect").disabled = false;
+        document.getElementById("remote-disconnect").disabled = true;
+        document.getElementById("reset-button").disabled = false;
+        document.getElementById("scene-select").disabled = false;
+      },
+      this.scenePath,
+    );
+    document.getElementById("remote-connect").disabled = true;
+    document.getElementById("remote-disconnect").disabled = false;
+    document.getElementById("reset-button").disabled = true;
+    document.getElementById("scene-select").disabled = true;
+    this.bridge.connect(urls);
+  }
+
+  holdCurrentPose() {
+    if (!this.controller) return;
+    const origin = this.controller.originPose(this.mjData);
+    this.controller.syncFrom(this.mjData);
+    for (const side of SIDES) {
+      const arm = this.controller.arms[side];
+      const pose = arm.pose(this.mjData);
+      const local = poseWorldToLocal(origin, pose.pos, pose.quat);
+      this.teleop.arms[side].pos = local.pos;
+      this.teleop.arms[side].quat = local.quat;
+      arm.actIds.forEach((aid, i) => {
+        this.mjData.ctrl[aid] = this.mjData.qpos[arm.qposIds[i]];
+      });
+      const aid = arm.gripperActId;
+      const jid = this.mjModel.actuator_trnid[2 * aid];
+      const q = this.mjData.qpos[this.mjModel.jnt_qposadr[jid]];
+      this.mjData.ctrl[aid] = q;
+      const end = arm.gripperRange.reduce((a, b) =>
+        Math.abs(a) > Math.abs(b) ? a : b,
+      );
+      this.teleop.arms[side].grip = 1 - Math.min(1, Math.max(0, q / end));
+    }
+    if (this.controller.lifterQposId >= 0) {
+      this.lifterHeight = this.mjData.qpos[this.controller.lifterQposId];
+      this.controller.commandLifter(this.mjData, this.lifterHeight);
+    }
+  }
+
   reset() {
     if (!this.controller) return; // scene is loading (or failed to load)
     this.teleop.reset();
@@ -699,16 +756,19 @@ class App {
 
     // Controller poses overwrite the targets; held keys still integrate on
     // top (the desktop keyboard keeps working alongside a headset).
-    if (xrFrame && this.renderer.xr.isPresenting) {
+    if (!this.bridge && xrFrame && this.renderer.xr.isPresenting) {
       const session = this.renderer.xr.getSession();
       const space = this.renderer.xr.getReferenceSpace();
       if (session && space) {
         this.applyXRFrame(readFrame(session, space, xrFrame), now / 1000);
       }
     }
-    this.teleop.step(dt, this.held);
-
-    this.applyTargets();
+    if (!this.bridge) {
+      this.teleop.step(dt, this.held);
+      this.applyTargets();
+    }
+    for (const marker of Object.values(this.markers ?? {}))
+      marker.visible = !this.bridge;
 
     // Advance physics (with gravity compensation) by the real elapsed time.
     // Physics only moves in model-timestep steps, so carry the target time
@@ -716,8 +776,10 @@ class App {
     this.simTarget = (this.simTarget ?? this.mjData.time) + dt;
     while (this.mjData.time < this.simTarget) {
       this.controller.applyGravityComp(this.mjData);
+      this.bridge?.beforeStep();
       mujoco.mj_step(this.mjModel, this.mjData);
     }
+    this.bridge?.afterStep();
 
     // Sync MuJoCo scene into three.js.
     mujoco.mjv_updateScene(
@@ -783,6 +845,13 @@ class App {
   }
 
   updateStatus() {
+    if (this.bridge) {
+      document.getElementById("remote-status").textContent = this.bridge.status;
+      this.statusElement.textContent =
+        "External controller controls the joints";
+      this.lastStatus = null;
+      return;
+    }
     const lines = [];
     if (this.teleop.homing) lines.push("returning to the home pose");
     for (const side of SIDES) {
@@ -839,6 +908,7 @@ function setupKeyboard(app) {
   // Shift and released after it would otherwise never leave `held`.
   const keyName = (event) => event.key.toLowerCase();
   window.addEventListener("keydown", (event) => {
+    if (app.bridge) return;
     if (event.ctrlKey || event.altKey || event.metaKey) return;
     // Held keys are tracked by keydown and keyup; auto-repeat adds nothing,
     // and must not cancel a home return started while a key was down.
@@ -911,6 +981,20 @@ async function main() {
   setupKeyboard(app);
   document.getElementById("help").textContent = HELP_TEXT;
   document.getElementById("reset-button").onclick = () => app.reset();
+  document.getElementById("remote-connect").onclick = () => {
+    const urls = document
+      .getElementById("remote-urls")
+      .value.split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (urls.length) app.connectRemoteControl(urls);
+  };
+  document.getElementById("remote-disconnect").onclick = () =>
+    app.bridge?.close();
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden)
+      app.bridge?.close("Tab hidden; external controller disconnected");
+  });
 
   // WebXR: three's button (bottom center of the page) says "VR NOT
   // SUPPORTED" / "WEBXR NEEDS HTTPS" itself where a session cannot start.
