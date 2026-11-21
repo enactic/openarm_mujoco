@@ -62,7 +62,12 @@ limitations under the License.
     <material name="default_material" rgba="0.7 0.7 0.7 1" />
     <material name="collision_material" rgba="1.0 0.28 0.1 0.9" />
 
-    <mesh name="body_collision" file="collision/body/body_link0.stl" scale="0.001 0.001 0.001" />
+    <mesh name="body_column_collision" file="collision/body/split_6parts/column.stl" />
+    <mesh name="body_diagonal_brace_collision" file="collision/body/split_6parts/diagonal_brace.stl" />
+    <mesh name="body_base_plate_collision" file="collision/body/split_6parts/base_plate.stl" />
+    <mesh name="body_base_bracket_left_collision" file="collision/body/split_6parts/base_bracket_left.stl" />
+    <mesh name="body_base_bracket_right_collision" file="collision/body/split_6parts/base_bracket_right.stl" />
+    <mesh name="body_chest_cover_collision" file="collision/body/split_6parts/chest_cover.stl" />
     <mesh name="link0_collision" file="collision/arm/link0.stl" scale="0.001 0.001 0.001" />
     <mesh name="link0_collision_left" file="collision/arm/link0_left.stl" scale="0.001 0.001 0.001" />
     <mesh name="link1_collision" file="collision/arm/link1.stl" scale="0.001 0.001 0.001" />
@@ -143,8 +148,12 @@ limitations under the License.
       <site name="arm_origin" pos="0 0 0.697" size="0.02" rgba="1 0.8 0 1" group="4" />
       <inertial pos="-0.016206894902 0 0.244091987626" quat="1.0 0.0 0.0 0.0" mass="3.74"
         diaginertia="0.248946829107 0.253033907704 0.0140271775534" />
-      <geom name="openarm_body_link0_collision" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" type="mesh"
-        mesh="body_link0_3.obj" class="collision" />
+      <geom name="openarm_body_column_collision" type="mesh" mesh="body_column_collision" class="collision" />
+      <geom name="openarm_body_diagonal_brace_collision" type="mesh" mesh="body_diagonal_brace_collision" class="collision" />
+      <geom name="openarm_body_base_plate_collision" type="mesh" mesh="body_base_plate_collision" class="collision" />
+      <geom name="openarm_body_base_bracket_left_collision" type="mesh" mesh="body_base_bracket_left_collision" class="collision" />
+      <geom name="openarm_body_base_bracket_right_collision" type="mesh" mesh="body_base_bracket_right_collision" class="collision" />
+      <geom name="openarm_body_chest_cover_collision" type="mesh" mesh="body_chest_cover_collision" class="collision" />
       <geom name="openarm_body_link0_visual_0" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0"
         material="matte_black" type="mesh" mesh="body_link0_0.obj" class="visual" />
       <geom name="openarm_body_link0_visual_1" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0"
