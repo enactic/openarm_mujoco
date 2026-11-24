@@ -16,7 +16,7 @@ limitations under the License.
 -->
 
 <mujoco model="openarm">
-  <option timestep="0.001" integrator="implicitfast" />
+  <option timestep="0.001" integrator="implicitfast" cone="elliptic" impratio="10" />
 
   <default>
     <!-- <geom friction="0.0001" margin="0.0005" /> -->
@@ -49,6 +49,9 @@ limitations under the License.
           solref="0.005 1" friction="1 0.01 0.01" />
         <!-- <material name="collision_material" rgba="1 0 0 0.5" specular="0.2" shininess="0.1"/> -->
         <equality solimp="0.99 0.999 1e-05" solref="0.005 1" />
+        <default class="fingertip">
+          <geom condim="4" />
+        </default>
       </default>
       <default class="visual">
         <geom material="visualgeom" contype="0" conaffinity="0" group="2" />
@@ -309,7 +312,7 @@ limitations under the License.
                             fullinertia="3.284268617249738e-05 4.17523619254798e-05 1.882116318207188e-05 -4.813534779503441e-07 4.110240982958172e-06 -3.504307786795564e-06" />
                           <geom name="openarm_left_right_finger_collision"
                             pos="0.0 0.05 -0.673001" quat="0 0 0 1" type="mesh"
-                            mesh="finger_collision" class="collision" />
+                            mesh="finger_collision" class="fingertip" />
                           <geom name="openarm_left_right_finger_visual_0" pos="0.0 0.05 -0.673001"
                             quat="0 0 0 1" material="default_material" type="mesh"
                             mesh="finger_0.obj" class="visual" />
@@ -325,7 +328,7 @@ limitations under the License.
                             fullinertia="3.284268617249738e-05 4.17523619254798e-05 1.882116318207188e-05 -4.813534779503441e-07 -4.110240982958172e-06 3.504307786795564e-06" />
                           <geom name="openarm_left_left_finger_collision"
                             pos="0.0 -0.05 -0.673001" quat="1.0 0.0 0.0 0.0" type="mesh"
-                            mesh="finger_collision" class="collision" />
+                            mesh="finger_collision" class="fingertip" />
                           <geom name="openarm_left_left_finger_visual_0" pos="0.0 -0.05 -0.673001"
                             quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh"
                             mesh="finger_0.obj" class="visual" />
@@ -485,7 +488,7 @@ limitations under the License.
                             fullinertia="3.284268617249738e-05 4.17523619254798e-05 1.882116318207188e-05 -4.813534779503441e-07 4.110240982958172e-06 -3.504307786795564e-06" />
                           <geom name="openarm_right_right_finger_collision"
                             pos="0.0 0.05 -0.673001" quat="0 0 0 1" type="mesh"
-                            mesh="finger_collision" class="collision" />
+                            mesh="finger_collision" class="fingertip" />
                           <geom name="openarm_right_right_finger_visual_0"
                             pos="0.0 0.05 -0.673001" quat="0 0 0 1"
                             material="default_material" type="mesh" mesh="finger_0.obj"
@@ -502,7 +505,7 @@ limitations under the License.
                             fullinertia="3.284268617249738e-05 4.17523619254798e-05 1.882116318207188e-05 -4.813534779503441e-07 -4.110240982958172e-06 3.504307786795564e-06" />
                           <geom name="openarm_right_left_finger_collision"
                             pos="0.0 -0.05 -0.673001" quat="1.0 0.0 0.0 0.0" type="mesh"
-                            mesh="finger_collision" class="collision" />
+                            mesh="finger_collision" class="fingertip" />
                           <geom name="openarm_right_left_finger_visual_0"
                             pos="0.0 -0.05 -0.673001" quat="1.0 0.0 0.0 0.0"
                             material="default_material" type="mesh" mesh="finger_0.obj"
