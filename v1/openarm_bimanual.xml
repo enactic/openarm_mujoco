@@ -190,22 +190,22 @@ limitations under the License.
             material="matte_black" type="mesh" mesh="link1_2_left.obj" class="visual" />
           <geom name="openarm_left_link1_visual_3" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0"
             material="matte_black" type="mesh" mesh="link1_3_left.obj" class="visual" />
-          <body name="openarm_left_link2" pos="-0.0301 0.0 0.06"
+          <body name="openarm_left_link2" pos="0.0 0.0 0.06"
             quat="0.7071067811882787 -0.7071067811848163 0.0 0.0">
             <joint name="openarm_left_joint2" type="hinge" ref="0.0" class="motor_DM8009"
               range="-3.3161253267948965 0.17453267320510335" axis="-1 0 0" />
-            <inertial pos="0.00839629182351943 2.0145102027597523e-08 0.03256649300522363"
+            <inertial pos="-0.02170370817648057 2.0145102027597523e-08 0.03256649300522363"
               mass="0.2775092746011571"
               fullinertia="0.000359 0.000376 0.000232 -1e-06 -0.000109 -1e-06" />
-            <geom name="openarm_left_link2_collision" pos="0.0301 0.0 -0.1225"
+            <geom name="openarm_left_link2_collision" pos="0.0 0.0 -0.1225"
               quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link2_collision_left" class="collision" />
-            <geom name="openarm_left_link2_visual_0" pos="0.0301 0.0 -0.1225" quat="1.0 0.0 0.0 0.0"
+            <geom name="openarm_left_link2_visual_0" pos="0.0 0.0 -0.1225" quat="1.0 0.0 0.0 0.0"
               material="matte_black" type="mesh" mesh="link2_0_left.obj" class="visual" />
-            <geom name="openarm_left_link2_visual_1" pos="0.0301 0.0 -0.1225" quat="1.0 0.0 0.0 0.0"
+            <geom name="openarm_left_link2_visual_1" pos="0.0 0.0 -0.1225" quat="1.0 0.0 0.0 0.0"
               material="matte_black" type="mesh" mesh="link2_1_left.obj" class="visual" />
-            <geom name="openarm_left_link2_visual_2" pos="0.0301 0.0 -0.1225" quat="1.0 0.0 0.0 0.0"
+            <geom name="openarm_left_link2_visual_2" pos="0.0 0.0 -0.1225" quat="1.0 0.0 0.0 0.0"
               material="matte_black" type="mesh" mesh="link2_2_left.obj" class="visual" />
-            <body name="openarm_left_link3" pos="0.0301 0.0 0.06625" quat="1.0 0.0 0.0 0.0">
+            <body name="openarm_left_link3" pos="0.0 0.0 0.06625" quat="1.0 0.0 0.0 0.0">
               <joint name="openarm_left_joint3" type="hinge" ref="0.0" class="motor_DM4340"
                 range="-1.570796 1.570796" axis="0 0 1" />
               <inertial pos="-0.002104752099628911 0.0005549085042607548 0.09047470545721961"
@@ -222,24 +222,24 @@ limitations under the License.
               <geom name="openarm_left_link3_visual_2" pos="-0.0 -0.0 -0.18875"
                 quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link3_2.obj"
                 class="visual" />
-              <body name="openarm_left_link4" pos="-0.0 0.0315 0.15375" quat="1.0 0.0 0.0 0.0">
+              <body name="openarm_left_link4" pos="0.0 0.0 0.15375" quat="1.0 0.0 0.0 0.0">
                 <joint name="openarm_left_joint4" type="hinge" ref="0.0" class="motor_DM4340"
                   range="0.0 2.443461" axis="0 1 0" />
-                <inertial pos="-0.0029006831074562967 -0.03030575826634669 0.06339637422196209"
+                <inertial pos="-0.0029006831074562967 0.00119424173365331 0.06339637422196209"
                   mass="0.6348534566833373"
                   fullinertia="0.000623 0.000511 0.000334 -1e-06 -1.9e-05 3.8e-05" />
-                <geom name="openarm_left_link4_collision" pos="0.0 -0.0315 -0.3425"
+                <geom name="openarm_left_link4_collision" pos="0.0 0.0 -0.3425"
                   quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link4_collision" class="collision" />
-                <geom name="openarm_left_link4_visual_0" pos="0.0 -0.0315 -0.3425"
+                <geom name="openarm_left_link4_visual_0" pos="0.0 0.0 -0.3425"
                   quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link4_0.obj"
                   class="visual" />
-                <geom name="openarm_left_link4_visual_1" pos="0.0 -0.0315 -0.3425"
+                <geom name="openarm_left_link4_visual_1" pos="0.0 0.0 -0.3425"
                   quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link4_1.obj"
                   class="visual" />
-                <geom name="openarm_left_link4_visual_2" pos="0.0 -0.0315 -0.3425"
+                <geom name="openarm_left_link4_visual_2" pos="0.0 0.0 -0.3425"
                   quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link4_2.obj"
                   class="visual" />
-                <body name="openarm_left_link5" pos="0.0 -0.0315 0.0955" quat="1.0 0.0 0.0 0.0">
+                <body name="openarm_left_link5" pos="0.0 0.0 0.0955" quat="1.0 0.0 0.0 0.0">
                   <joint name="openarm_left_joint5" type="hinge" ref="0.0" class="motor_DM4310"
                     range="-1.570796 1.570796" axis="0 0 1" />
                   <inertial pos="-0.003049665024221911 -0.0008866902457326625 0.043079803024980934"
@@ -256,22 +256,22 @@ limitations under the License.
                   <geom name="openarm_left_link5_visual_2" pos="-0.0 -0.0 -0.438"
                     quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link5_2_left.obj"
                     class="visual" />
-                  <body name="openarm_left_link6" pos="0.0375 0.0 0.1205" quat="1.0 0.0 0.0 0.0">
+                  <body name="openarm_left_link6" pos="0.0 0.0 0.1205" quat="1.0 0.0 0.0 0.0">
                     <joint name="openarm_left_joint6" type="hinge" ref="0.0" class="motor_DM4310"
                       range="-0.785398 0.785398" axis="1 0 0" />
-                    <inertial pos="-0.037136587005447405 -0.00033230528343419053 -9.498374522309838e-05"
+                    <inertial pos="0.000363412994552595 -0.00033230528343419053 -9.498374522309838e-05"
                       mass="0.475202773187987"
                       fullinertia="0.000143 0.000157 0.000159 -1e-06 1e-06 -1e-06" />
-                    <geom name="openarm_left_link6_collision" pos="-0.0375 -0.0 -0.5585"
+                    <geom name="openarm_left_link6_collision" pos="0.0 0.0 -0.5585"
                       quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link6_collision_left"
                       class="collision" />
-                    <geom name="openarm_left_link6_visual_0" pos="-0.0375 -0.0 -0.5585"
+                    <geom name="openarm_left_link6_visual_0" pos="0.0 0.0 -0.5585"
                       quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh"
                       mesh="link6_0_left.obj" class="visual" />
-                    <geom name="openarm_left_link6_visual_1" pos="-0.0375 -0.0 -0.5585"
+                    <geom name="openarm_left_link6_visual_1" pos="0.0 0.0 -0.5585"
                       quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh"
                       mesh="link6_1_left.obj" class="visual" />
-                    <body name="openarm_left_link7" pos="-0.0375 0.0 0.0" quat="1.0 0.0 0.0 0.0">
+                    <body name="openarm_left_link7" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0">
                       <joint name="openarm_left_joint7" type="hinge" ref="0.0" class="motor_DM4310"
                         range="-1.570796 1.570796" axis="0 -1 0" />
                       <inertial pos="-9.897454675528511e-05 -0.003372444724450437 0.06138919729233123" mass="0.4054971268153967"
@@ -366,25 +366,25 @@ limitations under the License.
             material="matte_black" type="mesh" mesh="link1_2.obj" class="visual" />
           <geom name="openarm_right_link1_visual_3" pos="-0.0 0.0 -0.0625" quat="1.0 0.0 0.0 0.0"
             material="matte_black" type="mesh" mesh="link1_3.obj" class="visual" />
-          <body name="openarm_right_link2" pos="-0.0301 0.0 0.06"
+          <body name="openarm_right_link2" pos="0.0 0.0 0.06"
             quat="0.7071067811882787 0.7071067811848163 0.0 0.0">
             <joint name="openarm_right_joint2" type="hinge" ref="0.0" class="motor_DM8009"
               range="-0.17453267320510335 3.3161253267948965" axis="-1 0 0" />
-            <inertial pos="0.00839629182351943 -2.0145102027597523e-08 0.03256649300522363"
+            <inertial pos="-0.02170370817648057 -2.0145102027597523e-08 0.03256649300522363"
               mass="0.2775092746011571"
               fullinertia="0.000359 0.000376 0.000232 1e-06 -0.000109 1e-06" />
-            <geom name="openarm_right_link2_collision" pos="0.0301 0.0 -0.1225"
+            <geom name="openarm_right_link2_collision" pos="0.0 0.0 -0.1225"
               quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link2_collision" class="collision" />
-            <geom name="openarm_right_link2_visual_0" pos="0.0301 0.0 -0.1225"
+            <geom name="openarm_right_link2_visual_0" pos="0.0 0.0 -0.1225"
               quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link2_0.obj"
               class="visual" />
-            <geom name="openarm_right_link2_visual_1" pos="0.0301 0.0 -0.1225"
+            <geom name="openarm_right_link2_visual_1" pos="0.0 0.0 -0.1225"
               quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link2_1.obj"
               class="visual" />
-            <geom name="openarm_right_link2_visual_2" pos="0.0301 0.0 -0.1225"
+            <geom name="openarm_right_link2_visual_2" pos="0.0 0.0 -0.1225"
               quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link2_2.obj"
               class="visual" />
-            <body name="openarm_right_link3" pos="0.0301 0.0 0.06625" quat="1.0 0.0 0.0 0.0">
+            <body name="openarm_right_link3" pos="0.0 0.0 0.06625" quat="1.0 0.0 0.0 0.0">
               <joint name="openarm_right_joint3" type="hinge" ref="0.0" class="motor_DM4340"
                 range="-1.570796 1.570796" axis="0 0 1" />
               <inertial pos="-0.002104752099628911 0.0005549085042607548 0.09047470545721961"
@@ -401,24 +401,24 @@ limitations under the License.
               <geom name="openarm_right_link3_visual_2" pos="-0.0 -0.0 -0.18875"
                 quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link3_2.obj"
                 class="visual" />
-              <body name="openarm_right_link4" pos="-0.0 0.0315 0.15375" quat="1.0 0.0 0.0 0.0">
+              <body name="openarm_right_link4" pos="0.0 0.0 0.15375" quat="1.0 0.0 0.0 0.0">
                 <joint name="openarm_right_joint4" type="hinge" ref="0.0" class="motor_DM4340"
                   range="0.0 2.443461" axis="0 1 0" />
-                <inertial pos="-0.0029006831074562967 -0.03030575826634669 0.06339637422196209"
+                <inertial pos="-0.0029006831074562967 0.00119424173365331 0.06339637422196209"
                   mass="0.6348534566833373"
                   fullinertia="0.000623 0.000511 0.000334 -1e-06 -1.9e-05 3.8e-05" />
-                <geom name="openarm_right_link4_collision" pos="0.0 -0.0315 -0.3425"
+                <geom name="openarm_right_link4_collision" pos="0.0 0.0 -0.3425"
                   quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link4_collision" class="collision" />
-                <geom name="openarm_right_link4_visual_0" pos="0.0 -0.0315 -0.3425"
+                <geom name="openarm_right_link4_visual_0" pos="0.0 0.0 -0.3425"
                   quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link4_0.obj"
                   class="visual" />
-                <geom name="openarm_right_link4_visual_1" pos="0.0 -0.0315 -0.3425"
+                <geom name="openarm_right_link4_visual_1" pos="0.0 0.0 -0.3425"
                   quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link4_1.obj"
                   class="visual" />
-                <geom name="openarm_right_link4_visual_2" pos="0.0 -0.0315 -0.3425"
+                <geom name="openarm_right_link4_visual_2" pos="0.0 0.0 -0.3425"
                   quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link4_2.obj"
                   class="visual" />
-                <body name="openarm_right_link5" pos="0.0 -0.0315 0.0955" quat="1.0 0.0 0.0 0.0">
+                <body name="openarm_right_link5" pos="0.0 0.0 0.0955" quat="1.0 0.0 0.0 0.0">
                   <joint name="openarm_right_joint5" type="hinge" ref="0.0" class="motor_DM4310"
                     range="-1.570796 1.570796" axis="0 0 1" />
                   <inertial pos="-0.003049665024221911 0.0008866902457326625 0.043079803024980934"
@@ -435,21 +435,21 @@ limitations under the License.
                   <geom name="openarm_right_link5_visual_2" pos="-0.0 -0.0 -0.438"
                     quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link5_2.obj"
                     class="visual" />
-                  <body name="openarm_right_link6" pos="0.0375 0.0 0.1205" quat="1.0 0.0 0.0 0.0">
+                  <body name="openarm_right_link6" pos="0.0 0.0 0.1205" quat="1.0 0.0 0.0 0.0">
                     <joint name="openarm_right_joint6" type="hinge" ref="0.0" class="motor_DM4310"
                       range="-0.785398 0.785398" axis="1 0 0" />
-                    <inertial pos="-0.037136587005447405 0.00033230528343419053 -9.498374522309838e-05"
+                    <inertial pos="0.000363412994552595 0.00033230528343419053 -9.498374522309838e-05"
                       mass="0.475202773187987"
                       fullinertia="0.000143 0.000157 0.000159 1e-06 1e-06 1e-06" />
-                    <geom name="openarm_right_link6_collision" pos="-0.0375 -0.0 -0.5585"
+                    <geom name="openarm_right_link6_collision" pos="0.0 0.0 -0.5585"
                       quat="1.0 0.0 0.0 0.0" type="mesh" mesh="link6_collision" class="collision" />
-                    <geom name="openarm_right_link6_visual_0" pos="-0.0375 -0.0 -0.5585"
+                    <geom name="openarm_right_link6_visual_0" pos="0.0 0.0 -0.5585"
                       quat="1.0 0.0 0.0 0.0" material="matte_black" type="mesh" mesh="link6_0.obj"
                       class="visual" />
-                    <geom name="openarm_right_link6_visual_1" pos="-0.0375 -0.0 -0.5585"
+                    <geom name="openarm_right_link6_visual_1" pos="0.0 0.0 -0.5585"
                       quat="1.0 0.0 0.0 0.0" material="metal_silver" type="mesh" mesh="link6_1.obj"
                       class="visual" />
-                    <body name="openarm_right_link7" pos="-0.0375 0.0 0.0" quat="1.0 0.0 0.0 0.0">
+                    <body name="openarm_right_link7" pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0">
                       <joint name="openarm_right_joint7" type="hinge" ref="0.0" class="motor_DM4310"
                         range="-1.570796 1.570796" axis="0 1 0" />
                       <inertial pos="-9.897454675528511e-05 0.003372444724450437 0.06138919729233123" mass="0.4054971268153967"
