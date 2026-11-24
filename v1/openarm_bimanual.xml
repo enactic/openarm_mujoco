@@ -49,7 +49,6 @@ limitations under the License.
           solref="0.005 1" friction="1 0.01 0.01" />
         <!-- <material name="collision_material" rgba="1 0 0 0.5" specular="0.2" shininess="0.1"/> -->
         <equality solimp="0.99 0.999 1e-05" solref="0.005 1" />
-        <!-- Match V2 fingertip torsional friction; rolling friction stays disabled. -->
         <default class="fingertip">
           <geom condim="4" />
         </default>
