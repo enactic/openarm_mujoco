@@ -46,9 +46,9 @@ limitations under the License.
     <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3"
       markrgb="0.8 0.8 0.8" width="300" height="300"/>
     <material name="groundplane"    texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
-    <mesh name="cell_cam_pcb" file="visual/cell/cell_cam_pcb.obj" />
-    <mesh name="cell_cam_base_plate" file="visual/cell/cell_cam_base_plate.obj" />
-    <mesh name="cell_cam_lens" file="visual/cell/cell_cam_lens.obj" />
+    <mesh name="cell_cam_pcb" file="visual/camera/b0495_pcb.obj" />
+    <mesh name="cell_cam_base_plate" file="visual/camera/b0495_base_plate.obj" />
+    <mesh name="cell_cam_lens" file="visual/camera/b0495_lens.obj" />
     <mesh name="cell_frame" file="visual/cell/cell_frame.obj" />
     <mesh name="cell_light_curtain_yellow" file="visual/cell/cell_light_curtain_yellow.obj" />
     <mesh name="cell_light_curtain_black" file="visual/cell/cell_light_curtain_black.obj" />
@@ -115,9 +115,6 @@ limitations under the License.
     <geom name="floor" size="0 0 0.05" type="plane" material="groundplane" />
     <frame name="cell_frame" pos="0 0 1.0075">
       <frame name="cell_visual_frame">
-        <geom name="cell_vis_cam_pcb" type="mesh" mesh="cell_cam_pcb" material="cell_cam_pcb_mat" class="cell_visual" />
-        <geom name="cell_vis_cam_base_plate" type="mesh" mesh="cell_cam_base_plate" material="cell_cam_base_plate_mat" class="cell_visual" />
-        <geom name="cell_vis_cam_lens" type="mesh" mesh="cell_cam_lens" material="cell_cam_lens_mat" class="cell_visual" />
         <geom name="cell_vis" type="mesh" mesh="cell_frame" material="cell_frame_mat" class="cell_visual" />
         <geom name="cell_vis_light_curtain_yellow" type="mesh" mesh="cell_light_curtain_yellow" material="cell_light_curtain_yellow_mat" class="cell_visual" />
         <geom name="cell_vis_light_curtain_black" type="mesh" mesh="cell_light_curtain_black" material="cell_light_curtain_black_mat" class="cell_visual" />
@@ -154,7 +151,12 @@ limitations under the License.
       <!-- legacy frame (original MuJoCo, Cell base): pos="0.245 0 0.795" xyaxes="0 -1 0 1 0 0".
            legacy frame (unshifted CAD/Isaac): pos="0.526165063509461 0 0.737346493924647", same xyaxes.
            Manually shifted 16 mm forward after real-image comparison; further calibration required. -->
-      <camera name="camera_ceiling" pos="0.526165063509461 0 0.721346493924647" xyaxes="0 -1 0 1 0 0" fovy="52.9" resolution="960 600" />
+      <frame name="openarm_cell_ceiling_camera_base_link" pos="0.526165063509461 0 0.7585" quat="0 1 0 0">
+        <geom name="cell_vis_cam_pcb" type="mesh" mesh="cell_cam_pcb" material="cell_cam_pcb_mat" class="cell_visual" />
+        <geom name="cell_vis_cam_base_plate" type="mesh" mesh="cell_cam_base_plate" material="cell_cam_base_plate_mat" class="cell_visual" />
+        <geom name="cell_vis_cam_lens" type="mesh" mesh="cell_cam_lens" material="cell_cam_lens_mat" class="cell_visual" />
+        <camera name="camera_ceiling" pos="0 0 0.037153506075353" xyaxes="0 1 0 1 0 0" fovy="52.9" resolution="960 600" />
+      </frame>
       <body name="openarm_lifter_link" pos="0.185 0 0.34">
         <!-- Attach first to import the shared visual and collision defaults. -->
         <attach model="bimanual" prefix="" />

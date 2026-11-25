@@ -189,6 +189,9 @@ limitations under the License.
     <mesh name="ee_base_link_right_00" content_type="model/obj" file="visual/gripper/ee_base_link_00.obj" />
     <mesh name="ee_base_link_right_01" content_type="model/obj" file="visual/gripper/ee_base_link_01.obj" />
     <mesh name="ee_base_link_right_02" content_type="model/obj" file="visual/gripper/ee_base_link_02.obj" />
+    <mesh name="b0495_pcb" content_type="model/obj" file="visual/camera/b0495_pcb.obj" />
+    <mesh name="b0495_base_plate" content_type="model/obj" file="visual/camera/b0495_base_plate.obj" />
+    <mesh name="b0495_lens" content_type="model/obj" file="visual/camera/b0495_lens.obj" />
     <mesh name="ee_base_link_right_collision_00" content_type="model/stl" file="collision/gripper/ee_base_link.stl" />
     <mesh name="finger_inner_right_00" content_type="model/obj" file="visual/gripper/finger_inner_00.obj" />
     <mesh name="finger_inner_right_01" content_type="model/obj" file="visual/gripper/finger_inner_01.obj" />
@@ -231,9 +234,9 @@ limitations under the License.
     <material name="ee_base_link_02_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
     <material name="ee_base_link_01_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
     <material name="ee_base_link_00_mat" rgba="0.247 0.247 0.247 1" specular="0.0" shininess="0.0" />
-    <material name="ee_base_link_03_mat" rgba="0.501960784 1 0.501960784 1" specular="0.0" shininess="0.0" />
-    <material name="ee_base_link_04_mat" rgba="0.694117647 0.694117647 0.694117647 1" specular="0.0" shininess="0.0" />
-    <material name="ee_base_link_05_mat" rgba="0.694117647 0.694117647 0.694117647 1" specular="0.0" shininess="0.0" />
+    <material name="b0495_pcb_mat" rgba="0.501960784 1 0.501960784 1" specular="0.0" shininess="0.0" />
+    <material name="b0495_base_plate_mat" rgba="0.694117647 0.694117647 0.694117647 1" specular="0.0" shininess="0.0" />
+    <material name="b0495_lens_mat" rgba="0.694117647 0.694117647 0.694117647 1" specular="0.0" shininess="0.0" />
     <material name="finger_inner_02_mat" rgba="0.65 0.65 0.65 1" specular="0.0" shininess="0.0" />
     <material name="finger_inner_01_mat" rgba="0.5 0.5 0.5 1" specular="0.0" shininess="0.0" />
     <material name="finger_inner_00_mat" rgba="0.247 0.247 0.247 1" specular="0.0" shininess="0.0" />
@@ -244,12 +247,6 @@ limitations under the License.
     <mesh name="link4_left_04" content_type="model/obj" file="visual/arm/link4_04.obj" />
     <mesh name="link4_right_03" content_type="model/obj" file="visual/arm/link4_03.obj" />
     <mesh name="link4_right_04" content_type="model/obj" file="visual/arm/link4_04.obj" />
-    <mesh name="ee_base_link_left_03" content_type="model/obj" file="visual/gripper/ee_base_link_03.obj" scale="1 -1 1" />
-    <mesh name="ee_base_link_left_04" content_type="model/obj" file="visual/gripper/ee_base_link_04.obj" scale="1 -1 1" />
-    <mesh name="ee_base_link_left_05" content_type="model/obj" file="visual/gripper/ee_base_link_05.obj" scale="1 -1 1" />
-    <mesh name="ee_base_link_right_03" content_type="model/obj" file="visual/gripper/ee_base_link_03.obj" />
-    <mesh name="ee_base_link_right_04" content_type="model/obj" file="visual/gripper/ee_base_link_04.obj" />
-    <mesh name="ee_base_link_right_05" content_type="model/obj" file="visual/gripper/ee_base_link_05.obj" />
   </asset>
   <equality>
     <joint name="openarm_left_ee_finger_joint_mimic" joint1="openarm_left_finger_joint1" joint2="openarm_left_finger_joint2" polycoef="0 1 0 0 0" solimp="0.95 0.99 0.001" solref="0.005 1" />
