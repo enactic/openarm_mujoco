@@ -48,7 +48,7 @@ even farther goal marker.
     <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
 
     <camera name="tablecam" pos="0.34 -0.14 1.3" xyaxes="1 0 0 0 1 0" fovy="64"/>
-    <camera name="frontcam" pos="1.05 -0.26 0.9" xyaxes="0 -1 0 0.3 0 1" fovy="58"/>
+    <camera name="frontcam" pos="1.05 -0.26 0.9" xyaxes="0 1 0 -0.3 0 1" fovy="58"/>
 
     <!-- bimanual arms mounted on the pedestal -->
     <attach model="arm_pedestal" prefix=""/>
