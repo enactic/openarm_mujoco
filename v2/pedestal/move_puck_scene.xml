@@ -48,7 +48,7 @@ puck can be pushed to a goal with the closed gripper, or grasped and placed
     <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
 
     <camera name="tablecam" pos="0.26 -0.18 1.15" xyaxes="1 0 0 0 1 0" fovy="60"/>
-    <camera name="frontcam" pos="0.95 -0.18 0.85" xyaxes="0 -1 0 0.3 0 1" fovy="55"/>
+    <camera name="frontcam" pos="0.95 -0.18 0.85" xyaxes="0 1 0 -0.3 0 1" fovy="55"/>
 
     <!-- bimanual arms mounted on the pedestal -->
     <attach model="arm_pedestal" prefix=""/>

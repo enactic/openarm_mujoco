@@ -57,7 +57,7 @@ the cap let either arm grasp and unscrew it.
     <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
 
     <camera name="tablecam" pos="0.30 0.0 1.30" xyaxes="1 0 0 0 1 0" fovy="60"/>
-    <camera name="frontcam" pos="1.05 0.0 0.90" xyaxes="0 -1 0 0.3 0 1" fovy="55"/>
+    <camera name="frontcam" pos="1.05 0.0 0.90" xyaxes="0 1 0 -0.3 0 1" fovy="55"/>
 
     <!-- bimanual arms mounted on the pedestal -->
     <attach model="arm_pedestal" prefix=""/>

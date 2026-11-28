@@ -49,7 +49,7 @@ it needs no yaw alignment.
     <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
 
     <camera name="tablecam" pos="0.28 -0.22 1.15" xyaxes="1 0 0 0 1 0" fovy="55"/>
-    <camera name="frontcam" pos="0.95 -0.22 0.85" xyaxes="0 -1 0 0.3 0 1" fovy="50"/>
+    <camera name="frontcam" pos="0.95 -0.22 0.85" xyaxes="0 1 0 -0.3 0 1" fovy="50"/>
 
     <!-- bimanual arms mounted on the pedestal -->
     <attach model="arm_pedestal" prefix=""/>
